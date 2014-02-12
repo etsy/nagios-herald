@@ -1,5 +1,8 @@
+require 'nagios-herald'
 require 'test/unit'
 require 'ostruct'
+require 'mock_email_message'
+require 'assertions'
 
 class DefaultFormatterTest < Test::Unit::TestCase
 

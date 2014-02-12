@@ -165,7 +165,7 @@ module NagiosHerald
           footer ""
           footer "EXAMPLES"
           footer "--------"
-          footer "#{program_name} -r rfrantz@etsy.com --env-file=tests/env_files/nagios_vars -y nagios@etsy.com --formatter=check_disk"
+          footer "#{program_name} -r rfrantz@etsy.com --env-file=test/env_files/nagios_vars -y nagios@etsy.com --formatter=check_disk"
           footer ""
         end
 
