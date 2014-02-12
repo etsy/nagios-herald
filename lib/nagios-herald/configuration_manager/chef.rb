@@ -12,11 +12,10 @@ module NagiosHerald
           $stderr.puts "Knife config file not found (#{config_file})"
           @config_loaded = false
         else
-          Chef::Config.from_file(chef_config_path)
+          Chef::Config.from_file(config_file)
           @config_loaded = true
         end
-        return @knife_config
-
+        return @config_loaded
       end
 
       def get_cluster_name_for_host(host)
