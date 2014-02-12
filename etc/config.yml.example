@@ -1,0 +1,8 @@
+# define the FQDN of servers we call on to provide context in notifications
+servers:
+  ganglia: ganglia.example.com
+  graphite: graphite.example.com
+splunk:
+  url: https://splunk.example.com:8089/services/search/jobs
+  username: splunkuser
+  password: splunkpass

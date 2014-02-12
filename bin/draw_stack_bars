@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+
+# Draw a set of 2 values stack bars
+# Requires PIL and python > 2.6
+# Install PIL using: yum install python-imaging
+
+import sys
+import os
+from optparse import OptionParser
+
+try:
+    import PIL
+except ImportError:
+    sys.stderr.write("The Python Image Library (PIL) is required to use the draw_stack_bar module")
+    sys.stderr.write(" - you may try : 'sudo pip install pillow'\n")
+    sys.exit(1)
+
+lib_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../', 'lib', 'stackbars'))
+sys.path.append(lib_path)
+from grouped_stackbars import GroupedStackbars
+
+def parseData(data):
+    series = []
+    for i in data:
+        label, value = i.split('=')
+        try:
+            series.append((label.strip(), int(value)))
+        except:
+            print "Invalid format - value is not a number %s in '%s'" % (value, i)
+            sys.exit(1)
+    return series
+
+def drawStackBars(series, options):
+    stacked_bars = GroupedStackbars(options)
+    stacked_bars.render(series)
+    stacked_bars.save(options.get('output_file'))
+
+def parse_options():
+    usage = "usage: %prog [options] label=value label=value"
+
+    parser = OptionParser(usage = usage)
+
+    parser.add_option("-w", "--width", type="int",
+                      help="Picture width",
+                      dest="width", default=300)
+
+    parser.add_option("-o", "--output", type="string",
+                      help="The file name to save the results in",
+                      dest="output_file", default='stacked_bars.png')
+
+    parser.add_option("--bar-area-ratio", type="float",
+                      help="How wide should the bar area be compared to the total width",
+                      dest="bar_area_ratio", default=.75)
+
+    parser.add_option("--bar-height-ratio", type="float",
+                    help="How tall should the bars be compared to their width",
+                    dest="bar_height_ratio", default=.2)
+
+    parser.add_option("--bar-border", type="int",
+                    help="Width of the border around the bars",
+                    dest="bar_border", default=1)
+
+    options, data = parser.parse_args()
+    if not data:
+        sys.stderr.write("No  data to plot !\n\n")
+        parser.print_help()
+        sys.exit(1)
+    return options, data
+
+if __name__=='__main__':
+    options, data = parse_options()
+    series = parseData(data)
+    drawStackBars(series, vars(options))
+
+
+

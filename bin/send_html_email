@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+
+require 'choice'
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+require 'nagios-herald'
+
+program_name = File.basename($0)
+
+Choice.options do
+  header "Simple script used to send HTML email with inline content"
+  header ""
+
+  option :body do
+    short "-b"
+    long  "--body"
+    desc  "Body of the email to be sent. Surround the text with double quotes."
+    desc  "Optionally, pipe the content of the email body to #{program_name}."
+    default "I have no idea what I'm doing right now..."
+  end
+
+  option :attachments  do
+    short "-a"
+    long  "--attachment *ATTACHMENT"
+    desc  "The path to a attachment that can be referenced in the body of the mail. Specify multiple attachments with multiple '-a' arguments."
+  end
+
+  option :recipients, :required => true do
+    short "-r"
+    long  "--recipient *RECIPIENT"
+    desc  "A recipient's email address. Specify multiple recipients with multiple '-r' arguments."
+  end
+
+  option :subject do
+    short "-s"
+    long  "--subject"
+    desc  "Subject of the email to be sent. Surround the text with double quotes."
+    default "Nagios Alert via #{program_name}"
+  end
+
+  footer ""
+  footer "EXAMPLES"
+  footer "--------"
+  footer "#{program_name} -r rfrantz@etsy.com -r imaginaryfriend@etsy.com -a /path/to/image1.png -a /path/to/image2.jpg -b \"<img src='/path/to/image1.png'/>Look ma, an image\""
+  footer ""
+end
+
+if !$stdin.tty?
+  body = $stdin.read    # allow for long message bodies to be piped in
+else
+  body = Choice[:body]  # should we allow for overriding piped input?
+end
+
+recipients = Choice[:recipients]
+recipients = recipients.join(", ")
+
+email = NagiosHerald::EmailMessage.new(recipients)
+email.subject = Choice[:subject]
+email.add_text(body)
+email.add_html(body)
+email.add_attachments(Choice[:attachments]) if Choice[:attachments]
+email.send()

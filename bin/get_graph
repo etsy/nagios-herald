@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+
+require 'choice'
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+require 'nagios-herald'
+
+program_name = File.basename($0)
+
+Choice.options do
+  header ""
+  header "#{program_name} is used to generate images from given URIs."
+  header ""
+  header "It takes one or more URIs from which to generate images."
+  header "The script outputs the full path for each of the images that have been written."
+  header ""
+
+  option :path do
+    short "-p"
+    long  "--path"
+    desc  "An optional path in which to write the image files."
+    desc  "DEFAULT: /tmp"
+    default "/tmp"
+  end
+
+  option :uris, :required => true do
+    short "-u"
+    long  "--uri *URI"
+    desc  "The URI from which to generate an image. Specify multiple URIs with multiple \'-u\' arguments."
+  end
+
+  footer ""
+  footer "EXAMPLES"
+  footer "--------"
+  footer "1. Passing a single URI to #{program_name}:"
+  footer ""
+  footer "#{program_name} -u \"http://graphite.etsycorp.com/render/?width=1606&height=790&target=cdn.fastly.img.AMS.body_size\""
+  footer ""
+  footer "2. Passing multiple URIs to #{program_name}:"
+  footer "(line breaks added for clarity)"
+  footer ""
+  footer "#{program_name} -u \"http://graphite.etsycorp.com/render/?width=1606&height=790&target=cdn.fastly.img.AMS.body_size\" \\"
+  footer " -u \"http://graphite.etsycorp.com/render/?width=1606&height=790&target=logster.ApiDeviceMetricLogster.exec_time\""
+  footer ""
+end
+
+path = Choice[:path] if Choice[:path]
+uris = Choice[:uris] if Choice[:uris]
+
+image_paths = NagiosHerald::Helpers::UrlImage.download_images( uris, path )
+puts image_paths.join( ", " )

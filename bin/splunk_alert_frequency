@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+#
+# splunk_alert_frequency.rb
+#
+
+require 'choice'
+require 'app_conf'
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+require 'nagios-herald'
+
+program_name = File.basename( $0 )
+Choice.options do
+  header ""
+  header "#{program_name} will search Splunk for Nagios events, that match the given service name, in the past n days."
+  header ""
+
+  option :duration do
+    short "-d"
+    long  "--duration"
+    desc  "The number of days to search back through Nagios events. DEFAULT: 1 day"
+    default 1
+  end
+
+  option :hostname, :required => true do
+    short "-h"
+    long  "--hostname"
+    desc  "[REQUIRED] The hostname to search for. Expects the Etsy Nagios-type hostname (i.e. web0200.ny4)."
+    desc  "NOTE: If '--service-name' is not specified, will look for alert where this host was in the DOWN state."
+  end
+
+  option :service_name do
+    short "-s"
+    long  "--service-name"
+    desc  "The name of the service to search for.  It may be necessary to surround the service name with double quotes."
+    default nil
+  end
+
+  option :config_file do
+    short "-c"
+    long  "--config-file"
+    desc  "Specify an alternate location for the config file."
+    default File.expand_path(File.dirname(__FILE__)  + "/../etc/config.yml")
+  end
+
+  footer ""
+end
+
+config  = AppConf.new
+config.load( Choice[:config_file] )
+
+reporter = NagiosHerald::Helpers::SplunkReporter.new(config['splunk']['url'],config['splunk']['username'], config['splunk']['password'])
+puts reporter.get_alert_frequency(Choice[:hostname], Choice[:service_name], {:duration => Choice[:duration]})
+
