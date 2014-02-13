@@ -49,7 +49,7 @@ module NagiosHerald
       def get(section = nil, key = nil)
         return @config if section.nil?
         return @config[section] if key.nil?
-        return @config[section][key]
+        return @config.fetch(section,{})[key]
       end
     end
   end
