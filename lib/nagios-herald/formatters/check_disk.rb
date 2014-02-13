@@ -6,21 +6,21 @@ module NagiosHerald
       include NagiosHerald::Logging
 
       # Parse the output of the nagios check
-      # DISK CRITICAL - free space: / 7051 MB (18% inode=60%); /data 16733467 MB (27% inode=99%);| /=31220MB;36287;2015;0;40319 /dev/shm=81MB;2236;124;0;2485 /data=44240486MB;54876558;3048697;0;60973954
+      # Simple output - ends with :
       # DISK CRITICAL - free space: / 7002 MB (18% inode=60%): /data 16273093 MB (26% inode=99%):
+      # Long output - delimited by |
+      # # DISK CRITICAL - free space: / 7051 MB (18% inode=60%); /data 16733467 MB (27% inode=99%);| /=31220MB;36287;2015;0;40319 /dev/shm=81MB;2236;124;0;2485 /data=44240486MB;54876558;3048697;0;60973954
       def get_partitions_data(input)
         partitions = []
-        space_regex = Regexp.new(
-          ".*free space:\s*(?<size>[^|]*)\|",
-        )
-        space_data = space_regex.match(input)
+        space_data = /.*free space:\s*(?<size>[^|:]*)(\||:)/.match(input)
         if space_data
           space_str = space_data[:size]
           splitter = (space_str.count(';') > 0)? ';' : ':'
           space_str.split(splitter).each do |part|
             partition_regex = Regexp.new('(?<partition>\S+)\s+(?<free_unit>.*)\s+\((?<free_percent>\d+)\%.*')
             data = partition_regex.match(part)
-            partitions << data if data
+            hash_data = Hash[ data.names.zip( data.captures ) ]
+            partitions << hash_data if hash_data
           end
         end
         return partitions
@@ -141,11 +141,12 @@ module NagiosHerald
         hostname  = get_nagios_var("NAGIOS_HOSTNAME")
         service_name  = get_nagios_var("NAGIOS_SERVICEDISPLAYNAME") # expecting 'Disk Space'
 
-        splunk_url = @cfgmgr.get('splunk','url')
+        splunk_url      = @cfgmgr.get('splunk','url')
         splunk_username = @cfgmgr.get('splunk', 'username')
         splunk_password = @cfgmgr.get('splunk', 'password')
         reporter = NagiosHerald::Helpers::SplunkReporter.new( splunk_url, splunk_username, splunk_password )
         splunk_data = reporter.get_alert_frequency(hostname, service_name, {:duration => 7})
+
         if splunk_data
           msg = "HOST '#{hostname}' has experienced "
           msg += splunk_data[:events_count].map{|k,v|  v.to_s + ' ' + k}.join(', ')
