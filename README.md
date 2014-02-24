@@ -28,7 +28,7 @@ Enter ``nagios-herald``!
 
 A typical example of a Nagios alert comes from the canonical disk space check, an example of which is below:
 
-<img src="http://imgshare.etsycorp.com/nassim/cv-ixkfp7ylkococ.png" style="border:1px solid #a1a1a1;">
+<img src="/etsy/nagios-herald/raw/master/docs/assets/img/vanilla-nagios.png" style="border:1px solid #a1a1a1;">
 
 While it does provide necessary information, it could be formatted for better readability.  For example,
 the following line, which contains the information we need, is dense and may be difficult to
@@ -48,7 +48,7 @@ an engineer might refer to can be embedded and/or formatted in the email alert.
 
 The previous disk space alert example can be tailored to look like this:
 
-![html nagios email](http://imgshare.etsycorp.com/rfrantz/11-yeci262tg08w4.png)
+![html nagios email](docs/assets/img/nagios-herald.png)
 
 Notice the handy **stack bar** that clearly illustrates the problematic volume?  See that **Ganglia graph**
 showing disk space utilization for the node in the last 24 hours. Curious why the alert fired?  Check
@@ -382,7 +382,7 @@ Stack bars can be useful for visualizing disk utilization.
 
 For example: **./bin/draw_stack_bars /var=10** will generate:
 
-![stack bars](http://imgshare.etsycorp.com/rfrantz/7c-sntmtbhwg0cs0.png)
+![stack bars](docs/assets/img/stack-bars.png)
 
 ### Ganglia Graphs ``bin/get_ganglia_graph``
 
