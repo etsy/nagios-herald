@@ -176,23 +176,23 @@ that is enforced in ``nagios-herald`` via code that imports classes based on the
 
 3. Optional: Inline static images in the message.
 
-Call the ``add_attachment`` method and specify the full path to the image file to be attached.
-The mailer will then inline the image in the HTML body of the message.
+    Call the ``add_attachment`` method and specify the full path to the image file to be attached.
+    The mailer will then inline the image in the HTML body of the message.
 
-    partitions_chart = "/path/to/partition_chart.png"
-    add_attachment partitions_chart
-    add_html "<img src='#{partitions_chart}' width='300' alt='partitions_remaining_space' />"
+        partitions_chart = "/path/to/partition_chart.png"
+        add_attachment partitions_chart
+        add_html "<img src='#{partitions_chart}' width='300' alt='partitions_remaining_space' />"
 
 4. Optional: Attach documents to the message.
 
-Call the ``add_attachment`` method and specify the full path to the document to be attached.  **Done**.
+    Call the ``add_attachment`` method and specify the full path to the document to be attached.  **Done**.
 
-    add_attachment "/path/to/file.zip"
+        add_attachment "/path/to/file.zip"
 
 5. Optional: use the NagiosHerald helpers to retrieve additional data (see [check_disk formatter](https://github.etsycorp.com/Sysops/nagios-herald/blob/master/lib/nagios-herald/formatters/check_disk.rb) for more details)
 
-    NagiosHerald::Helpers::GangliaGraph
-    NagiosHerald::Helpers::SplunkReporter
+        NagiosHerald::Helpers::GangliaGraph
+        NagiosHerald::Helpers::SplunkReporter
 
 6. When configuring nagios to use your formatter, do not forget to specify the formatter-dir option (--formatter-dir)
 
