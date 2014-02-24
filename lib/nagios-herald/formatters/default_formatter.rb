@@ -12,9 +12,9 @@ module NagiosHerald
 
       def initialize(cfgmgr, options)
         @cfgmgr     = cfgmgr
-        @nagios_url   = options.nagiosurl
-        @state_type   = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
-        @tag      = ""
+        @nagios_url = options.nagiosurl
+        @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
+        @tag        = ""
         @email      = nil
       end
 
@@ -38,12 +38,12 @@ module NagiosHerald
       def start_section(*section_style_args)
         if ! section_style_args.nil?
            style = section_style_args.join(';')
-           add_html("<div style='#{style}'>")
+           add_html "<div style='#{style}'>"
         end
       end
 
       def end_section
-        add_html("</div>")
+        add_html "</div>"
       end
 
       def get_default_value(name)

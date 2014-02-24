@@ -78,7 +78,7 @@ module NagiosHerald
 
         # Collect ganglia data
         hostname  = get_nagios_var("NAGIOS_HOSTNAME")
-        # TODO : address building up hostnames in a robust, future-proor manner
+        # TODO : address building up hostnames in a robust, future-proof manner
         fqdn    = hostname + ".etsy.com"
         ganglia_graphs = get_ganglia_graphs(fqdn)
         ganglia_graphs.each do |g|

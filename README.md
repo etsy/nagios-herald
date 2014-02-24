@@ -146,33 +146,33 @@ that is enforced in ``nagios-herald`` via code that imports classes based on the
 
 1. Create your formatter and extend the ``NagiosHerald::Formatter::DefaultFormatter`` class:
 
-    module NagiosHerald
-      module Formatter
-        class CheckDisk < NagiosHerald::Formatter::DefaultFormatter
-          include NagiosHerald::Logging
+        module NagiosHerald
+          module Formatter
+            class CheckDisk < NagiosHerald::Formatter::DefaultFormatter
+              include NagiosHerald::Logging
 
 
-          (override various methods here)
+              (override various methods here)
 
+            end
+          end
         end
-      end
-    end
 
 2. Override the sections you want to customize.
 
-You can define the text and/or HTML content in a message by calling the ``add_text`` and ``add_html`` methods
-inside a formatting method:
+    You can define the text and/or HTML content in a message by calling the ``add_text`` and ``add_html`` methods
+    inside a formatting method:
 
-    add_text "Something blew up!"
-    add_html "Something <b>blew</b> up!"
+        add_text "Something blew up!"
+        add_html "Something <b>blew</b> up!"
 
-An example of an overridden ``format_additional_info`` method could be:
+    An example of an overridden ``format_additional_info`` method could be:
 
-    def format_additional_info()
-        hostname  = get_nagios_var("NAGIOS_HOSTNAME")
-        add_text "The hostname is #{hostname}"
-        add_html "The hostname is <b>#{hostname}</b>"
-    end
+        def format_additional_info()
+            hostname  = get_nagios_var("NAGIOS_HOSTNAME")
+            add_text "The hostname is #{hostname}"
+            add_html "The hostname is <b>#{hostname}</b>"
+        end
 
 3. Optional: Inline static images in the message.
 

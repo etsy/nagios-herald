@@ -8,9 +8,9 @@ module NagiosHerald
     include NagiosHerald::Logging
 
     def initialize(notification_formatter, options)
-      @formatter    = notification_formatter
+      @formatter  = notification_formatter
       @no_email   = options.noemail
-      @pager_mode   = options.pager_mode
+      @pager_mode = options.pager_mode
       @sandbox    = nil
     end
 
