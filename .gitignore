@@ -1,6 +1,5 @@
 *.pyc
 .DS_STORE
-*.png
 etc/config.yml
 mail.html
 *.gem
