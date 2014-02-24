@@ -134,7 +134,8 @@ does not override.  The methods available to be overridden are:
 All of these methods are defined in the ``DefaultFormatter`` class located at
 ``/lib/nagios-herald/formatters/default_formatter.rb``.
 
-To begin writing your own formatter, create a new create a new Ruby file that inherits from ``NagiosHerald::Formatter::DefaultFormatter``.  This file will definethe formatter class you intend to write.  The file and class should follow a specific naming convention:
+To begin writing your own formatter, create a new create a new Ruby file that inherits from ``NagiosHerald::Formatter::DefaultFormatter``.  
+This file will define the formatter class you intend to write.  The file and class should follow a specific naming convention:
 
 * The class name is camel-cased.
 * The class file name is lower-cased and uses underscores between words.
@@ -143,7 +144,7 @@ As an example, a formatter used for providing context for disk space checks woul
 ``CheckDisk`` and the class file would be named ``check_disk.rb``.  This is a typical Ruby pattern and one
 that is enforced in ``nagios-herald`` via code that imports classes based on the class file name.
 
-1) Create your formatter and extend the ``NagiosHerald::Formatter::DefaultFormatter`` class:
+1. Create your formatter and extend the ``NagiosHerald::Formatter::DefaultFormatter`` class:
 
     module NagiosHerald
       module Formatter
@@ -157,7 +158,7 @@ that is enforced in ``nagios-herald`` via code that imports classes based on the
       end
     end
 
-2) Override the sections you want to customize.
+2. Override the sections you want to customize.
 
 You can define the text and/or HTML content in a message by calling the ``add_text`` and ``add_html`` methods
 inside a formatting method:
@@ -173,7 +174,7 @@ An example of an overridden ``format_additional_info`` method could be:
         add_html "The hostname is <b>#{hostname}</b>"
     end
 
-3) Optional: Inline static images in the message.
+3. Optional: Inline static images in the message.
 
 Call the ``add_attachment`` method and specify the full path to the image file to be attached.
 The mailer will then inline the image in the HTML body of the message.
@@ -182,18 +183,18 @@ The mailer will then inline the image in the HTML body of the message.
     add_attachment partitions_chart
     add_html "<img src='#{partitions_chart}' width='300' alt='partitions_remaining_space' />"
 
-4) Optional: Attach documents to the message.
+4. Optional: Attach documents to the message.
 
 Call the ``add_attachment`` method and specify the full path to the document to be attached.  **Done**.
 
     add_attachment "/path/to/file.zip"
 
-5) Optional: use the NagiosHerald helpers to retrieve additional data (see [check_disk formatter](https://github.etsycorp.com/Sysops/nagios-herald/blob/master/lib/nagios-herald/formatters/check_disk.rb) for more details)
+5. Optional: use the NagiosHerald helpers to retrieve additional data (see [check_disk formatter](https://github.etsycorp.com/Sysops/nagios-herald/blob/master/lib/nagios-herald/formatters/check_disk.rb) for more details)
 
     NagiosHerald::Helpers::GangliaGraph
     NagiosHerald::Helpers::SplunkReporter
 
-6) When configuring nagios to use your formatter, do not forget to specify the formatter-dir option (--formatter-dir)
+6. When configuring nagios to use your formatter, do not forget to specify the formatter-dir option (--formatter-dir)
 
 ### Defining Formatting Based on Alert Types and Delivery Method
 
@@ -340,7 +341,7 @@ Nagios instances.  You know what to do.
 
 Now,for the good stuff.  Once your formatter is created and tested (please test), add the
 ``_email_formatter_name`` custom variable in the ``services.cfg`` config file for the check you want
-the formatter to run.  It's value should be the name of the formatter.  An example configuration
+the formatter to run.  Its value should be the name of the formatter.  An example configuration
 stanza is below:
 
     define service {
