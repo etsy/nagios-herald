@@ -28,7 +28,7 @@ Enter ``nagios-herald``!
 
 A typical example of a Nagios alert comes from the canonical disk space check, an example of which is below:
 
-<img src="/etsy/nagios-herald/raw/master/docs/assets/img/vanilla-nagios.png" style="border:1px solid #a1a1a1;">
+<img src="/docs/assets/img/vanilla-nagios.png" style="border:1px solid #a1a1a1;">
 
 While it does provide necessary information, it could be formatted for better readability.  For example,
 the following line, which contains the information we need, is dense and may be difficult to
