@@ -165,8 +165,6 @@ module NagiosHerald
       end
 
       def format_state_detail
-        format_additional_info
-        format_action_url
         if @state_type == "SERVICE"
           format_notes
           format_additional_details

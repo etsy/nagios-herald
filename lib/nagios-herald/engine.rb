@@ -33,7 +33,9 @@ module NagiosHerald
         @formatter.tag = "ALERT"
         generate_section("format_host_info")
         generate_section("format_state_info")
-        generate_section("format_state_detail")
+        generate_section("format_additional_info")
+        generate_section("format_action_url")
+        generate_section("format_state_detail") # format_notes and format_additional_details for services
         generate_section("format_recipients_email_link")
         generate_section("format_notification_info")
         generate_section("format_alert_ack_url")
@@ -47,7 +49,9 @@ module NagiosHerald
       else
         generate_section("format_host_info", "color:green")
         generate_section("format_state_info", "color:green")
-        generate_section("format_state_detail", "color:green")
+        generate_section("format_additional_info", "color:green")
+        generate_section("format_action_url", "color:green")
+        generate_section("format_state_detail", "color:green") # format_notes and format_additional_details for services
         generate_section("format_recipients_email_link")
         generate_section("format_notification_info")
       end

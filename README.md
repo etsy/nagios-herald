@@ -217,8 +217,9 @@ Depending on whether an alert is sent in pager or email mode, content is written
     email:
         format_host_info
         format_state_info
-        format_state_detail
         format_additional_info
+        format_action_url
+        format_notes (for services)
         format_additional_details (for services only)
         format_recipients_email_link
         format_notification_info
@@ -232,8 +233,9 @@ Depending on whether an alert is sent in pager or email mode, content is written
     email:
         format_host_info
         format_state_info
-        format_state_detail
         format_additional_info
+        format_action_url
+        format_notes (for services only)
         format_additional_details (for services only)
         format_recipients_email_link
         format_notification_info
