@@ -193,7 +193,7 @@ module NagiosHerald
         recipients_mail   = recipients_list.map {|n| n + "@etsy.com"}
         recipients_mail_str = recipients_mail.join(',')
         add_text "Sent to #{recipients}\n"
-        add_html "Sent to <a href=\"mailto:#{recipients_mail_str}?subject=#{subject}\">#{recipients}</a><br>"
+        add_html %Q(Sent to <a href="mailto:#{recipients_mail_str}?subject=#{subject}">#{recipients}</a><br>)
       end
 
       def format_ack_info

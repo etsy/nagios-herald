@@ -64,13 +64,13 @@ module NagiosHerald
         # Collect partitions data and plot a chart
         # if the check has recovered, $NAGIOS_SERVICEOUTPUT doesn't contain the data we need to parse for images; just give us the A-OK message
         if output =~ /DISK OK/
-            add_html "Additional info:<br><b><font color=\"green\"> #{output}</font><br><br>"
+            add_html %Q(Additional info:<br><b><font color="green"> #{output}</font><br><br>)
         else
           partitions = get_partitions_data(output)
           partitions_chart = get_partitions_stackedbars_chart(partitions)
           if partitions_chart
             add_attachment partitions_chart
-            add_html "<img src=\"#{partitions_chart}\" width=\"500\" alt=\"partitions_remaining_space\" /><br><br>"
+            add_html %Q(<img src="#{partitions_chart}" width="500" alt="partitions_remaining_space" /><br><br>)
           else
             add_html "Additional info:<br> #{output}<br><br>" if output
           end
@@ -83,7 +83,7 @@ module NagiosHerald
         ganglia_graphs = get_ganglia_graphs(fqdn)
         ganglia_graphs.each do |g|
           add_attachment g
-          add_html "<img src=\"#{g}\" alt=\"ganglia_graph\" /><br><br>"
+          add_html %Q(<img src="#{g}" alt="ganglia_graph" /><br><br>)
         end
       end
 
@@ -111,10 +111,10 @@ module NagiosHerald
             if defined?( percent ) and !percent.nil?
               percent_free = 100 - percent.to_i
               if percent_free <= @critical_threshold.to_i
-                output_line = "<b><font color=\"red\">#{line}</font>  Free disk space <font color=\"red\">(#{percent_free}%)</font> is <= CRITICAL threshold (#{@critical_threshold}%).</b>"
+                output_line = %Q(<b><font color="red">#{line}</font>  Free disk space <font color="red">(#{percent_free}%)</font> is <= CRITICAL threshold (#{@critical_threshold}%).</b>)
                 output_lines << output_line
               elsif percent_free <= @warning_threshold.to_i
-                output_line = "<b><font color=\"orange\">#{line}</font>  Free disk space <font color=\"orange\">(#{percent_free}%)</font> is <= WARNING threshold ( #{@warning_threshold}%).</b>"
+                output_line = %Q(<b><font color="orange">#{line}</font>  Free disk space <font color="orange">(#{percent_free}%)</font> is <= WARNING threshold ( #{@warning_threshold}%).</b>)
                 output_lines << output_line
               else
                 output_lines << line
