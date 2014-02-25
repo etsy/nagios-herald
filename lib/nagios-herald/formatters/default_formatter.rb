@@ -8,6 +8,7 @@ module NagiosHerald
 
       attr_accessor :tag
       attr_accessor :email
+      # @sandbox is the place to save attachments, possibly a tempdir
       attr_accessor :sandbox
 
       def initialize(cfgmgr, options)
@@ -61,10 +62,10 @@ module NagiosHerald
       ## individual sections formatter
 
       def format_subject
-        hostname      = get_nagios_var("NAGIOS_HOSTNAME")
-        service_desc    = get_nagios_var("NAGIOS_SERVICEDESC")
+        hostname          = get_nagios_var("NAGIOS_HOSTNAME")
+        service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
         notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
-        state       = get_nagios_var("NAGIOS_#{@state_type}STATE")
+        state             = get_nagios_var("NAGIOS_#{@state_type}STATE")
 
         subject="#{@tag}: #{hostname}"
         subject += "/#{service_desc}" if service_desc != ""
@@ -87,8 +88,8 @@ module NagiosHerald
 
       def format_host_info
         notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
-        hostname      = get_nagios_var("NAGIOS_HOSTNAME")
-        service_desc    = get_nagios_var("NAGIOS_SERVICEDESC")
+        hostname          = get_nagios_var("NAGIOS_HOSTNAME")
+        service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
         add_text "Host: #{hostname} "
         add_html "<br><b>Host</b>: #{hostname} "
         if !service_desc.nil? and !service_desc.empty?
@@ -102,10 +103,10 @@ module NagiosHerald
       end
 
       def format_state_info
-        state     = get_nagios_var("NAGIOS_#{@state_type}STATE")
-        duration    = get_nagios_var("NAGIOS_#{@state_type}DURATION")
+        state         = get_nagios_var("NAGIOS_#{@state_type}STATE")
+        duration      = get_nagios_var("NAGIOS_#{@state_type}DURATION")
         last_duration = get_nagios_var("NAGIOS_LAST#{@state_type}STATE")
-        attempts    = get_nagios_var("NAGIOS_#{@state_type}ATTEMPT")
+        attempts      = get_nagios_var("NAGIOS_#{@state_type}ATTEMPT")
         max_attempts  = get_nagios_var("NAGIOS_MAX#{@state_type}ATTEMPTS")
         add_text "State is now: #{state} for #{duration} (was #{last_duration}) after #{attempts} / #{max_attempts} checks\n"
         if state.eql? 'OK' or state.eql? 'UP'
@@ -117,15 +118,15 @@ module NagiosHerald
       end
 
       def format_notification_info
-        date    = get_nagios_var("NAGIOS_LONGDATETIME")
-        number    = get_nagios_var("NAGIOS_NOTIFICATIONNUMBER")
+        date   = get_nagios_var("NAGIOS_LONGDATETIME")
+        number = get_nagios_var("NAGIOS_NOTIFICATIONNUMBER")
         add_text "Notification sent at: #{date} (notification number #{number})\n\n"
         add_html "Notification sent at: #{date} (notification number #{number})<br><br>"
       end
 
       # checks plugin's output
       def format_additional_info
-        output    = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
+        output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
         if !output.nil? and !output.empty?
           add_text "Additional info: #{NagiosHerald::Util::unescape_text(output)}\n\n"
           add_html "<b>Additional info</b>: #{output}<br><br>"
@@ -148,7 +149,7 @@ module NagiosHerald
 
       # checks plugin's long output
       def format_additional_details
-        long_output   = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
+        long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
         if !long_output.nil? and !long_output.empty?
           add_text "Additional Details: #{NagiosHerald::Util::unescape_text(long_output)}\n"
           add_html "<b>Additional Details</b>: <pre>#{NagiosHerald::Util::unescape_text(long_output)}</pre><br><br>"
