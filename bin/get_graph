@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'choice'
-$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'nagios-herald'
 
 program_name = File.basename($0)

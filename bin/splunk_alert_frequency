@@ -6,7 +6,7 @@
 
 require 'choice'
 require 'app_conf'
-$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'nagios-herald'
 
 program_name = File.basename( $0 )
@@ -40,7 +40,7 @@ Choice.options do
     short "-c"
     long  "--config-file"
     desc  "Specify an alternate location for the config file."
-    default File.expand_path(File.dirname(__FILE__)  + "/../etc/config.yml")
+    default File.expand_path(File.join(File.dirname(__FILE__), '..', 'etc', 'config.yml'))
   end
 
   footer ""

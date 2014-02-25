@@ -84,7 +84,7 @@ module NagiosHerald
             short "-c"
             long  "--config-file"
             desc  "Specify an alternate location for the config file."
-            default File.expand_path(File.dirname(__FILE__)  + "/../../etc/config.yml")
+            default File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'etc', 'config.yml'))
           end
 
           option :debug do

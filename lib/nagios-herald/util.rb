@@ -20,7 +20,7 @@ module NagiosHerald
     end
 
     def self.load_helper(name)
-      helper_path = File.expand_path(File.dirname(__FILE__) + "/helpers/#{name}")
+      helper_path = File.expand_path(File.join(File.dirname(__FILE__), 'helpers', name))
       $stderr.puts "Helper '#{name}' not found" unless File.exist?(helper_path + ".rb")
       begin
         require helper_path
