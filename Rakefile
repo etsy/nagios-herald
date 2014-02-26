@@ -1,6 +1,6 @@
 require 'rake/testtask'
 
-task :default => 'test:integration'
+task :default => ['test:integration', 'test:unit']
 
 # Tests
 namespace :test do

@@ -19,7 +19,7 @@ module NagiosHerald
         logger.datetime_format = "%Y-%m-%d %H:%M:%S"
         logger.progname = classname
         logger.formatter = proc { |severity, datetime, progname, msg|
-        "[#{datetime}] #{severity} -- #{progname}: #{msg}\n"
+          "[#{datetime}] #{severity} -- #{progname}: #{msg}\n"
         }
         logger
       end

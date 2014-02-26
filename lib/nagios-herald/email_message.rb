@@ -7,13 +7,14 @@ module NagiosHerald
     attr_reader :html
 
     def initialize(recipients, options = {})
-      @recipients   = recipients
-      @pager_mode   = options[:pager_mode]
-      @replyto    = options[:replyto]
-      @subject    = nil
-      @text     = ""
-      @html     = ""
-      @attachments  = []
+      @recipients  = recipients
+      @pager_mode  = options[:pager_mode]
+      @replyto     = options[:replyto]
+      @subject     = nil
+      @text        = ""
+      @html        = ""
+      # attachments are a list of paths
+      @attachments = []
     end
 
     def add_text(bit)
@@ -24,6 +25,7 @@ module NagiosHerald
       @html += bit if not @pager_mode
     end
 
+    # Should collapse this and the next to take a splat of paths
     def add_attachment(path)
       @attachments << path
     end
@@ -32,6 +34,8 @@ module NagiosHerald
       @attachments.concat(list_of_path)
     end
 
+    # this is a list of Mail::Part
+    # => #<Mail::Part:19564000, Multipart: false, Headers: <Content-Type: ; filename="Rakefile">, <Content-Transfer-Encoding: binary>, <Content-Disposition: attachment; filename="Rakefile">, <Content-ID: <530e1814464a9_3305aaef88979a2@blahblahbl.blah.blah.blah.mail>>>
     def inline_body_with_attachments(attachments)
       inline_html = @html
       attachments.each do |attachment|
@@ -39,11 +43,12 @@ module NagiosHerald
           inline_html = inline_html.sub(attachment.filename, "cid:#{attachment.cid}")
         end
       end
-      return inline_html
+      inline_html
     end
 
+    # this is misleading and odd. @subject is already an attr_accessor, is this a useful alias?
     def has_content
-      return @subject
+      @subject
     end
 
     def print
@@ -52,7 +57,7 @@ module NagiosHerald
       puts "Subject : #{@subject}"
       puts "------------------"
       puts @text
-
+      # pull this out to save html maybe?
       File.open("mail.html", 'w') { |file| file.write( @html) }
       puts "------------------"
       puts "Email html content saved as mail.html"
