@@ -1,4 +1,5 @@
 require 'test/unit'
+require 'ostruct'
 
 NAGIOS_VARS = {
   :HOSTNAME               => "test.host.com",
@@ -49,6 +50,15 @@ NAGIOS_VARS = {
 module NagiosHerald
   module TestHelpers
     class BaseTestCase < Test::Unit::TestCase
+      def simple_options
+        options = OpenStruct.new
+        options.pager_mode = false
+        options.noemail = false
+        options.debug = false
+        options.nagiosurl = 'http://test/nagios/'
+        options
+      end
+
       def load_env(notification_type, expected_vars)
         # Load the env with the nagios var we want
         all_vars = NAGIOS_VARS
