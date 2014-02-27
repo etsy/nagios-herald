@@ -3,7 +3,7 @@ require 'chef/search/query'
 
 module NagiosHerald
   module ConfigurationManager
-    class ChefManager < AbstractConfigurationManager
+    class ChefManager < BaseManager
       def load_config
         return @config_loaded unless @config_loaded.nil?
         config_file = self.get('knife_config') || '~/.chef/knife.rb'
@@ -15,7 +15,7 @@ module NagiosHerald
           Chef::Config.from_file(config_file)
           @config_loaded = true
         end
-        return @config_loaded
+        @config_loaded
       end
 
       def get_cluster_name_for_host(host)
@@ -23,7 +23,7 @@ module NagiosHerald
         query = Chef::Search::Query.new
         # we're only expecting a single node to be returned --> make sure it's the case!
         node = query.search('node', "fqdn:#{host}").first.first
-        return node.ganglia.cluster_name
+        node.ganglia.cluster_name
       end
     end
   end
