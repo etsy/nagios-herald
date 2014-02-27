@@ -15,8 +15,8 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
     load_env(notification_type, expected_vars)
     formatter = NagiosHerald::Formatter::DefaultFormatter.new(@cfgmgr, @options)
     handler = NagiosHerald::Engine.new(formatter, @options)
-    email = MockEmailMessage.new("test@etsy.com")
-
+    email = NagiosHerald::EmailMessage.new("test@etsy.com")
+    email.expects(:send).once
     handler.report(email, notification_type)
 
     expected_vars.each do |var|
@@ -26,32 +26,32 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
         val = NAGIOS_VARS.fetch(var)
       end
       if check_subject
-        assert_contains val, email.subject, "Failed to report #{var} in text email"
+        assert_includes email.subject, val, "Failed to report #{var} in text email"
       else
-        assert_contains val, email.text, "Failed to report #{var} in text email"
-        assert_contains val, email.html, "Failed to report #{var} in html email"
+        assert_includes email.text, val, "Failed to report #{var} in text email"
+        assert_includes email.html, val, "Failed to report #{var} in html email"
       end
-      assert_equal(true, email.sent, "Failed to send email")
     end
   end
 
-  def testServiceEmailSubject
+  def test_service_email_subject
     expected_vars = [:HOSTNAME, :NOTIFICATIONTYPE, :SERVICEDESC, :SERVICESTATE]
 
     ["PROBLEM", "FLAPPINGSTART","RECOVERY","FLAPPINGSTOP","ACKNOWLEDGEMENT"].each do |notification_type|
-      checkEmailIncludeCriticalInfo(notification_type, expected_vars, true)
+      check_email_include_critical_info(notification_type, expected_vars, true)
     end
   end
 
-  def testHostEmailSubject
+  def test_host_email_subject
     expected_vars = [:HOSTNAME, :NOTIFICATIONTYPE, :HOSTSTATE]
 
     ["PROBLEM", "FLAPPINGSTART","RECOVERY","FLAPPINGSTOP","ACKNOWLEDGEMENT"].each do |notification_type|
-      checkEmailIncludeCriticalInfo(notification_type, expected_vars, true)
+      check_email_include_critical_info(notification_type, expected_vars, true)
     end
+
   end
 
-  def testProblemServiceEmailBody
+  def test_problem_service_email_body
     expected_vars = [
       :HOSTNAME, :SERVICEDESC,
       :SERVICESTATE, :SERVICEDURATION, :LASTSERVICESTATE, :SERVICEATTEMPT, :MAXSERVICEATTEMPTS,
@@ -60,10 +60,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :SERVICE_ACK_URL
     ]
 
-    checkEmailIncludeCriticalInfo('PROBLEM', expected_vars)
+    check_email_include_critical_info('PROBLEM', expected_vars)
   end
 
-  def testFlappingStartServiceEmailBody
+  def test_flapping_start_service_email_body
     expected_vars = [
       :HOSTNAME, :SERVICEDESC,
       :SERVICESTATE, :SERVICEDURATION, :LASTSERVICESTATE, :SERVICEATTEMPT, :MAXSERVICEATTEMPTS,
@@ -71,10 +71,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :NOTIFICATIONRECIPIENTS, :LONGDATETIME, :NOTIFICATIONNUMBER,
       :SERVICE_ACK_URL
     ]
-    checkEmailIncludeCriticalInfo('FLAPPINGSTART', expected_vars)
+    check_email_include_critical_info('FLAPPINGSTART', expected_vars)
   end
 
-  def testProblemHostEmailBody
+  def test_problem_host_email_body
     expected_vars = [
       :HOSTNAME,
       :HOSTSTATE, :HOSTDURATION, :LASTHOSTSTATE, :HOSTATTEMPT, :MAXHOSTATTEMPTS,
@@ -82,10 +82,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :NOTIFICATIONRECIPIENTS, :LONGDATETIME, :NOTIFICATIONNUMBER,
       :HOST_ACK_URL
     ]
-    checkEmailIncludeCriticalInfo('PROBLEM', expected_vars)
+    check_email_include_critical_info('PROBLEM', expected_vars)
   end
 
-  def testFlappingStartHostEmailBody
+  def test_flapping_start_host_email_body
     expected_vars = [
       :HOSTNAME,
       :HOSTSTATE, :HOSTDURATION, :LASTHOSTSTATE, :HOSTATTEMPT, :MAXHOSTATTEMPTS,
@@ -93,10 +93,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :NOTIFICATIONRECIPIENTS, :LONGDATETIME, :NOTIFICATIONNUMBER,
       :HOST_ACK_URL
     ]
-    checkEmailIncludeCriticalInfo('FLAPPINGSTART', expected_vars)
+    check_email_include_critical_info('FLAPPINGSTART', expected_vars)
   end
 
-  def testRecoveryServiceEmailBody
+  def test_recovery_service_email_body
     expected_vars = [
       :HOSTNAME, :SERVICEDESC,
       :SERVICESTATE, :SERVICEDURATION, :LASTSERVICESTATE, :SERVICEATTEMPT, :MAXSERVICEATTEMPTS,
@@ -104,10 +104,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :NOTIFICATIONRECIPIENTS, :LONGDATETIME, :NOTIFICATIONNUMBER,
       :LONGDATETIME, :NOTIFICATIONNUMBER
     ]
-    checkEmailIncludeCriticalInfo('RECOVERY', expected_vars)
+    check_email_include_critical_info('RECOVERY', expected_vars)
   end
 
-  def testRecoveryFlappingStopEmailBody
+  def test_recovery_flapping_stop_email_body
     expected_vars = [
       :HOSTNAME, :SERVICEDESC,
       :SERVICESTATE, :SERVICEDURATION, :LASTSERVICESTATE, :SERVICEATTEMPT, :MAXSERVICEATTEMPTS,
@@ -115,10 +115,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :NOTIFICATIONRECIPIENTS, :LONGDATETIME, :NOTIFICATIONNUMBER,
       :LONGDATETIME, :NOTIFICATIONNUMBER
     ]
-    checkEmailIncludeCriticalInfo('FLAPPINGSTOP', expected_vars)
+    check_email_include_critical_info('FLAPPINGSTOP', expected_vars)
   end
 
-  def testRecoveryHostEmailBody
+  def test_recovery_host_email_body
     expected_vars = [
       :HOSTNAME,
       :HOSTSTATE, :HOSTDURATION, :LASTHOSTSTATE, :HOSTATTEMPT, :MAXHOSTATTEMPTS,
@@ -126,10 +126,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :NOTIFICATIONRECIPIENTS, :LONGDATETIME, :NOTIFICATIONNUMBER,
       :LONGDATETIME, :NOTIFICATIONNUMBER
     ]
-    checkEmailIncludeCriticalInfo('RECOVERY', expected_vars)
+    check_email_include_critical_info('RECOVERY', expected_vars)
   end
 
-  def testFlappingStopHostEmailBody
+  def test_flapping_stop_host_email_body
     expected_vars = [
       :HOSTNAME,
       :HOSTSTATE, :HOSTDURATION, :LASTHOSTSTATE, :HOSTATTEMPT, :MAXHOSTATTEMPTS,
@@ -137,10 +137,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :NOTIFICATIONRECIPIENTS, :LONGDATETIME, :NOTIFICATIONNUMBER,
       :LONGDATETIME, :NOTIFICATIONNUMBER
     ]
-    checkEmailIncludeCriticalInfo('FLAPPINGSTOP', expected_vars)
+    check_email_include_critical_info('FLAPPINGSTOP', expected_vars)
   end
 
-  def testAcknowledgmentServiceEmailBody
+  def test_acknowledgment_service_email_body
     # manually add servicestate in the env since it's not present in the email
     # but needs to be present in the env
     ENV["NAGIOS_SERVICESTATE"] = 'ACKNOWLEDGEMENT'
@@ -150,10 +150,10 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :LONGDATETIME, :SERVICEACKAUTHOR, :SERVICEACKCOMMENT
     ]
 
-    checkEmailIncludeCriticalInfo('ACKNOWLEDGEMENT', expected_vars)
+    check_email_include_critical_info('ACKNOWLEDGEMENT', expected_vars)
   end
 
-  def testAcknowledgmentHostEmailBody
+  def test_acknowledgment_host_email_body
     # manually add servicestate in the env since it's not present in the email
     # but needs to be present in the env
     ENV["NAGIOS_HOSTSTATE"] = 'ACKNOWLEDGEMENT'
@@ -163,14 +163,14 @@ class DefaultFormatterTest < NagiosHerald::TestHelpers::BaseTestCase
       :LONGDATETIME, :HOSTACKAUTHOR, :HOSTACKCOMMENT
     ]
 
-    checkEmailIncludeCriticalInfo('ACKNOWLEDGEMENT', expected_vars)
+    check_email_include_critical_info('ACKNOWLEDGEMENT', expected_vars)
   end
 
 
-  def testProblemServicePagerBody
+  def test_problem_service_pager_body
     @options.pager_mode = true
 
     expected_vars = []
-    checkEmailIncludeCriticalInfo('PROBLEM', expected_vars)
+    check_email_include_critical_info('PROBLEM', expected_vars)
   end
 end
