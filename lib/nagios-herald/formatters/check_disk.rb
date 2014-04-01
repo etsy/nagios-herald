@@ -52,7 +52,7 @@ module NagiosHerald
           graph =  ganglia.get_graphs( [hostname], 'part_max_used', @sandbox, '1day')
           return graph
         rescue Exception => e
-          logger.error "Exception encountered retrieving ganglia graphs - message #{e.message}"
+          logger.error "Exception encountered retrieving ganglia graphs - #{e.message}"
           return []
         end
       end

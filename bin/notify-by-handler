@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'nagios-herald'
-require 'nagios-herald/exec'
+require 'nagios-herald/executor'
 
-handler = NagiosHerald::Exec::NagiosHerald.new()
-handler.report!
+nagios_herald = NagiosHerald::Executor.new()
+nagios_herald.report!
