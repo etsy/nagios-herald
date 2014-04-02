@@ -1,6 +1,6 @@
 require 'nagios-herald/version'
 require 'nagios-herald/util'
-require 'nagios-herald/email_message'
+require 'nagios-herald/message'
 require 'nagios-herald/logging'
 require 'nagios-herald/configuration_manager'
 require 'nagios-herald/formatters/default_formatter'
