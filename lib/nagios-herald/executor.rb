@@ -58,7 +58,7 @@ module NagiosHerald
       formatter = formatter_class.new(cfgmgr, @options)
 
       # Get an alert handler for our formatter
-      handler = Engine.new(formatter, @options)
+      engine = Engine.new(formatter, @options)
 
       contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
       contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
@@ -68,7 +68,7 @@ module NagiosHerald
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
         message = EmailMessage.new(contact, @options)
-        handler.report(message, notification_type)
+        engine.report(message, notification_type)
       end
     end
 
@@ -76,8 +76,16 @@ module NagiosHerald
       program_name = File.basename($0)
 
       Choice.options do
-        header "Nagios handler"
+        header "Nagios Herald - Spread the word"
         header ""
+
+        option :configuration_manager do
+          short "-C"
+          long  "--configuration-manager"
+          desc  "Configuration Management Tool"
+          default "chef"
+          desc  "Valid options: simple, chef"
+        end
 
         option :config_file do
           short "-c"
@@ -95,7 +103,14 @@ module NagiosHerald
         option :env do
           short "-e"
           long  "--env-file"
-          desc  "Path to a file containing environment variables to use for testind/debugging (i.e. nagios_vars)."
+          desc  "Path to a file containing environment variables to use for testing/debugging (i.e. nagios_vars)."
+        end
+
+        option :formatter_dir do
+          short   "-F"
+          long    "--formatter-dir"
+          desc    "Formatter directory"
+          default nil
         end
 
         option :formatter_name do
@@ -106,9 +121,25 @@ module NagiosHerald
         end
 
         option :formatter_dir do
+          short   "-F"
           long    "--formatter-dir"
           desc    "Formatter directory"
           default nil
+        end
+
+        option :message_type do
+          short   "-m"
+          long    "--message-type"
+          desc    "Type of message to deliver (i.e. email, IRC, pager)"
+          desc    "[DEFAULT] email"
+          desc    "FUTURE USE"
+          default "email"
+        end
+
+        option :noemail do
+          short "-N"
+          long  "--no-email"
+          desc  "Output email content to screen but do not send it."
         end
 
         option :notification_type do
@@ -118,6 +149,12 @@ module NagiosHerald
           desc  "Valid options: PROBLEM, FLAPPINGSTART, RECOVERY, FLAPPINGSTOP, ACKNOWLEDGEMENT"
         end
 
+        option :pager_mode do
+          short "-p"
+          long  "--pager"
+          desc  "Enable pager mode"
+        end
+
         option :recipients do
           short "-r"
           long  "--recipient"
@@ -125,10 +162,11 @@ module NagiosHerald
           desc  "If not specified, recipients are looked up in the ENV['NAGIOS_CONTACTEMAIL'] environment variable."
         end
 
-        option :pager_mode do
-          short "-p"
-          long  "--pager"
-          desc  "Enable pager mode"
+        option :trace do
+          short "-t"
+          long  "--trace"
+          desc  "Show a full traceback on error"
+          default false
         end
 
         option :nagiosurl do
@@ -141,24 +179,6 @@ module NagiosHerald
           short "-y"
           long  "--reply-to"
           desc  "[REQUIRED] Reply-to email address (i.e. nagios@etsy.com) used for acknowledgement replies."
-        end
-
-        option :noemail do
-          long  "--no-email"
-          desc  "Output email content to screen but do not send it."
-        end
-
-        option :configuration_manager do
-          long  "--configuration-manager"
-          desc  "Configuration Management Tool"
-          default "chef"
-          desc  "Valid options: simple, chef"
-        end
-
-        option :trace do
-          long  "--trace"
-          desc  "Show a full traceback on error"
-          default false
         end
 
         footer ""
