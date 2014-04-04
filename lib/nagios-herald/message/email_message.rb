@@ -1,12 +1,13 @@
+require 'nagios-herald/message/message'
 require 'mail'
 
 module NagiosHerald
-  class EmailMessage
+  class EmailMessage < Message
     attr_accessor :subject
     attr_reader :text
     attr_reader :html
 
-    def initialize(recipients, options = {})
+    def initialize(notification_formatter, recipients, options = {})
       @recipients  = recipients
       @pager_mode  = options[:pager_mode]
       @replyto     = options[:replyto]
@@ -15,6 +16,7 @@ module NagiosHerald
       @html        = ""
       # attachments are a list of paths
       @attachments = []
+      super(notification_formatter, options)
     end
 
     def add_text(bit)

@@ -1,10 +1,9 @@
-#!/usr/bin/env ruby
-
 require 'app_conf'
 require 'tmpdir'
+require 'nagios-herald/logging'
 
 module NagiosHerald
-  class Engine
+  class Message
     include NagiosHerald::Logging
 
     def initialize(notification_formatter, options)
