@@ -67,9 +67,16 @@ module NagiosHerald
 
     def send
       if not has_content
-        puts "Email has not content - exiting"
+        puts "Email has no content - exiting"
         return
       end
+
+      if @no_email
+        self.print
+        return
+      end
+
+      clean_sandbox
 
       mail = Mail.new({
         :from  => @replyto,
@@ -107,6 +114,8 @@ module NagiosHerald
       mail.add_part(html_part)
 
       mail.deliver!
+
+      clean_sandbox
     end
   end
 end

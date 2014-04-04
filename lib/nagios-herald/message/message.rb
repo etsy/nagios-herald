@@ -66,8 +66,8 @@ module NagiosHerald
       end
     end
 
-    def generate_content(notification_type)
-      case notification_type
+    def generate_content(nagios_notification_type)
+      case nagios_notification_type
         when "PROBLEM", "FLAPPINGSTART"
           generate_problem_content
         when "RECOVERY", "FLAPPINGSTOP"
@@ -75,7 +75,7 @@ module NagiosHerald
         when "ACKNOWLEDGEMENT"
           generate_ack_content
         else
-          $stderr.puts "invalid notification type"
+          $stderr.puts "Invalid Nagios notification type!\nExpecting something like PROBLEM or RECOVERY"
           exit 1
         end
     end
@@ -89,20 +89,16 @@ module NagiosHerald
       FileUtils.remove_entry @sandbox if  File.directory?(@sandbox)
     end
 
-    def report(email, notification_type)
-      @formatter.email = email
+    def generate(nagios_notification_type)
+      # @formatter.email is used to generate the subject via the formatter
+      # i think this should be handled by the message subclass
+      # formatters format content in the body; the message class (i.e. email, pager)
+      # should be smart enough to generate an appropriate subject
+      @formatter.email = self
       @formatter.sandbox = get_sandbox_path
 
-      generate_content(notification_type)
+      generate_content(nagios_notification_type)
       generate_section('format_subject')
-
-      if @no_email
-        email.print
-      else
-        email.send
-      end
-
-      clean_sandbox
     end
   end
 end

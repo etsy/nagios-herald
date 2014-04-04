@@ -59,14 +59,15 @@ module NagiosHerald
 
       contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
       contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
-      notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
+      nagios_notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
 
       # Report for email and pager
       # we eventually want to determine the correct class based on the requested message type (--message-type)
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
         message = EmailMessage.new(formatter, contact, @options)
-        message.report(message, notification_type)
+        message.generate(nagios_notification_type)
+        message.send
       end
     end
 
