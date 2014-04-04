@@ -71,7 +71,7 @@ module NagiosHerald
         return
       end
 
-      if @no_email
+      if @nosend
         self.print
         return
       end

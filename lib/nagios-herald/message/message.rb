@@ -8,7 +8,7 @@ module NagiosHerald
 
     def initialize(notification_formatter, options)
       @formatter  = notification_formatter
-      @no_email   = options.noemail
+      @nosend   = options.nosend
       @pager_mode = options.pager_mode
       @sandbox    = nil
     end

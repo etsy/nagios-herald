@@ -135,10 +135,10 @@ module NagiosHerald
           default "email"
         end
 
-        option :noemail do
+        option :nosend do
           short "-N"
-          long  "--no-email"
-          desc  "Output email content to screen but do not send it."
+          long  "--no-send"
+          desc  "Output content to screen but do not send it"
         end
 
         option :notification_type do
