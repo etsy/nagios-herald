@@ -1,5 +1,8 @@
 module NagiosHerald
   module Util
+
+    # TODO: add methods for handling HTTP(s) requests so we can control timeouts
+
     def self.load_env_from_file(path)
       File.readlines(path).each do |line|
         values = line.split("=")
@@ -31,28 +34,13 @@ module NagiosHerald
       end
     end
 
+    def get_nagios_var(name)
+      value = ENV[name]
+    end
+
     def self.underscore_to_camel_case(name)
       words = name.downcase.split('_')
       return words.map! {|w| w.capitalize}.join('')
-    end
-
-    # Load all the formatters
-    def self.load_formatter(name, formatter_dir = nil)
-      return if name.nil?
-      formatter_dir = formatter_dir || File.join(File.dirname(__FILE__) , "formatters")
-      formatter_path = File.expand_path(File.join(formatter_dir, name.downcase))
-      begin
-        require formatter_path
-        formatter_class = "NagiosHerald::Formatter::#{underscore_to_camel_case(name)}"
-        constantize(formatter_class)
-      rescue LoadError
-        puts "Exception encountered loading #{formatter_path}"
-        return nil
-      end
-    end
-
-    def get_nagios_var(name)
-      value = ENV[name]
     end
 
     def self.constantize(camel_cased_word)
@@ -80,5 +68,6 @@ module NagiosHerald
         end
       end
     end
+
   end
 end
