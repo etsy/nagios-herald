@@ -3,7 +3,7 @@ module NagiosHerald
 
     # TODO: add methods for handling HTTP(s) requests so we can control timeouts
 
-    def self.unescape_text(text)
+    def unescape_text(text)
       return text.gsub("\\n", "\n").gsub("\\t", "\t")
     end
 

@@ -59,7 +59,7 @@ module NagiosHerald
 
       def format_additional_info
         output  = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
-        add_text "Additional info:\n #{NagiosHerald::Util::unescape_text(output)}\n\n" if output
+        add_text "Additional info:\n #{unescape_text(output)}\n\n" if output
 
         # Collect partitions data and plot a chart
         # if the check has recovered, $NAGIOS_SERVICEOUTPUT doesn't contain the data we need to parse for images; just give us the A-OK message
@@ -128,8 +128,8 @@ module NagiosHerald
           output_string = output_lines.join( "<br>" )
           add_html output_string
         else  # just spit out what we got from df
-          add_text "Additional Details:\n#{NagiosHerald::Util::unescape_text(long_output)}\n" if long_output
-          add_html "Additional Details:<br><pre>#{NagiosHerald::Util::unescape_text(long_output)}</pre><br><br>" if long_output
+          add_text "Additional Details:\n#{unescape_text(long_output)}\n" if long_output
+          add_html "Additional Details:<br><pre>#{unescape_text(long_output)}</pre><br><br>" if long_output
         end
         format_alert_frequency
 

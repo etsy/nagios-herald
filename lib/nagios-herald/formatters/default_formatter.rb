@@ -94,7 +94,7 @@ module NagiosHerald
       def format_additional_info
         output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
         if !output.nil? and !output.empty?
-          add_text "Additional info: #{NagiosHerald::Util::unescape_text(output)}\n\n"
+          add_text "Additional info: #{unescape_text(output)}\n\n"
           add_html "<b>Additional info</b>: #{output}<br><br>"
         end
       end
@@ -102,7 +102,7 @@ module NagiosHerald
       def format_notes
         notes = get_nagios_var("NAGIOS_#{@state_type}NOTES")
         if !notes.nil? and !notes.empty?
-          add_text "Notes: #{NagiosHerald::Util::unescape_text(notes)}\n\n"
+          add_text "Notes: #{unescape_text(notes)}\n\n"
           add_html "<b>Notes</b>: #{notes}<br><br>"
         end
 
@@ -117,8 +117,8 @@ module NagiosHerald
       def format_additional_details
         long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
         if !long_output.nil? and !long_output.empty?
-          add_text "Additional Details: #{NagiosHerald::Util::unescape_text(long_output)}\n"
-          add_html "<b>Additional Details</b>: <pre>#{NagiosHerald::Util::unescape_text(long_output)}</pre><br><br>"
+          add_text "Additional Details: #{unescape_text(long_output)}\n"
+          add_html "<b>Additional Details</b>: <pre>#{unescape_text(long_output)}</pre><br><br>"
         end
       end
 
