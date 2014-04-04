@@ -125,6 +125,15 @@ module NagiosHerald
 
     end
 
+    def load_env_from_file(path)
+      File.readlines(path).each do |line|
+        values = line.split("=")
+        key = values[0]
+        value = values[1, values.length - 1 ].map {|v| v.strip() }.join('=')
+        ENV[key] = value
+      end
+    end
+
     def load_formatter(name, formatter_dir = nil)
       return if name.nil?
       formatter_dir = formatter_dir || File.join(File.dirname(__FILE__) , "formatters")
@@ -179,7 +188,7 @@ module NagiosHerald
 
     def report
       # Load the environment if asked for it
-      Util::load_env_from_file(@options.env) if @options.env
+      load_env_from_file(@options.env) if @options.env
 
       # Load the config
       config = get_config

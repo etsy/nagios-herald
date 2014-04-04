@@ -3,15 +3,6 @@ module NagiosHerald
 
     # TODO: add methods for handling HTTP(s) requests so we can control timeouts
 
-    def self.load_env_from_file(path)
-      File.readlines(path).each do |line|
-        values = line.split("=")
-        key = values[0]
-        value = values[1, values.length - 1 ].map {|v| v.strip() }.join('=')
-        ENV[key] = value
-      end
-    end
-
     def self.unescape_text(text)
       return text.gsub("\\n", "\n").gsub("\\t", "\t")
     end
