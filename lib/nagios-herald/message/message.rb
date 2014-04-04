@@ -1,10 +1,12 @@
 require 'app_conf'
 require 'tmpdir'
 require 'nagios-herald/logging'
+require 'nagios-herald/util'
 
 module NagiosHerald
   class Message
     include NagiosHerald::Logging
+    include NagiosHerald::Util
 
     def initialize(notification_formatter, options)
       @formatter  = notification_formatter
@@ -90,15 +92,20 @@ module NagiosHerald
     end
 
     def generate(nagios_notification_type)
-      # @formatter.email is used to generate the subject via the formatter
-      # i think this should be handled by the message subclass
-      # formatters format content in the body; the message class (i.e. email, pager)
-      # should be smart enough to generate an appropriate subject
       @formatter.email = self
       @formatter.sandbox = get_sandbox_path
 
       generate_content(nagios_notification_type)
-      generate_section('format_subject')
+      generate_subject
     end
+
+    def generate_subject
+      raise Exception, "#{self.to_s}: You must override generate_subject()"
+    end
+
+    def send
+      raise Exception, "#{self.to_s}: You must override send()"
+    end
+
   end
 end

@@ -1,10 +1,13 @@
 #!/usr/bin/env ruby
 
 require 'tmpdir'
+require 'nagios-herald/util'
 
 module NagiosHerald
   module Formatter
     class DefaultFormatter
+
+      include NagiosHerald::Util
 
       attr_accessor :tag
       attr_accessor :email
@@ -47,44 +50,7 @@ module NagiosHerald
         add_html "</div>"
       end
 
-      def get_default_value(name)
-        return nil
-      end
-
-      def get_nagios_var(name)
-        value = ENV[name]
-        if value.nil?
-          return get_default_value(name)
-        end
-        return value
-      end
-
       ## individual sections formatter
-
-      def format_subject
-        hostname          = get_nagios_var("NAGIOS_HOSTNAME")
-        service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
-        notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
-        state             = get_nagios_var("NAGIOS_#{@state_type}STATE")
-
-        subject="#{@tag}: #{hostname}"
-        subject += "/#{service_desc}" if service_desc != ""
-
-        if @state_type == "SERVICE"
-          if @pager_mode
-            subject="SVC #{subject}: #{@state_type}"
-          else
-            subject="** #{notification_type} Service #{subject} is #{state} **"
-          end
-        else
-          if @pager_mode
-            subject="HST #{subject}: ${@state_type}"
-          else
-            subject="** #{notification_type} Host #{subject} is #{state} **"
-          end
-        end
-        @email.subject = subject
-      end
 
       def format_host_info
         notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")

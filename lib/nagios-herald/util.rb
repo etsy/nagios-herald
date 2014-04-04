@@ -51,6 +51,9 @@ module NagiosHerald
       end
     end
 
+    def get_nagios_var(name)
+      value = ENV[name]
+    end
 
     def self.constantize(camel_cased_word)
       names = camel_cased_word.split('::')

@@ -48,6 +48,35 @@ module NagiosHerald
       inline_html
     end
 
+    def generate_subject
+      if !@subject.nil?
+        @subject
+      else
+        hostname          = get_nagios_var("NAGIOS_HOSTNAME")
+        service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
+        notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
+        state             = get_nagios_var("NAGIOS_#{@state_type}STATE")
+
+        subject="#{@tag}: #{hostname}"
+        subject += "/#{service_desc}" if service_desc != ""
+
+        if @state_type == "SERVICE"
+          if @pager_mode
+            subject="SVC #{subject}: #{@state_type}"
+          else
+            subject="** #{notification_type} Service #{subject} is #{state} **"
+          end
+        else
+          if @pager_mode
+            subject="HST #{subject}: ${@state_type}"
+          else
+            subject="** #{notification_type} Host #{subject} is #{state} **"
+          end
+        end
+        @subject = subject
+      end
+    end
+
     # this is misleading and odd. @subject is already an attr_accessor, is this a useful alias?
     def has_content
       @subject
@@ -73,10 +102,10 @@ module NagiosHerald
 
       if @nosend
         self.print
+        clean_sandbox  # just in case
         return
       end
 
-      clean_sandbox
 
       mail = Mail.new({
         :from  => @replyto,
