@@ -1,4 +1,4 @@
-require 'nagios-herald/message/message'
+require 'nagios-herald/message/base'
 require 'mail'
 
 module NagiosHerald
