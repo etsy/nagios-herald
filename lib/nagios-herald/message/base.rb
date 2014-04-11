@@ -20,7 +20,7 @@ module NagiosHerald
     end
 
     def self.formatters
-      @formatters ||= {}
+      @@formatters ||= {}
     end
 
     def self.inherited(subclass)
