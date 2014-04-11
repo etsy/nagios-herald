@@ -11,7 +11,8 @@ module NagiosHerald
     attr_accessor :formatter_path
 
     def initialize
-      @formatter_path = File.expand_path("formatters", File.dirname(__FILE__))
+      # TODO: add support for @options.formatter_path
+      @formatter_path = File.expand_path("message/formatters", File.dirname(__FILE__))
     end
 
     # return an array of formatter class files' absolute paths
@@ -31,6 +32,7 @@ module NagiosHerald
         puts "#{$0}: No formatters were found in '#{@formatter_path}'"
         exit 1
       else
+        puts "#{formatter_classes}"
         formatter_classes.each do |formatter_class|
           Kernel.load formatter_class
         end

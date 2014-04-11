@@ -209,9 +209,11 @@ module NagiosHerald
       # we eventually want to determine the correct class based on the requested message type (--message-type)
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
-        #message = EmailMessage.new(formatter, contact, @options)
         message = Message::Email.new(formatter, contact, @options)
-        puts "MESSAGE HAS FORMATTERS: #{Message.formatters}"
+        test = Message::Formatter.new
+        puts "FORMATTERS: #{Message::Formatter.formatters}"
+        formatter_instance = Message::Formatter.formatters['foo']
+        foo_formatter = formatter_instance.new
         message.generate(nagios_notification_type)
         message.send
       end
