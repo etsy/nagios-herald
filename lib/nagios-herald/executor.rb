@@ -164,6 +164,7 @@ module NagiosHerald
       return config
     end
 
+    # TODO: combine this with 'report()' and rename to 'run()'
     def report!
       begin
         @options = parse_options

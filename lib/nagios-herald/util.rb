@@ -34,6 +34,10 @@ module NagiosHerald
       return words.map! {|w| w.capitalize}.join('')
     end
 
+    # TODO: replace constantize with code that loads classes automatically
+    # tries to find a constant with the name specified in the argument string
+    # (from Ruby on Rails?)
+    # this is used to return an object of the specified name?
     def self.constantize(camel_cased_word)
       names = camel_cased_word.split('::')
       names.shift if names.empty? || names.first.empty?
