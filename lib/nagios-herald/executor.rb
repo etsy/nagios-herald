@@ -210,8 +210,8 @@ module NagiosHerald
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
         message = Message::Email.new(formatter, contact, @options)
-        test = Message::Formatter.new
-        puts "FORMATTERS: #{Message::Formatter.formatters}"
+        formatters = Message::Formatter.new # a null context? simply loads all formatters for us
+        # can formatters stay namespaced at the same level of Message (i.e. nagios-heralf/formatters)?
         formatter_instance = Message::Formatter.formatters['foo']
         foo_formatter = formatter_instance.new
         message.generate(nagios_notification_type)

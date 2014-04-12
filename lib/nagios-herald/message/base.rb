@@ -2,8 +2,6 @@ require 'app_conf'
 require 'tmpdir'
 require 'nagios-herald/logging'
 require 'nagios-herald/util'
-#require 'nagios-herald/formatter_loader'
-#require 'ap'
 
 module NagiosHerald
   class Message
@@ -15,29 +13,10 @@ module NagiosHerald
       @nosend   = options.nosend
       @pager_mode = options.pager_mode
       @sandbox    = nil
-#      formatter_loader = NagiosHerald::FormatterLoader.new
-#      formatter_files = formatter_loader.load_formatters
     end
-
-#    def self.formatters
-#      @@formatters ||= {}
-#    end
-#
-#    def self.inherited(subclass)
-#      puts "#{subclass} inherited from #{self.name}!"
-#      subclass_base_name = subclass.name.split('::').last
-#      puts "subclass base name: #{subclass_base_name}"
-#      subclass_base_name.gsub!(/[A-Z]/) { |s| "_" + s } # replace uppercase with underscore and lowercase
-#      subclass_base_name.downcase!
-#      subclass_base_name.sub!(/^_/, "")
-#      puts "snake_case: #{subclass_base_name}"
-#      formatters[subclass_base_name] = subclass
-#      ap formatters
-#    end
 
     def generate_section(name, *section_style_args)
       if @formatter.respond_to?(name)
-        #logger.debug("Generating section #{name}")
         @formatter.start_section(*section_style_args)
         @formatter.send(name)
         @formatter.end_section
