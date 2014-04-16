@@ -12,29 +12,29 @@ module NagiosHerald
 
     def initialize
       # TODO: add support for @options.formatter_path
-      @formatter_path = File.expand_path("message/formatters", File.dirname(__FILE__))
+      @formatter_path = File.expand_path("formatters", File.dirname(__FILE__))
     end
 
     # return an array of formatter class files' absolute paths
-    def enum_formatter_classes(formatter_path)
+    def enum_formatter_class_files(formatter_path)
       formatter_class_files = Dir.glob(File.expand_path("*.rb", formatter_path))
     end
 
     # return an array of all class files we care about
-    def formatter_classes
-      @formatter_classes ||= enum_formatter_classes(@formatter_path)
+    def formatter_class_files
+      @formatter_class_files ||= enum_formatter_class_files(@formatter_path)
     end
 
     # load the formatters
     # bail if we don't find any formatters
     def load_formatters
-      if formatter_classes.empty?
+      if formatter_class_files.empty?
         puts "#{$0}: No formatters were found in '#{@formatter_path}'"
         exit 1
       else
-        puts "#{formatter_classes}"
-        formatter_classes.each do |formatter_class|
-          Kernel.load formatter_class
+        puts "#{formatter_class_files}"
+        formatter_class_files.each do |formatter_class_file|
+          Kernel.load formatter_class_file
         end
       end
     end

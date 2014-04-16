@@ -4,7 +4,7 @@ require 'tmpdir'
 require 'nagios-herald/util'
 
 module NagiosHerald
-  module Formatter
+  class Formatter
     class DefaultFormatter
 
       include NagiosHerald::Util

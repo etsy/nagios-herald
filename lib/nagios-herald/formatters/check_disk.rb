@@ -1,7 +1,7 @@
 ['ganglia_graph', 'splunk_alert_frequency'].each {|h| NagiosHerald::Util::load_helper(h)}
 
 module NagiosHerald
-  module Formatter
+  class Formatter
     class CheckDisk < NagiosHerald::Formatter::DefaultFormatter
       include NagiosHerald::Logging
 

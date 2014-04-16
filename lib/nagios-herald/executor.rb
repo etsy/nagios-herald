@@ -148,6 +148,16 @@ module NagiosHerald
       end
     end
 
+    # instantiate NagiosHerald::FormatterLoader
+    def formatter_loader
+      @formatter_loader ||= NagiosHerald::FormatterLoader.new
+    end
+
+    # load all formatters
+    def load_formatters
+      @formatters_loaded ||= formatter_loader.load_formatters
+    end
+
     def get_formatter
       formatter_class = load_formatter(@options.formatter_name, @options.formatter_dir)
       if formatter_class.nil?
@@ -210,10 +220,11 @@ module NagiosHerald
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
         message = Message::Email.new(formatter, contact, @options)
-        formatters = Message::Formatter.new # a null context? simply loads all formatters for us
-        # can formatters stay namespaced at the same level of Message (i.e. nagios-heralf/formatters)?
-        formatter_instance = Message::Formatter.formatters['foo']
+        # REFACTOR START
+        load_formatters
+        formatter_instance = Formatter.formatters['foo']
         foo_formatter = formatter_instance.new
+        # REFACTOR END
         message.generate(nagios_notification_type)
         message.send
       end
