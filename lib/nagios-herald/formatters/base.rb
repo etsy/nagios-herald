@@ -25,8 +25,6 @@ module NagiosHerald
       @tag  = ""
       @text = ""
 
-      formatter_loader = NagiosHerald::FormatterLoader.new
-      formatter_files = formatter_loader.load_formatters
     end
 
     def self.formatters
