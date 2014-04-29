@@ -67,22 +67,19 @@ module NagiosHerald
       @attachments << path
     end
 
+    #
+    # format the content
+    #
+
+    # Public: Appends a newline in text and HTML format.
+    # Generates text and HTML output.
     def format_line_break
       add_text "\n"
       add_html "<br>"
     end
 
-    def start_section(*section_style_args)
-      if ! section_style_args.nil?
-         style = section_style_args.join(';')
-         add_html "<div style='#{style}'>"
-      end
-    end
-
-    def end_section
-      add_html "</div>"
-    end
-
+    # Public: Formats the information about the host that's being alerted on.
+    # Generates text and HTML output.
     def format_host_info
       notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       hostname          = get_nagios_var("NAGIOS_HOSTNAME")
@@ -99,6 +96,9 @@ module NagiosHerald
       format_line_break
     end
 
+    # Public: Formats information about the state of the thing being alerted on
+    # where 'thing' is either HOST or SERVICE.
+    # Generates text and HTML output.
     def format_state_info
       state         = get_nagios_var("NAGIOS_#{@state_type}STATE")
       duration      = get_nagios_var("NAGIOS_#{@state_type}DURATION")
@@ -114,6 +114,9 @@ module NagiosHerald
       format_line_break
     end
 
+    # Public: Formats information about the notification.
+    # Provides information such as the date and notification number.
+    # Generates text and HTML output.
     def format_notification_info
       date   = get_nagios_var("NAGIOS_LONGDATETIME")
       number = get_nagios_var("NAGIOS_NOTIFICATIONNUMBER")
@@ -121,7 +124,8 @@ module NagiosHerald
       add_html "Notification sent at: #{date} (notification number #{number})<br><br>"
     end
 
-    # checks plugin's output
+    # Public: Formats information provided plugin's output.
+    # Generates text and HTML output.
     def format_additional_info
       output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
       if !output.nil? and !output.empty?
@@ -130,6 +134,18 @@ module NagiosHerald
       end
     end
 
+    # Public: Formats information provided plugin's *long* output.
+    # Generates text and HTML output.
+    def format_additional_details
+      long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
+      if !long_output.nil? and !long_output.empty?
+        add_text "Additional Details: #{unescape_text(long_output)}\n"
+        add_html "<b>Additional Details</b>: <pre>#{unescape_text(long_output)}</pre><br><br>"
+      end
+    end
+
+    # Public: Formats the notes information for this alert.
+    # Generates text and HTML output.
     def format_notes
       notes = get_nagios_var("NAGIOS_#{@state_type}NOTES")
       if !notes.nil? and !notes.empty?
@@ -144,15 +160,8 @@ module NagiosHerald
       end
     end
 
-    # checks plugin's long output
-    def format_additional_details
-      long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
-      if !long_output.nil? and !long_output.empty?
-        add_text "Additional Details: #{unescape_text(long_output)}\n"
-        add_html "<b>Additional Details</b>: <pre>#{unescape_text(long_output)}</pre><br><br>"
-      end
-    end
-
+    # Public: Formats the action URL for this alert.
+    # Generates text and HTML output.
     def format_action_url
       action_url = get_nagios_var("NAGIOS_#{@state_type}ACTIONURL")
       if !action_url.nil? and !action_url.empty?
@@ -161,6 +170,8 @@ module NagiosHerald
       end
     end
 
+    # Public: Formats details for the state of the alert (if it's a service)
+    # TODO: Nothing for HOST?
     def format_state_detail
       if @state_type == "SERVICE"
         format_notes
@@ -169,12 +180,15 @@ module NagiosHerald
       format_line_break
     end
 
+    # FIXME: Looks like a dupe of #format_additional_info (used in pager alerts, it seems)
     def format_short_state_detail
       output   = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
       add_text = "#{output}\n"
       add_html = "#{output}<br>"
     end
 
+    # Public: Formats the email recipients and URIs
+    # Generates text and HTML output.
     def format_recipients_email_link
       hostname      = get_nagios_var("NAGIOS_HOSTNAME")
       if @state_type == "SERVICE"
@@ -193,6 +207,8 @@ module NagiosHerald
       add_html %Q(Sent to <a href="mailto:#{recipients_mail_str}?subject=#{subject}">#{recipients}</a><br>)
     end
 
+    # Public: Formats the information about who ack'd the alert and when
+    # Generates text and HTML output.
     def format_ack_info
       date    = get_nagios_var("NAGIOS_LONGDATETIME")
       author    = get_nagios_var("NAGIOS_#{@state_type}ACKAUTHOR")
@@ -215,6 +231,9 @@ module NagiosHerald
       add_html "Comment: #{comment}" if comment
     end
 
+    # Public: Formats brief ack information.
+    # Useful for pager messages.
+    # Generates text and HTML output.
     def format_short_ack_info
       author    = get_nagios_var("NAGIOS_#{@state_type}ACKAUTHOR")
       comment   = get_nagios_var("NAGIOS_#{@state_type}COMMENT")
@@ -236,6 +255,8 @@ module NagiosHerald
       add_html "Comment: #{comment}" if comment
     end
 
+    # Public: Formats the URI one can click to acknowledge an alert (i.e. in an email)
+    # Generates text and HTML output.
     def format_alert_ack_url
       hostname  = get_nagios_var("NAGIOS_HOSTNAME")
       service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
@@ -250,13 +271,40 @@ module NagiosHerald
       add_html "Acknowledge this alert: #{url}<br>"
     end
 
-    def generate_section(name, *section_style_args)
-      # let's get (start|end)_section from default_formatter
-      # and strip calls to methods via @formatter
+    #
+    # structural bits and content generation
+    #
+
+    # Public: Starts a format section's HTML DIV block.
+    #
+    # *section_style_args - CSS-type attributes used to style the content.
+    #
+    # Example
+    #
+    #   start_section("color:green")
+    #
+    # Generates HTML DIV block with the requested style.
+    def start_section(*section_style_args)
+      if ! section_style_args.nil?
+         style = section_style_args.join(';')
+         add_html "<div style='#{style}'>"
+      end
+    end
+
+    # Public: Ends a format section's HTML DIV block.
+    def end_section
+      add_html "</div>"
+    end
+
+    # Public: Wrapper for starting a format section, calling the format method,
+    # and ending the section.
+    def generate_section(section_name, *section_style_args)
       start_section(*section_style_args)
+      self.send(section_name)
       end_section
     end
 
+    # Public: Generate content for PROBLEM alerts.
     def generate_problem_content
       if @pager_mode
         generate_section("format_short_state_detail")
@@ -274,6 +322,7 @@ module NagiosHerald
       end
     end
 
+    # Public: Generate content for RECOVERY alerts.
     def generate_recovery_content
       @formatter.tag = "OK"
       if @pager_mode
@@ -289,6 +338,7 @@ module NagiosHerald
       end
     end
 
+    # Public: Generate content for ACKNOWLEGEMENT alerts
     def generate_ack_content
       @formatter.tag = "ACK"
       if @pager_mode
@@ -299,6 +349,15 @@ module NagiosHerald
       end
     end
 
+    # Public: Dispatch method to help generate content based on notification
+    # type.
+    #
+    # nagios_notification_type - One of any valid Nagios notification types.
+    #
+    # Example
+    #
+    #   generate_content("PROBLEM")
+    #
     def generate_content(nagios_notification_type)
       case nagios_notification_type
         when "PROBLEM", "FLAPPINGSTART"
@@ -313,21 +372,28 @@ module NagiosHerald
         end
     end
 
-    # override #generate_subject in the formatter subclass
+    # Public: Generates a subject.
+    # Should be overridden in the formatter sublcass.
     def generate_subject
         raise Exception, "#{self.to_s}: You must override #generate_subject"
     end
 
-    # override #generate_body in the formatter subclass
+    # Public: Generates content body.
+    # Should be overridden in the formatter sublcass.
     def generate_body
         raise Exception, "#{self.to_s}: You must override #generate_body"
     end
 
+    # Public: Creates a temporary directory in which to create files used in
+    # attachments.
+    #
+    # Returns the path to a temporary directory.
     def get_sandbox_path
       @sandbox = Dir.mktmpdir if @sandbox.nil?
       return @sandbox
     end
 
+    # Public: Does some housecleaning on the sandbox, if it exists.
     def clean_sandbox
       FileUtils.remove_entry @sandbox if  File.directory?(@sandbox)
     end
