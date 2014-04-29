@@ -225,10 +225,13 @@ module NagiosHerald
         # eventually 'formatter_instance' will be renamed to 'formatter_class' and 'foo_formatter' to 'formatter'
         formatter_instance = Formatter.formatters['foo']    # expect 'foo' to be replaced with @options.formatter_name
         foo_formatter = formatter_instance.new
-        subject = foo_formatter.generate_subject
-        puts "FOO SUBJECT: #{subject}"
-        body = foo_formatter.generate_body
-        puts "BODY: #{body}"
+        message.subject = foo_formatter.generate_subject
+        puts "FOO SUBJECT: #{message.subject}"
+        #message.body = foo_formatter.generate_body
+        foo_formatter.generate_body
+        #message.body = foo_formatter.text
+        message.body = foo_formatter.html
+        puts "BODY: #{message.body}"
         # REFACTOR END
         message.generate(nagios_notification_type)
         message.send

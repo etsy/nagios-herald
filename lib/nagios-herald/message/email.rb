@@ -4,9 +4,10 @@ require 'mail'
 module NagiosHerald
   class Message
     class Email < Message
+      attr_accessor :body
+      attr_reader :html
       attr_accessor :subject
       attr_reader :text
-      attr_reader :html
 
       def initialize(notification_formatter, recipients, options = {})
         @recipients  = recipients
@@ -102,7 +103,7 @@ module NagiosHerald
         end
 
         if @nosend
-          self.print
+          #self.print   # temp disable while testing some things
           clean_sandbox  # just in case
           return
         end

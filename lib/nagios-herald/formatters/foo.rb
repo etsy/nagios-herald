@@ -8,15 +8,16 @@ module NagiosHerald
         super
       end
 
-      def generate_subject
-        add_text "I added text!"
-        self.text
-      end
+      # Optionally override #generate_subject
+      # Account for message type (email, pager, IRC) and act accordingly
+      #def generate_subject
+      #  add_text "I added text!"
+      #  self.text
+      #end
 
-      def generate_body
-        nagios_notification_type = get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
-        generate_content(nagios_notification_type)
-      end
+      # Optionally override #generate_body
+      #def generate_body
+      #end
 
     end
   end

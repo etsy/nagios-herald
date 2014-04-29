@@ -4,21 +4,21 @@ require 'tmpdir'
 require 'nagios-herald/logging' # needed?
 require 'nagios-herald/util'
 require 'nagios-herald/formatter_loader'
-require 'ap'
+#require 'ap'
 
 module NagiosHerald
   class Formatter
     #include NagiosHerald::Logging  # needed?
     include NagiosHerald::Util
 
-    attr_accessor :attachments
+    attr_accessor :attachments  # this is probably more appropriate in the Message class
     attr_accessor :html
     attr_accessor :sandbox # @sandbox is the place to save attachments, possibly a tempdir
     attr_accessor :state_type
     attr_accessor :tag
     attr_accessor :text
 
-    # when instansiated, load all formatters
+    # when instantiated, load all formatters
     def initialize
       @attachments = []
       @html = ""
@@ -39,15 +39,11 @@ module NagiosHerald
     # and the value is the actual class (i.e. CheckDisk) so that we can easily
     # instantiate formatters when we know the formatter name
     def self.inherited(subclass)
-      puts "#{subclass} inherited from #{self.name}!" # debug
       subclass_base_name = subclass.name.split('::').last
-      puts "subclass base name: #{subclass_base_name}"    # debug
       subclass_base_name.gsub!(/[A-Z]/) { |s| "_" + s } # replace uppercase with underscore and lowercase
       subclass_base_name.downcase!
       subclass_base_name.sub!(/^_/, "")   # strip the leading underscore
-      puts "snake_case: #{subclass_base_name}"    # debug
       formatters[subclass_base_name] = subclass
-      ap formatters   # debug
     end
 
     ## methods to generate content
@@ -306,47 +302,34 @@ module NagiosHerald
 
     # Public: Generate content for PROBLEM alerts.
     def generate_problem_content
-      if @pager_mode
-        generate_section("format_short_state_detail")
-        @formatter.tag = ""
-      else
-        self.tag = "ALERT"
-        generate_section("format_host_info")
-        generate_section("format_state_info")
-        generate_section("format_additional_info")
-        generate_section("format_action_url")
-        generate_section("format_state_detail") # format_notes and format_additional_details for services
-        generate_section("format_recipients_email_link")
-        generate_section("format_notification_info")
-        generate_section("format_alert_ack_url")
-      end
+      self.tag = "ALERT"
+      generate_section("format_host_info")
+      generate_section("format_state_info")
+      generate_section("format_additional_info")
+      generate_section("format_action_url")
+      generate_section("format_state_detail") # format_notes and format_additional_details for services
+      generate_section("format_recipients_email_link")
+      generate_section("format_notification_info")
+      generate_section("format_alert_ack_url")
     end
 
     # Public: Generate content for RECOVERY alerts.
     def generate_recovery_content
-      @formatter.tag = "OK"
-      if @pager_mode
-        generate_section("format_short_state_detail")
-      else
-        generate_section("format_host_info", "color:green")
-        generate_section("format_state_info", "color:green")
-        generate_section("format_additional_info", "color:green")
-        generate_section("format_action_url", "color:green")
-        generate_section("format_state_detail", "color:green") # format_notes and format_additional_details for services
-        generate_section("format_recipients_email_link")
-        generate_section("format_notification_info")
-      end
+      self.tag = "OK"
+      generate_section("format_host_info", "color:green")
+      generate_section("format_state_info", "color:green")
+      generate_section("format_additional_info", "color:green")
+      generate_section("format_action_url", "color:green")
+      generate_section("format_state_detail", "color:green") # format_notes and format_additional_details for services
+      generate_section("format_recipients_email_link")
+      generate_section("format_notification_info")
     end
 
     # Public: Generate content for ACKNOWLEGEMENT alerts
     def generate_ack_content
-      @formatter.tag = "ACK"
-      if @pager_mode
-        generate_section("format_short_ack_info")
-      else
-        generate_section("format_host_info")
-        generate_section("format_ack_info")
-      end
+      self.tag = "ACK"
+      generate_section("format_host_info")
+      generate_section("format_ack_info")
     end
 
     # Public: Dispatch method to help generate content based on notification
@@ -373,15 +356,30 @@ module NagiosHerald
     end
 
     # Public: Generates a subject.
-    # Should be overridden in the formatter sublcass.
+    # Can, and probably should, be overridden in a subclass.
     def generate_subject
-        raise Exception, "#{self.to_s}: You must override #generate_subject"
+      hostname          = get_nagios_var("NAGIOS_HOSTNAME")
+      service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
+      notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
+      state             = get_nagios_var("NAGIOS_#{@state_type}STATE")
+
+      subject="#{hostname}"
+      subject += "/#{service_desc}" if service_desc != ""
+
+      if @state_type == "SERVICE"
+        subject="** #{notification_type} Service #{subject} is #{state} **"
+      else
+        subject="** #{notification_type} Host #{subject} is #{state} **"
+      end
+
+      subject
     end
 
     # Public: Generates content body.
-    # Should be overridden in the formatter sublcass.
+    # Can, and probably should, be overridden in a subclass.
     def generate_body
-        raise Exception, "#{self.to_s}: You must override #generate_body"
+        nagios_notification_type = get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
+        generate_content(nagios_notification_type)
     end
 
     # Public: Creates a temporary directory in which to create files used in

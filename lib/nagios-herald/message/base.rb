@@ -9,10 +9,12 @@ module NagiosHerald
     include NagiosHerald::Util
 
     def initialize(notification_formatter, options)
+      @body       = ""
       @formatter  = notification_formatter
-      @nosend   = options.nosend
+      @nosend     = options.nosend
       @pager_mode = options.pager_mode
       @sandbox    = nil
+      @subject    = ""
     end
 
     def generate_section(name, *section_style_args)
