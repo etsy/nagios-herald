@@ -11,9 +11,12 @@ module NagiosHerald
     #include NagiosHerald::Logging  # needed?
     include NagiosHerald::Util
 
-    # @sandbox is the place to save attachments, possibly a tempdir
-    attr_accessor :sandbox
+    attr_accessor :attachments
+    attr_accessor :html
+    attr_accessor :sandbox # @sandbox is the place to save attachments, possibly a tempdir
+    attr_accessor :state_type
     attr_accessor :tag
+    attr_accessor :text
 
     # when instansiated, load all formatters
     def initialize
@@ -250,8 +253,8 @@ module NagiosHerald
     def generate_section(name, *section_style_args)
       # let's get (start|end)_section from default_formatter
       # and strip calls to methods via @formatter
-      @formatter.start_section(*section_style_args)
-      @formatter.end_section
+      start_section(*section_style_args)
+      end_section
     end
 
     def generate_problem_content
@@ -259,7 +262,7 @@ module NagiosHerald
         generate_section("format_short_state_detail")
         @formatter.tag = ""
       else
-        @formatter.tag = "ALERT"
+        self.tag = "ALERT"
         generate_section("format_host_info")
         generate_section("format_state_info")
         generate_section("format_additional_info")
@@ -308,6 +311,16 @@ module NagiosHerald
           $stderr.puts "Invalid Nagios notification type!\nExpecting something like PROBLEM or RECOVERY"
           exit 1
         end
+    end
+
+    # override #generate_subject in the formatter subclass
+    def generate_subject
+        raise Exception, "#{self.to_s}: You must override #generate_subject"
+    end
+
+    # override #generate_body in the formatter subclass
+    def generate_body
+        raise Exception, "#{self.to_s}: You must override #generate_body"
     end
 
     def get_sandbox_path

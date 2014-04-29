@@ -98,12 +98,14 @@ module NagiosHerald
       generate_subject
     end
 
+    # should this reside in formatters?
     def generate_subject
-      raise Exception, "#{self.to_s}: You must override generate_subject()"
+      raise Exception, "#{self.to_s}: You must override #generate_subject"
     end
 
+    # override #send in the message subclass
     def send
-      raise Exception, "#{self.to_s}: You must override send()"
+      raise Exception, "#{self.to_s}: You must override #send"
     end
 
   end

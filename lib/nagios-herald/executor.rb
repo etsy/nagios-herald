@@ -222,8 +222,13 @@ module NagiosHerald
         message = Message::Email.new(formatter, contact, @options)
         # REFACTOR START
         load_formatters
-        formatter_instance = Formatter.formatters['foo']
+        # eventually 'formatter_instance' will be renamed to 'formatter_class' and 'foo_formatter' to 'formatter'
+        formatter_instance = Formatter.formatters['foo']    # expect 'foo' to be replaced with @options.formatter_name
         foo_formatter = formatter_instance.new
+        subject = foo_formatter.generate_subject
+        puts "FOO SUBJECT: #{subject}"
+        body = foo_formatter.generate_body
+        puts "BODY: #{body}"
         # REFACTOR END
         message.generate(nagios_notification_type)
         message.send
