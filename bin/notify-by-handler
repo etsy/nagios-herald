@@ -3,5 +3,4 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'nagios-herald'
 require 'nagios-herald/executor'
 
-nagios_herald = NagiosHerald::Executor.new()
-nagios_herald.report!
+NagiosHerald::Executor.new.announce

@@ -5,6 +5,9 @@ require 'app_conf'
 module NagiosHerald
   class Executor
 
+    # Public: Parse the command line options.
+    #
+    # Returns a hash of the specified options and defaults as appropriate.
     def parse_options
       program_name = File.basename($0)
 
@@ -117,6 +120,10 @@ module NagiosHerald
 
     end
 
+    # Public: Load environment variables from a file.
+    # This is useful for running controlled tests.
+    #
+    # Updates the ENV hash for each key/value pair.
     def load_env_from_file(path)
       File.readlines(path).each do |line|
         values = line.split("=")
@@ -126,27 +133,64 @@ module NagiosHerald
       end
     end
 
-    # instantiate NagiosHerald::FormatterLoader
+    # Public: Instantiate a new FormatterLoader object.
+    #
+    # Returns a new FormatterLoader object.
     def formatter_loader
       @formatter_loader ||= NagiosHerald::FormatterLoader.new
     end
 
-    # load all formatters
+    # Public: Loads all formatter classes.
+    #
+    # Returns true.
     def load_formatters
       @formatters_loaded ||= formatter_loader.load_formatters
     end
 
-    # TODO: combine this with 'report()' and rename to 'run()'
-    def report!
+    # Public: The main method from which notifications are generated and sent.
+    def announce
       begin
         @options = parse_options
       rescue SystemExit
-        $stderr.puts "Invalid  or missing options\n"
+        $stderr.puts "Invalid or missing options\n"
         exit 1
       end
 
       begin
-        report
+        # Load the environment if asked for it
+        load_env_from_file(@options.env) if @options.env
+  
+        # Load the config for use globally
+        Config.load(@options)
+  
+        contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
+        contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
+        nagios_notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
+  
+        # FIXME: this code is still very email-centric...
+        # Report for email and pager
+        # we eventually want to determine the correct class based on the requested message type (--message-type)
+        [contact_email, contact_pager].each do | contact |
+          next if contact.nil? || contact.eql?("")
+          # TODO: we need a message_loader
+          message = Message::Email.new(contact, @options)
+          load_formatters
+          formatter_class = Formatter.formatters[@options.formatter_name]
+          if formatter_class.nil?
+              formatter_class = NagiosHerald::Formatter   # default to the base formatter
+          end
+          formatter = formatter_class.new(@options)
+          message.subject = formatter.generate_subject
+          formatter.generate_body
+          message.text = formatter.text
+          if @options.message_type.downcase.eql?("email")
+            # hmm, this feels hokey
+            message.html = formatter.html
+            message.attachments = formatter.attachments
+          end
+          message.send
+          formatter.clean_sandbox # clean house
+        end
       rescue Exception => e
         raise e if @options[:trace] || e.is_a?(SystemExit)
 
@@ -156,43 +200,6 @@ module NagiosHerald
         exit 1
       end
       exit 0
-    end
-
-
-    def report
-      # Load the environment if asked for it
-      load_env_from_file(@options.env) if @options.env
-
-      # Load the config for use globally
-      Config.load(@options)
-
-      contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
-      contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
-      nagios_notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
-
-      # FIXME: this code is still very email-centric...
-      # Report for email and pager
-      # we eventually want to determine the correct class based on the requested message type (--message-type)
-      [contact_email, contact_pager].each do | contact |
-        next if contact.nil? || contact.eql?("")
-        message = Message::Email.new(contact, @options)
-        load_formatters
-        formatter_class = Formatter.formatters[@options.formatter_name]
-        if formatter_class.nil?
-            formatter_class = NagiosHerald::Formatter   # default to the base formatter
-        end
-        formatter = formatter_class.new(@options)
-        message.subject = formatter.generate_subject
-        formatter.generate_body
-        #message.body = formatter.text  # thinking for emails we still want text, to complement html
-        message.body = formatter.html
-        if @options.message_type.downcase.eql?("email")
-          # hmm, this feels hokey
-          message.attachments = formatter.attachments
-        end
-        message.send
-        formatter.clean_sandbox # clean house
-      end
     end
 
   end

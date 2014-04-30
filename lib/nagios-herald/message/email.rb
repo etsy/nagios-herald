@@ -6,16 +6,15 @@ module NagiosHerald
     class Email < Message
 
       attr_accessor :attachments
-      attr_reader   :html
+      attr_accessor :html
       attr_accessor :subject
-      attr_reader   :text
+      attr_accessor :text
 
       def initialize(recipients, options = {})
         @replyto     = options[:replyto]
         @subject     = ""
         @text        = ""
         @html        = ""
-        # attachments are a list of paths
         @attachments = []
         super(recipients, options)
       end
@@ -23,8 +22,7 @@ module NagiosHerald
       # this is a list of Mail::Part
       # => #<Mail::Part:19564000, Multipart: false, Headers: <Content-Type: ; filename="Rakefile">, <Content-Transfer-Encoding: binary>, <Content-Disposition: attachment; filename="Rakefile">, <Content-ID: <530e1814464a9_3305aaef88979a2@blahblahbl.blah.blah.blah.mail>>>
       def inline_body_with_attachments(attachments)
-        #inline_html = @html
-        inline_html = @body
+        inline_html = @html
         attachments.each do |attachment|
           if (inline_html =~ /#{attachment.filename}/)
             inline_html = inline_html.sub(attachment.filename, "cid:#{attachment.cid}")
@@ -41,7 +39,6 @@ module NagiosHerald
       end
 
       def send
-
         if @nosend
           self.print
           return
@@ -70,8 +67,7 @@ module NagiosHerald
           html_part.attachments[attachment] = File.read(attachment)
         end
 
-        #if @html != ""
-        if @body != ""
+        if @html != ""
           # Inline the attachment if need be
           inline_html = inline_body_with_attachments(html_part.attachments)
           html_content_part = Mail::Part.new do
@@ -84,7 +80,6 @@ module NagiosHerald
         mail.add_part(html_part)
 
         mail.deliver!
-
       end
     end
   end
