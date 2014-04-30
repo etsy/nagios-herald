@@ -23,6 +23,7 @@ module NagiosHerald
     def initialize(options)
       @attachments = []
       @html = ""
+      @message_type = options[:message_type]
       @nagios_url = options[:nagiosurl]
       @sandbox  = get_sandbox_path
       @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
@@ -372,13 +373,28 @@ module NagiosHerald
       notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       state             = get_nagios_var("NAGIOS_#{@state_type}STATE")
 
-      subject="#{hostname}"
-      subject += "/#{service_desc}" if service_desc != ""
+      # yes, this hack is not very OOP, but it'll do for now
+      # because sometimes "working" is better than "elegant" or "correct"
+      case @message_type.downcase
+      when "email"
+        subject="#{hostname}"
+        subject += "/#{service_desc}" if service_desc != ""
 
-      if @state_type == "SERVICE"
-        subject="** #{notification_type} Service #{subject} is #{state} **"
-      else
-        subject="** #{notification_type} Host #{subject} is #{state} **"
+        if @state_type == "SERVICE"
+          subject="** #{notification_type} Service #{subject} is #{state} **"
+        else
+          subject="** #{notification_type} Host #{subject} is #{state} **"
+        end
+      when "pager"
+        # do we even need a subject for a page? can it be part of the content?
+        subject="#{hostname}"
+        subject += "/#{service_desc}" if service_desc != ""
+
+        if @state_type == "SERVICE"
+          subject="#{notification_type} SVC #{subject} #{state}"
+        else
+          subject="#{notification_type} HST #{subject} #{state}"
+        end
       end
 
       subject

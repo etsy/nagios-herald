@@ -35,7 +35,8 @@ module NagiosHerald
         puts "------------------"
         puts "Subject : #{@subject}"
         puts "------------------"
-        puts @body
+        puts @text if !@text.empty?
+        puts @html if !@html.empty?
       end
 
       def send

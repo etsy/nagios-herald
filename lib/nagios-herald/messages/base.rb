@@ -15,7 +15,8 @@ module NagiosHerald
 
     def initialize(recipients, options)
       @body       = ""
-      @nosend      = options[:nosend]
+      @nosend     = options[:nosend]
+      # TODO: instead of passing this in via the subclass, let's set it via message.recipients
       @recipients = recipients
     end
 
