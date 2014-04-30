@@ -18,7 +18,6 @@ module NagiosHerald
     attr_accessor :tag
     attr_accessor :text
 
-    # when instantiated, load all formatters
     def initialize(options)
       @attachments = []
       @html = ""
@@ -34,10 +33,14 @@ module NagiosHerald
       @@formatters ||= {}
     end
 
-    # when subclassed formatters are instantiated, add them to the @@formatters hash
-    # the key is the downcased and snake_cased name of the class file (i.e. check_disk)
-    # and the value is the actual class (i.e. CheckDisk) so that we can easily
-    # instantiate formatters when we know the formatter name
+    # Public: When subclassed formatters are instantiated, add them to the @@formatters hash.
+    # The key is the downcased and snake_cased name of the class file (i.e. check_disk);
+    # the value is the actual class (i.e. CheckDisk) so that we can easily
+    # instantiate formatters when we know the formatter name.
+    # Learned this pattern thanks to the folks at Chef and @jonlives.
+    # See https://github.com/opscode/chef/blob/11-stable/lib/chef/knife.rb#L79#L83
+    #
+    # Returns the formatters hash.
     def self.inherited(subclass)
       subclass_base_name = subclass.name.split('::').last
       subclass_base_name.gsub!(/[A-Z]/) { |s| "_" + s } # replace uppercase with underscore and lowercase
@@ -46,19 +49,23 @@ module NagiosHerald
       formatters[subclass_base_name] = subclass
     end
 
-    ## methods to generate content
-
-    # concatenate text
+    # Public: Concatenates text content.
+    #
+    # Returns a string containing all text content.
     def add_text(text)
       @text += text
     end
 
-    # concatenate html
+    # Public: Concatenates HTML content.
+    #
+    # Returns a string containing all HTML content.
     def add_html(html)
       @html += html
     end
 
-    # add moar attachments (like images)
+    # Public: Add an attachment's path to an array.
+    #
+    # Returns the array of attachment paths.
     def add_attachment(path)
       @attachments << path
     end

@@ -177,8 +177,10 @@ module NagiosHerald
         next if contact.nil? || contact.eql?("")
         message = Message::Email.new(contact, @options)
         load_formatters
-        # TODO: add exception handling so that the base formatter gets called
         formatter_class = Formatter.formatters[@options.formatter_name]
+        if formatter_class.nil?
+            formatter_class = NagiosHerald::Formatter   # default to the base formatter
+        end
         formatter = formatter_class.new(@options)
         message.subject = formatter.generate_subject
         formatter.generate_body
