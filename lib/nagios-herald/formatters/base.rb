@@ -1,14 +1,16 @@
-# base formatter
-require 'app_conf'
+# Formatter objects know best about how to create and format content.
+# The Base class defines several variables and methods that can be used in subclasses.
+# Nearly all of them can be overridden. Subclasses can also extend functionality and
+# call on helpers.
+
 require 'tmpdir'
-require 'nagios-herald/logging' # needed?
+require 'nagios-herald/logging'
 require 'nagios-herald/util'
 require 'nagios-herald/formatter_loader'
-#require 'ap'
 
 module NagiosHerald
   class Formatter
-    #include NagiosHerald::Logging  # needed?
+    #include NagiosHerald::Logging
     include NagiosHerald::Util
 
     attr_accessor :attachments  # this is probably more appropriate in the Message class

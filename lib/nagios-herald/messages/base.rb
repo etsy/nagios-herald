@@ -1,3 +1,4 @@
+require 'nagios-herald/message_loader'
 require 'nagios-herald/logging'
 require 'nagios-herald/util'
 
@@ -39,10 +40,16 @@ module NagiosHerald
     # Returns the message_types hash.
     def self.inherited(subclass)
       subclass_base_name = subclass.name.split('::').last
-      subclass_base_name.gsub!(/[A-Z]/) { |s| "_" + s } # replace uppercase with underscore and lowercase
-      subclass_base_name.downcase!
-      subclass_base_name.sub!(/^_/, "")   # strip the leading underscore
-      message_types[subclass_base_name] = subclass
+      if subclass_base_name == subclass_base_name.upcase
+        # we've got an all upper case class name (probably an acronym like IRC); just downcase the whole thing
+        subclass_base_name.downcase!
+        message_types[subclass_base_name] = subclass
+      else
+        subclass_base_name.gsub!(/[A-Z]/) { |s| "_" + s } # replace uppercase with underscore and lowercase
+        subclass_base_name.downcase!
+        subclass_base_name.sub!(/^_/, "")   # strip the leading underscore
+        message_types[subclass_base_name] = subclass
+      end
     end
 
   end

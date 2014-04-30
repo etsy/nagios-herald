@@ -55,13 +55,10 @@ module NagiosHerald
           default nil
         end
 
-        option :message_type do
+        option :message_type, :required => true do
           short   "-m"
           long    "--message-type"
-          desc    "Type of message to deliver (i.e. email, IRC, pager)"
-          desc    "[DEFAULT] email"
-          desc    "FUTURE USE"
-          default "email"
+          desc    "[REQUIRED] Type of message to deliver (i.e. email, IRC, pager)"
         end
 
         option :nosend do
@@ -147,6 +144,20 @@ module NagiosHerald
       @formatters_loaded ||= formatter_loader.load_formatters
     end
 
+    # Public: Instantiate a new MessageLoader object.
+    #
+    # Returns a new MessageLoader object.
+    def message_loader
+      @message_loader ||= NagiosHerald::MessageLoader.new
+    end
+
+    # Public: Loads all message classes.
+    #
+    # Returns true.
+    def load_messages
+      @messages_loaded ||= message_loader.load_messages
+    end
+
     # Public: The main method from which notifications are generated and sent.
     def announce
       begin
@@ -171,15 +182,30 @@ module NagiosHerald
         # Report for email and pager
         # we eventually want to determine the correct class based on the requested message type (--message-type)
         [contact_email, contact_pager].each do | contact |
-          next if contact.nil? || contact.eql?("")
-          # TODO: we need a message_loader
-          message = Message::Email.new(contact, @options)
+          next if contact.nil? || contact.eql?("")  # log this condition!
+
           load_formatters
+          load_messages
+
+          # bail if can't identify the message type because we don't know what sort of thing to send
+          if !Message.message_types.has_key?(@options.message_type)
+            puts "Unknown message type: '#{@options.message_type}'" # log this condition!
+            puts "I'm aware of the following message types:"
+            sorted_message_types = Message.message_types.sort_by {|message_type, message_class| message_type}
+            sorted_message_types.each do |message_type|
+              puts " + #{message_type.first}"
+            end
+            exit 1
+          end
+          message_class = Message.message_types[@options.message_type]
+          message = message_class.new(contact, @options)
+
           formatter_class = Formatter.formatters[@options.formatter_name]
-          if formatter_class.nil?
+          if formatter_class.nil?   # log this condition!
               formatter_class = NagiosHerald::Formatter   # default to the base formatter
           end
           formatter = formatter_class.new(@options)
+
           message.subject = formatter.generate_subject
           formatter.generate_body
           message.text = formatter.text
@@ -191,7 +217,7 @@ module NagiosHerald
           message.send
           formatter.clean_sandbox # clean house
         end
-      rescue Exception => e
+      rescue Exception => e # log this condition!
         raise e if @options[:trace] || e.is_a?(SystemExit)
 
         $stderr.print "#{e.class}: " unless e.class == RuntimeError
