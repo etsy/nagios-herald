@@ -126,20 +126,6 @@ module NagiosHerald
       end
     end
 
-    def load_formatter(name, formatter_dir = nil)
-      return if name.nil?
-      formatter_dir = formatter_dir || File.join(File.dirname(__FILE__) , "formatters")
-      formatter_path = File.expand_path(File.join(formatter_dir, name.downcase))
-      begin
-        require formatter_path
-        formatter_class = "NagiosHerald::Formatter::#{Util::underscore_to_camel_case(name)}"
-        Util::constantize(formatter_class)
-      rescue LoadError
-        puts "Exception encountered loading #{formatter_path}"
-        return nil
-      end
-    end
-
     # instantiate NagiosHerald::FormatterLoader
     def formatter_loader
       @formatter_loader ||= NagiosHerald::FormatterLoader.new
@@ -148,15 +134,6 @@ module NagiosHerald
     # load all formatters
     def load_formatters
       @formatters_loaded ||= formatter_loader.load_formatters
-    end
-
-    def get_formatter
-      formatter_class = load_formatter(@options.formatter_name, @options.formatter_dir)
-      if formatter_class.nil?
-        puts "Exception encountered loading #{@options.formatter_name} - defaulting to default formatter"
-        formatter_class = load_formatter("default_formatter")
-      end
-      return formatter_class
     end
 
     # TODO: combine this with 'report()' and rename to 'run()'
@@ -193,20 +170,26 @@ module NagiosHerald
       contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
       nagios_notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
 
+      # FIXME: this code is still very email-centric...
       # Report for email and pager
       # we eventually want to determine the correct class based on the requested message type (--message-type)
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
         message = Message::Email.new(contact, @options)
         load_formatters
-        formatter_class = Formatter.formatters[@options.formatter_name]    # expect 'foo' to be replaced with @options.formatter_name
+        # TODO: add exception handling so that the base formatter gets called
+        formatter_class = Formatter.formatters[@options.formatter_name]
         formatter = formatter_class.new(@options)
         message.subject = formatter.generate_subject
         formatter.generate_body
-        #message.body = formatter.text
+        #message.body = formatter.text  # thinking for emails we still want text, to complement html
         message.body = formatter.html
+        if @options.message_type.downcase.eql?("email")
+          # hmm, this feels hokey
+          message.attachments = formatter.attachments
+        end
         message.send
-        #formatter.clean_sandbox # clean house
+        formatter.clean_sandbox # clean house
       end
     end
 

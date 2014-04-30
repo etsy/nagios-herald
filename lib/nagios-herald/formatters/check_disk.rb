@@ -80,9 +80,9 @@ module NagiosHerald
         # TODO : address building up hostnames in a robust, future-proof manner
         fqdn    = hostname + ".etsy.com"
         ganglia_graphs = get_ganglia_graphs(fqdn)
-        ganglia_graphs.each do |g|
-          add_attachment g
-          add_html %Q(<img src="#{g}" alt="ganglia_graph" /><br><br>)
+        ganglia_graphs.each do |ganglia_graph|
+          add_attachment ganglia_graph
+          add_html %Q(<img src="#{ganglia_graph}" alt="ganglia_graph" /><br><br>)
         end
       end
 

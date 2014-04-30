@@ -5,6 +5,7 @@ module NagiosHerald
   class Message
     class Email < Message
 
+      attr_accessor :attachments
       attr_reader   :html
       attr_accessor :subject
       attr_reader   :text

@@ -82,7 +82,6 @@ module NagiosHerald
             logger.warn("No Ganglia graph found for '#{host}' (cluster: '#{cluster_name}') - '#{metric}' in '#{range}'")
           end
         end
-        puts image_paths
         return image_paths
       end
     end
