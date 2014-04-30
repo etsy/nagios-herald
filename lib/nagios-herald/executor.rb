@@ -205,11 +205,11 @@ module NagiosHerald
       config = get_config
 
       # Get a configuration manager
-      cfgmgr = ConfigurationManager.get_configuration_manager(@options.configuration_manager, config)
+      #cfgmgr = ConfigurationManager.get_configuration_manager(@options.configuration_manager, config)
 
       # Get a formatter
-      formatter_class = get_formatter
-      formatter = formatter_class.new(cfgmgr, @options)
+      #formatter_class = get_formatter
+      #formatter = formatter_class.new(cfgmgr, @options)
 
       contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
       contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
@@ -219,22 +219,21 @@ module NagiosHerald
       # we eventually want to determine the correct class based on the requested message type (--message-type)
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
-        message = Message::Email.new(formatter, contact, @options)
-        # REFACTOR START
+        #message = Message::Email.new(formatter, contact, @options) # pre-refactor
+        message = Message::Email.new(contact, @options)
         load_formatters
         # eventually 'formatter_instance' will be renamed to 'formatter_class' and 'foo_formatter' to 'formatter'
-        formatter_instance = Formatter.formatters['foo']    # expect 'foo' to be replaced with @options.formatter_name
-        foo_formatter = formatter_instance.new
+        #formatter_instance = Formatter.formatters['foo']    # expect 'foo' to be replaced with @options.formatter_name
+        formatter_instance = Formatter.formatters[@options.formatter_name]    # expect 'foo' to be replaced with @options.formatter_name
+        foo_formatter = formatter_instance.new(@options)
         message.subject = foo_formatter.generate_subject
-        puts "FOO SUBJECT: #{message.subject}"
         #message.body = foo_formatter.generate_body
         foo_formatter.generate_body
         #message.body = foo_formatter.text
         message.body = foo_formatter.html
-        puts "BODY: #{message.body}"
-        # REFACTOR END
-        message.generate(nagios_notification_type)
+        #message.generate(nagios_notification_type) # pre-refactor
         message.send
+        foo_formatter.clean_sandbox # clean house
       end
     end
 

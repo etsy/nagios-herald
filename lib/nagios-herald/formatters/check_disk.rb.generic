@@ -1,0 +1,11 @@
+module NagiosHerald
+  class Formatter
+    class CheckDisk < NagiosHerald::Formatter
+
+    def initialize(options = {})
+      super(options)
+    end
+
+    end
+  end
+end

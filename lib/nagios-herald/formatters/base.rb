@@ -19,11 +19,11 @@ module NagiosHerald
     attr_accessor :text
 
     # when instantiated, load all formatters
-    def initialize
+    def initialize(options)
       @attachments = []
       @html = ""
-      #@nagios_url = options.nagiosurl    # SOON
-      @sandbox  = nil
+      @nagios_url = options[:nagiosurl]
+      @sandbox  = get_sandbox_path
       @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
       @tag  = ""
       @text = ""
@@ -258,9 +258,9 @@ module NagiosHerald
       service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
 
       if service_desc != ""
-        url = "#{@nagios_url}?cmd_typ=34&host=#{hostname}&service=#{service_desc}"
+        url = "#{@nagios_url}/nagios/cgi-bin/cmd.cgi?cmd_typ=34&host=#{hostname}&service=#{service_desc}"
       else
-        url = "#{@nagios_url}?cmd_typ=33&host=#{hostname}"
+        url = "#{@nagios_url}/nagios/cgi-bin/cmd.cgi?cmd_typ=33&host=#{hostname}"
       end
       url = URI.escape(url)
       add_text "Acknowledge this alert: #{url}\n"
@@ -393,7 +393,7 @@ module NagiosHerald
 
     # Public: Does some housecleaning on the sandbox, if it exists.
     def clean_sandbox
-      FileUtils.remove_entry @sandbox if  File.directory?(@sandbox)
+      FileUtils.remove_entry @sandbox if File.directory?(@sandbox)
     end
 
   end

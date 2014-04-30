@@ -2,7 +2,8 @@
 
 module NagiosHerald
   class Formatter
-    class CheckDisk < NagiosHerald::Formatter::DefaultFormatter
+    #class CheckDisk < NagiosHerald::Formatter::DefaultFormatter    # pre-refactor
+    class CheckDisk < NagiosHerald::Formatter
       include NagiosHerald::Logging
 
       # Parse the output of the nagios check

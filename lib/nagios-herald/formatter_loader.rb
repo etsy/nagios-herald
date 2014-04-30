@@ -32,7 +32,7 @@ module NagiosHerald
         puts "#{$0}: No formatters were found in '#{@formatter_path}'"
         exit 1
       else
-        puts "#{formatter_class_files}"
+        #puts "#{formatter_class_files}"    # debug
         formatter_class_files.each do |formatter_class_file|
           Kernel.load formatter_class_file
         end

@@ -8,101 +8,13 @@ module NagiosHerald
     include NagiosHerald::Logging
     include NagiosHerald::Util
 
-    def initialize(notification_formatter, options)
+    attr_accessor :body
+    attr_accessor :recipients
+
+    def initialize(recipients, options)
       @body       = ""
-      @formatter  = notification_formatter
-      @nosend     = options.nosend
-      @pager_mode = options.pager_mode
-      @sandbox    = nil
-      @subject    = ""
-    end
-
-    def generate_section(name, *section_style_args)
-      if @formatter.respond_to?(name)
-        @formatter.start_section(*section_style_args)
-        @formatter.send(name)
-        @formatter.end_section
-      else
-        logger.error("Formatter method not found! #{name}")
-      end
-    end
-
-    def generate_problem_content
-      if @pager_mode
-        generate_section("format_short_state_detail")
-        @formatter.tag = ""
-      else
-        @formatter.tag = "ALERT"
-        generate_section("format_host_info")
-        generate_section("format_state_info")
-        generate_section("format_additional_info")
-        generate_section("format_action_url")
-        generate_section("format_state_detail") # format_notes and format_additional_details for services
-        generate_section("format_recipients_email_link")
-        generate_section("format_notification_info")
-        generate_section("format_alert_ack_url")
-      end
-    end
-
-    def generate_recovery_content
-      @formatter.tag = "OK"
-      if @pager_mode
-        generate_section("format_short_state_detail")
-      else
-        generate_section("format_host_info", "color:green")
-        generate_section("format_state_info", "color:green")
-        generate_section("format_additional_info", "color:green")
-        generate_section("format_action_url", "color:green")
-        generate_section("format_state_detail", "color:green") # format_notes and format_additional_details for services
-        generate_section("format_recipients_email_link")
-        generate_section("format_notification_info")
-      end
-    end
-
-    def generate_ack_content
-      @formatter.tag = "ACK"
-      if @pager_mode
-        generate_section("format_short_ack_info")
-      else
-        generate_section("format_host_info")
-        generate_section("format_ack_info")
-      end
-    end
-
-    def generate_content(nagios_notification_type)
-      case nagios_notification_type
-        when "PROBLEM", "FLAPPINGSTART"
-          generate_problem_content
-        when "RECOVERY", "FLAPPINGSTOP"
-          generate_recovery_content
-        when "ACKNOWLEDGEMENT"
-          generate_ack_content
-        else
-          $stderr.puts "Invalid Nagios notification type!\nExpecting something like PROBLEM or RECOVERY"
-          exit 1
-        end
-    end
-
-    def get_sandbox_path
-      @sandbox = Dir.mktmpdir if @sandbox.nil?
-      return @sandbox
-    end
-
-    def clean_sandbox
-      FileUtils.remove_entry @sandbox if  File.directory?(@sandbox)
-    end
-
-    def generate(nagios_notification_type)
-      @formatter.email = self
-      @formatter.sandbox = get_sandbox_path
-
-      generate_content(nagios_notification_type)
-      generate_subject
-    end
-
-    # should this reside in formatters?
-    def generate_subject
-      raise Exception, "#{self.to_s}: You must override #generate_subject"
+      @nosend      = options[:nosend]
+      @recipients = recipients
     end
 
     # override #send in the message subclass
