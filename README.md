@@ -85,11 +85,6 @@ structure, for reference.
       └── readme.md
     ── lib
       ├── nagios-herald
-      │  ├── configuration_manager
-      │  │  ├── base.rb
-      │  │  ├── chef.rb
-      │  │  └── simple.rb
-      │  ├── configuration_manager.rb
       │  ├── email_message.rb
       │  ├── engine.rb
       │  ├── exec.rb

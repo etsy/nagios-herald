@@ -52,13 +52,6 @@ Choice.options do
     default "8h"
   end
 
-  option :configuration_manager do
-    long  "--configuration-manager"
-    desc  "Configuration Management Tool"
-    default "chef"
-    desc  "Valid options: simple, chef"
-  end
-
   footer ""
   footer "EXAMPLES"
   footer "--------"
@@ -82,11 +75,8 @@ options = Choice.choices
 abort("Config file not found #{options.config_file}") unless File.exists? options.config_file
 config = AppConf.new
 config.load( options.config_file )
-cfgmgr = NagiosHerald::ConfigurationManager.get_configuration_manager(options.configuration_manager, config)
 
-ganglia_url = cfgmgr.get('servers', 'ganglia')
-abort("No ganglia server defined in configuration file") unless ganglia_url
-ganglia = NagiosHerald::Helpers::GangliaGraph.new(cfgmgr, ganglia_url)
+ganglia = NagiosHerald::Helpers::GangliaGraph.new
 
 image_paths = ganglia.get_graphs( options.hosts, options.metric, options.path, options.range )
 puts image_paths.join( ", " ) if image_paths

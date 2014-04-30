@@ -12,14 +12,6 @@ module NagiosHerald
         header "Nagios Herald - Spread the word"
         header ""
 
-        option :configuration_manager do
-          short "-C"
-          long  "--configuration-manager"
-          desc  "Configuration Management Tool"
-          default "chef"
-          desc  "Valid options: simple, chef"
-        end
-
         option :config_file do
           short "-c"
           long  "--config-file"
@@ -167,13 +159,6 @@ module NagiosHerald
       return formatter_class
     end
 
-    def get_config
-      abort("Config file not found #{@options.config_file}") unless File.exists? @options.config_file
-      config       = AppConf.new
-      config.load( @options.config_file )
-      return config
-    end
-
     # TODO: combine this with 'report()' and rename to 'run()'
     def report!
       begin
@@ -201,15 +186,8 @@ module NagiosHerald
       # Load the environment if asked for it
       load_env_from_file(@options.env) if @options.env
 
-      # Load the config
-      config = get_config
-
-      # Get a configuration manager
-      #cfgmgr = ConfigurationManager.get_configuration_manager(@options.configuration_manager, config)
-
-      # Get a formatter
-      #formatter_class = get_formatter
-      #formatter = formatter_class.new(cfgmgr, @options)
+      # Load the config for use globally
+      Config.load(@options)
 
       contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
       contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
@@ -219,21 +197,16 @@ module NagiosHerald
       # we eventually want to determine the correct class based on the requested message type (--message-type)
       [contact_email, contact_pager].each do | contact |
         next if contact.nil? || contact.eql?("")
-        #message = Message::Email.new(formatter, contact, @options) # pre-refactor
         message = Message::Email.new(contact, @options)
         load_formatters
-        # eventually 'formatter_instance' will be renamed to 'formatter_class' and 'foo_formatter' to 'formatter'
-        #formatter_instance = Formatter.formatters['foo']    # expect 'foo' to be replaced with @options.formatter_name
-        formatter_instance = Formatter.formatters[@options.formatter_name]    # expect 'foo' to be replaced with @options.formatter_name
-        foo_formatter = formatter_instance.new(@options)
-        message.subject = foo_formatter.generate_subject
-        #message.body = foo_formatter.generate_body
-        foo_formatter.generate_body
-        #message.body = foo_formatter.text
-        message.body = foo_formatter.html
-        #message.generate(nagios_notification_type) # pre-refactor
+        formatter_class = Formatter.formatters[@options.formatter_name]    # expect 'foo' to be replaced with @options.formatter_name
+        formatter = formatter_class.new(@options)
+        message.subject = formatter.generate_subject
+        formatter.generate_body
+        #message.body = formatter.text
+        message.body = formatter.html
         message.send
-        foo_formatter.clean_sandbox # clean house
+        #formatter.clean_sandbox # clean house
       end
     end
 

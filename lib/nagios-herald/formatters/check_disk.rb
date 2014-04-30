@@ -47,13 +47,11 @@ module NagiosHerald
 
       def get_ganglia_graphs(hostname)
         begin
-          ganglia_url = @cfgmgr.get('servers','ganglia')
-          return [] unless ganglia_url
-          ganglia = NagiosHerald::Helpers::GangliaGraph.new(@cfgmgr, ganglia_url)
+          ganglia = NagiosHerald::Helpers::GangliaGraph.new
           graph =  ganglia.get_graphs( [hostname], 'part_max_used', @sandbox, '1day')
           return graph
         rescue Exception => e
-          logger.error "Exception encountered retrieving ganglia graphs - #{e.message}"
+          logger.error "Exception encountered retrieving Ganglia graphs - #{e.message}"
           return []
         end
       end
@@ -142,9 +140,9 @@ module NagiosHerald
         hostname  = get_nagios_var("NAGIOS_HOSTNAME")
         service_name  = get_nagios_var("NAGIOS_SERVICEDISPLAYNAME") # expecting 'Disk Space'
 
-        splunk_url      = @cfgmgr.get('splunk','url')
-        splunk_username = @cfgmgr.get('splunk', 'username')
-        splunk_password = @cfgmgr.get('splunk', 'password')
+        splunk_url      = Config.splunk.url
+        splunk_username = Config.splunk.username
+        splunk_password = Config.splunk.password
         reporter = NagiosHerald::Helpers::SplunkReporter.new( splunk_url, splunk_username, splunk_password )
         splunk_data = reporter.get_alert_frequency(hostname, service_name, {:duration => 7})
 
