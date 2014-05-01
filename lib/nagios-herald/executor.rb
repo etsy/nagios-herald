@@ -4,6 +4,7 @@ require 'app_conf'
 
 module NagiosHerald
   class Executor
+    include NagiosHerald::Logging
 
     # Public: Parse the command line options.
     #
@@ -171,6 +172,7 @@ module NagiosHerald
         # Load the environment if asked for it
         load_env_from_file(@options.env) if @options.env
   
+        logger.warn "LOGGER: Loading config..."
         # Load the config for use globally
         Config.load(@options)
   
