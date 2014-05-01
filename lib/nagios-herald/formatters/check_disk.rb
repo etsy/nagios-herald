@@ -64,20 +64,21 @@ module NagiosHerald
 
       def format_additional_info
         output  = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
-        add_text "Additional info:\n #{unescape_text(output)}\n\n" if output
+        add_text "Additional Info:\n #{unescape_text(output)}\n\n" if output
 
         # Collect partitions data and plot a chart
         # if the check has recovered, $NAGIOS_SERVICEOUTPUT doesn't contain the data we need to parse for images; just give us the A-OK message
         if output =~ /DISK OK/
-            add_html %Q(Additional info:<br><b><font color="green"> #{output}</font><br><br>)
+            add_html %Q(Additional Info:<br><b><font color="green"> #{output}</font><br><br>)
         else
           partitions = get_partitions_data(output)
           partitions_chart = get_partitions_stackedbars_chart(partitions)
           if partitions_chart
+            add_html "<b>Additional Info</b>:<br> #{output}<br><br>" if output
             add_attachment partitions_chart
             add_html %Q(<img src="#{partitions_chart}" width="500" alt="partitions_remaining_space" /><br><br>)
           else
-            add_html "Additional info:<br> #{output}<br><br>" if output
+            add_html "<b>Additional Info</b>:<br> #{output}<br><br>" if output
           end
         end
 
@@ -131,10 +132,11 @@ module NagiosHerald
 
           output_lines << "</pre>"
           output_string = output_lines.join( "<br>" )
+          add_html "<b>Additional Details</b>:"
           add_html output_string
         else  # just spit out what we got from df
           add_text "Additional Details:\n#{unescape_text(long_output)}\n" if long_output
-          add_html "Additional Details:<br><pre>#{unescape_text(long_output)}</pre><br><br>" if long_output
+          add_html "<b>Additional Details</b>:<br><pre>#{unescape_text(long_output)}</pre><br><br>" if long_output
         end
         format_alert_frequency
 
@@ -142,6 +144,7 @@ module NagiosHerald
 
       def format_alert_frequency
         # find out how frequently we've seen alerts for this service check
+        add_text "Alert Frequency\n"
         add_html "<h4>Alert Frequency</h4>"
         hostname  = get_nagios_var("NAGIOS_HOSTNAME")
         service_name  = get_nagios_var("NAGIOS_SERVICEDISPLAYNAME") # expecting 'Disk Space'

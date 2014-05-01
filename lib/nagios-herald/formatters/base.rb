@@ -3,6 +3,14 @@
 # Nearly all of them can be overridden. Subclasses can also extend functionality and
 # call on helpers.
 
+# Dear Reader,
+# There is a brittle, un-OOP pattern in this class, but it gets the job done
+# because sometimes "working" is better than "elegant" or "correct".
+# Your exercise, should you choose to take it on, is to devise a better way
+# for a formatter to know which content to generate based on the message type.
+# THIS IS ESPECIALLY IMPORTANT FOR SUBCLASSES THAT OVERRIDE METHODS!
+# Hit me with your best shot.
+
 require 'tmpdir'
 require 'nagios-herald/logging'
 require 'nagios-herald/util'
@@ -23,7 +31,7 @@ module NagiosHerald
     def initialize(options)
       @attachments = []
       @html = ""
-      @message_type = options[:message_type]
+      @message_type = options[:message_type].downcase
       @nagios_url = options[:nagiosurl]
       @sandbox  = get_sandbox_path
       @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
@@ -135,8 +143,8 @@ module NagiosHerald
     def format_additional_info
       output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
       if !output.nil? and !output.empty?
-        add_text "Additional info: #{unescape_text(output)}\n\n"
-        add_html "<b>Additional info</b>: #{output}<br><br>"
+        add_text "Additional Info: #{unescape_text(output)}\n\n"
+        add_html "<b>Additional Info</b>: #{output}<br><br>"
       end
     end
 
@@ -313,14 +321,19 @@ module NagiosHerald
     # Public: Generate content for PROBLEM alerts.
     def generate_problem_content
       self.tag = "ALERT"
-      generate_section("format_host_info")
-      generate_section("format_state_info")
-      generate_section("format_additional_info")
-      generate_section("format_action_url")
-      generate_section("format_state_detail") # format_notes and format_additional_details for services
-      generate_section("format_recipients_email_link")
-      generate_section("format_notification_info")
-      generate_section("format_alert_ack_url")
+      case @message_type
+      when "pager"
+        generate_section("format_additional_info")
+      else
+        generate_section("format_host_info")
+        generate_section("format_state_info")
+        generate_section("format_additional_info")
+        generate_section("format_action_url")
+        generate_section("format_state_detail") # format_notes and format_additional_details for services
+        generate_section("format_recipients_email_link")
+        generate_section("format_notification_info")
+        generate_section("format_alert_ack_url")
+      end
     end
 
     # Public: Generate content for RECOVERY alerts.
@@ -373,9 +386,7 @@ module NagiosHerald
       notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       state             = get_nagios_var("NAGIOS_#{@state_type}STATE")
 
-      # yes, this hack is not very OOP, but it'll do for now
-      # because sometimes "working" is better than "elegant" or "correct"
-      case @message_type.downcase
+      case @message_type
       when "email"
         subject="#{hostname}"
         subject += "/#{service_desc}" if service_desc != ""
@@ -386,7 +397,6 @@ module NagiosHerald
           subject="** #{notification_type} Host #{subject} is #{state} **"
         end
       when "pager"
-        # do we even need a subject for a page? can it be part of the content?
         subject="#{hostname}"
         subject += "/#{service_desc}" if service_desc != ""
 
