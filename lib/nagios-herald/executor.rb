@@ -183,7 +183,6 @@ module NagiosHerald
   
         # Load the config for use globally
         Config.load(@options)
-        Config.foo
   
         contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
         contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
