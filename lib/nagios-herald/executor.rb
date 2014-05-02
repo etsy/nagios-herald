@@ -56,6 +56,15 @@ module NagiosHerald
           default nil
         end
 
+        option :log_output do
+          short   "-l"
+          long    "--log-output"
+          desc    "Log output location"
+          desc    "Can be a file name or STDOUT (i.e. -l /tmp/output.log or -l STDOUT)"
+          desc    "[DEFAULT] Uses the value of 'log_output' in the config or STDOUT if not defined."
+          default nil
+        end
+
         option :message_type, :required => true do
           short   "-m"
           long    "--message-type"
@@ -172,9 +181,9 @@ module NagiosHerald
         # Load the environment if asked for it
         load_env_from_file(@options.env) if @options.env
   
-        logger.warn "LOGGER: Loading config..."
         # Load the config for use globally
         Config.load(@options)
+        Config.foo
   
         contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
         contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
@@ -184,18 +193,21 @@ module NagiosHerald
         # Report for email and pager
         # we eventually want to determine the correct class based on the requested message type (--message-type)
         [contact_email, contact_pager].each do | contact |
-          next if contact.nil? || contact.eql?("")  # log this condition!
+          if contact.nil? || contact.eql?("")
+            logger.error "No recipient defined for this notification!"
+            next
+          end
 
           load_formatters
           load_messages
 
           # bail if can't identify the message type because we don't know what sort of thing to send
           if !Message.message_types.has_key?(@options.message_type)
-            puts "Unknown message type: '#{@options.message_type}'" # log this condition!
-            puts "I'm aware of the following message types:"
+            logger.error "Unknown message type: '#{@options.message_type}'"
+            logger.error "I'm aware of the following message types:"
             sorted_message_types = Message.message_types.sort_by {|message_type, message_class| message_type}
             sorted_message_types.each do |message_type|
-              puts " + #{message_type.first}"
+              logger.error " + #{message_type.first}"
             end
             exit 1
           end
@@ -203,7 +215,8 @@ module NagiosHerald
           message = message_class.new(contact, @options)
 
           formatter_class = Formatter.formatters[@options.formatter_name]
-          if formatter_class.nil?   # log this condition!
+          if formatter_class.nil?
+              logger.warn "Undefined formatter! Defaulting to the base formatter."
               formatter_class = NagiosHerald::Formatter   # default to the base formatter
           end
           formatter = formatter_class.new(@options)
@@ -219,12 +232,17 @@ module NagiosHerald
           message.send
           formatter.clean_sandbox # clean house
         end
-      rescue Exception => e # log this condition!
+      rescue Exception => e
+        logger.fatal "#{e.class}: #{e.message}"
+        logger.fatal "COMMAND LINE #{File.basename $0} #{ARGV.join(" ")}"
+        if @options[:trace].nil?
+          logger.fatal "Use --trace for backtrace."
+        else
+          e.backtrace.each do |line|
+            logger.fatal "TRACE #{line}"
+          end
+        end
         raise e if @options[:trace] || e.is_a?(SystemExit)
-
-        $stderr.print "#{e.class}: " unless e.class == RuntimeError
-        $stderr.puts "#{e.message}"
-        $stderr.puts "  Use --trace for backtrace."
         exit 1
       end
       exit 0

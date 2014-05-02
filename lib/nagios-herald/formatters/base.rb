@@ -18,7 +18,7 @@ require 'nagios-herald/formatter_loader'
 
 module NagiosHerald
   class Formatter
-    #include NagiosHerald::Logging
+    include NagiosHerald::Logging
     include NagiosHerald::Util
 
     attr_accessor :attachments  # this is probably more appropriate in the Message class
@@ -373,7 +373,7 @@ module NagiosHerald
         when "ACKNOWLEDGEMENT"
           generate_ack_content
         else
-          $stderr.puts "Invalid Nagios notification type!\nExpecting something like PROBLEM or RECOVERY"
+          logger.fatal "Invalid Nagios notification type! Expecting something like PROBLEM or RECOVERY."
           exit 1
         end
     end

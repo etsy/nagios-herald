@@ -11,14 +11,18 @@ module NagiosHerald
     end
 
     # Use a hash class-ivar to cache a unique Logger per class:
+    # "ivar" = fancy term for "instance variable"
+    # do we want this? or a global logger?
     @loggers = {}
 
     extend self
 
+    # effectively sets the progname
     def logger_for(classname)
       @loggers[classname] ||= configure_logger_for(classname)
     end
 
+    # instantiates a Logger instance
     def configure_logger_for(classname)
       logger = Logger.new(STDOUT)
       logger.datetime_format = "%Y-%m-%d %H:%M:%S"
