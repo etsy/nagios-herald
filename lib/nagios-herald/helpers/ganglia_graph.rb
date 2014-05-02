@@ -12,13 +12,7 @@ module NagiosHerald
       def load_knife_config
         return @knife_config_loaded unless @knife_config_loaded.nil?
 
-        begin
-          knife_config_file = Config.knife_config
-        # Config raises an exception when it doesn't find a config item
-        rescue Exception => e
-          knife_config_file = '~/.chef/knife.rb' # default
-        end
-
+        knife_config_file = Config.knife_config ? Config.knife_config : '~/.chef/knife.rb'
         knife_config_file = File.expand_path(knife_config_file)
         if !File.exist?(knife_config_file)
           $stderr.puts "Knife config file not found (#{knife_config_file})"

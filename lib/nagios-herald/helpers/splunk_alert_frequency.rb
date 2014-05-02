@@ -99,8 +99,9 @@ module NagiosHerald
         begin
           json = JSON.parse( response.body )
         rescue Exception => e
-          logger.debug(e.message)  # debug
-          logger.error("Failed to parse response from Splunk. Perhaps we got an empty result?")
+          # just warn; our formatter should handle this gracefully
+          logger.warn(e.message)
+          logger.warn("Failed to parse response from Splunk. Perhaps we got an empty result?")
           return nil
         end
 

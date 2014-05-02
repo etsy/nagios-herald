@@ -58,6 +58,9 @@ module NagiosHerald
           return graph
         rescue Exception => e
           logger.error "Exception encountered retrieving Ganglia graphs - #{e.message}"
+          e.backtrace.each do |line|
+            logger.error "#{line}"
+          end
           return []
         end
       end

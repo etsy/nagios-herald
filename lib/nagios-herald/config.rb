@@ -22,7 +22,8 @@ module NagiosHerald
     # Public: Look up config items in the @config hash.
     # Use some Ruby magic to make it so.
     def method_missing(item_name, *args, &block)
-      @config[item_name.to_sym] || fail(NoMethodError, "Unknown config item #{item_name}", caller)
+      #@config[item_name.to_sym] || fail(NoMethodError, "Unknown config item #{item_name}", caller)
+      @config[item_name.to_sym] || nil
     end
 
   end

@@ -56,12 +56,12 @@ module NagiosHerald
           default nil
         end
 
-        option :log_output do
+        option :logfile do
           short   "-l"
-          long    "--log-output"
-          desc    "Log output location"
+          long    "--logfile"
+          desc    "Logfile location"
           desc    "Can be a file name or STDOUT (i.e. -l /tmp/output.log or -l STDOUT)"
-          desc    "[DEFAULT] Uses the value of 'log_output' in the config or STDOUT if not defined."
+          desc    "[DEFAULT] Uses the value of 'logfile' in the config or STDOUT if not defined."
           default nil
         end
 
@@ -184,19 +184,19 @@ module NagiosHerald
         # Load the config for use globally
         Config.load(@options)
   
-        contact_email = @options.recipients.nil? ? ENV['NAGIOS_CONTACTEMAIL'] : @options.recipients
-        contact_pager = @options.pager_mode ? @options.recipients : ENV['NAGIOS_CONTACTPAGER']
+        recipients = @options.recipients.nil? ? [ ENV['NAGIOS_CONTACTEMAIL'] ] : [ @options.recipients ]
         nagios_notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
   
         # FIXME: this code is still very email-centric...
         # Report for email and pager
         # we eventually want to determine the correct class based on the requested message type (--message-type)
-        [contact_email, contact_pager].each do | contact |
-          if contact.nil? || contact.eql?("")
+        recipients.each do |recipient|
+          if recipient.nil? || recipient.eql?("")
             logger.error "No recipient defined for this notification!"
             next
           end
 
+          logger.info "Loading formatters and messages"
           load_formatters
           load_messages
 
@@ -211,7 +211,7 @@ module NagiosHerald
             exit 1
           end
           message_class = Message.message_types[@options.message_type]
-          message = message_class.new(contact, @options)
+          message = message_class.new(recipient, @options)
 
           formatter_class = Formatter.formatters[@options.formatter_name]
           if formatter_class.nil?
