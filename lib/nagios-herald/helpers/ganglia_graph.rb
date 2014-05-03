@@ -6,13 +6,13 @@ module NagiosHerald
       include NagiosHerald::Logging
 
       def initialize
-        @ganglia_base_uri = Config.servers.ganglia
+        @ganglia_base_uri = Config.config['servers']['ganglia']
       end
 
       def load_knife_config
         return @knife_config_loaded unless @knife_config_loaded.nil?
 
-        knife_config_file = Config.knife_config ? Config.knife_config : '~/.chef/knife.rb'
+        knife_config_file = Config.config['knife_config'] ? Config.config['knife_config'] : '~/.chef/knife.rb'
         knife_config_file = File.expand_path(knife_config_file)
         if !File.exist?(knife_config_file)
           $stderr.puts "Knife config file not found (#{knife_config_file})"

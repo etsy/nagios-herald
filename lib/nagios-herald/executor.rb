@@ -196,7 +196,6 @@ module NagiosHerald
             next
           end
 
-          logger.info "Loading formatters and messages"
           load_formatters
           load_messages
 

@@ -152,9 +152,9 @@ module NagiosHerald
         hostname  = get_nagios_var("NAGIOS_HOSTNAME")
         service_name  = get_nagios_var("NAGIOS_SERVICEDISPLAYNAME") # expecting 'Disk Space'
 
-        splunk_url      = Config.splunk.url
-        splunk_username = Config.splunk.username
-        splunk_password = Config.splunk.password
+        splunk_url      = Config.config['splunk']['url']
+        splunk_username = Config.config['splunk']['username']
+        splunk_password = Config.config['splunk']['password']
         reporter = NagiosHerald::Helpers::SplunkReporter.new( splunk_url, splunk_username, splunk_password )
         splunk_data = reporter.get_alert_frequency(hostname, service_name, {:duration => 7})
 

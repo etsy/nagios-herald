@@ -11,19 +11,14 @@ module NagiosHerald
     #
     # options - The options hash built from command-line arguments.
     #
-    # Returns a hash of the parsed config file.
+    # Returns a hash of the parsed config file merged with the command line options.
     def load(options = {})
       abort("Config file not found #{options.config_file}") unless File.exists? options.config_file
       @config = AppConf.new
       @config.load(options.config_file)
+      @config = @config.to_hash
+      @config.merge!(options)   # runtime options should override
       @config
-    end
-
-    # Public: Look up config items in the @config hash.
-    # Use some Ruby magic to make it so.
-    def method_missing(item_name, *args, &block)
-      #@config[item_name.to_sym] || fail(NoMethodError, "Unknown config item #{item_name}", caller)
-      @config[item_name.to_sym] || nil
     end
 
   end

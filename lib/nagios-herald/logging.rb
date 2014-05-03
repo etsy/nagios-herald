@@ -23,11 +23,16 @@ module NagiosHerald
     end
 
     # instantiates a Logger instance
+    # default to STDOUT
     def configure_logger_for(classname)
-      logfile = Config.logfile ? Config.logfile : STDOUT
-      # TODO: check the command line options to determine if a logfile was specified
-      # TODO TODO: Config should merge command line options on top of config values
-      logger = Logger.new(logfile)
+      logfile = Config.config['logfile'] ? Config.config['logfile'] : STDOUT
+      begin
+        logger = Logger.new(logfile)
+      rescue Exception => e
+        puts "Failed to open #{logfile} for writing: #{e.message}"
+        puts "Defaulting to STDOUT"
+        logger = Logger.new(STDOUT)
+      end
       logger.datetime_format = "%Y-%m-%d %H:%M:%S"
       logger.progname = "#{File.basename $0} (#{classname})"
       logger.formatter = proc { |severity, datetime, progname, msg|
