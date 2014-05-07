@@ -184,20 +184,18 @@ module NagiosHerald
         # Load the config for use globally
         Config.load(@options)
   
+        # load the formatters and messages
+        load_formatters
+        load_messages
+
         recipients = @options.recipients.nil? ? [ ENV['NAGIOS_CONTACTEMAIL'] ] : [ @options.recipients ]
         nagios_notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
   
-        # FIXME: this code is still very email-centric...
-        # Report for email and pager
-        # we eventually want to determine the correct class based on the requested message type (--message-type)
         recipients.each do |recipient|
           if recipient.nil? || recipient.eql?("")
             logger.error "No recipient defined for this notification!"
             next
           end
-
-          load_formatters
-          load_messages
 
           # bail if can't identify the message type because we don't know what sort of thing to send
           if !Message.message_types.has_key?(@options.message_type)
@@ -219,14 +217,8 @@ module NagiosHerald
           end
           formatter = formatter_class.new(@options)
 
-          message.subject = formatter.generate_subject
-          formatter.generate_body
-          message.text = formatter.text
-          if @options.message_type.downcase.eql?("email")
-            # hmm, this feels hokey
-            message.html = formatter.html
-            message.attachments = formatter.attachments
-          end
+          formatter.generate_message_content
+          message.content = formatter.content
           message.send
           formatter.clean_sandbox # clean house
         end

@@ -31,6 +31,30 @@ module NagiosHerald
         inline_html
       end
 
+      def curate_text
+        @text += self.content[:text][:host_info]
+        @text += self.content[:text][:state_info]
+        @text += self.content[:text][:additional_info]
+        @text += self.content[:text][:action_url]
+        @text += self.content[:text][:notes]
+        @text += self.content[:text][:additional_details]
+        @text += self.content[:text][:recipients_email_link]
+        @text += self.content[:text][:notification_info]
+        @text += self.content[:text][:alert_ack_url]
+      end
+
+      def curate_html
+        @html += self.content[:html][:host_info]
+        @html += self.content[:html][:state_info]
+        @html += self.content[:html][:additional_info]
+        @html += self.content[:html][:action_url]
+        @html += self.content[:html][:notes]
+        @html += self.content[:html][:additional_details]
+        @html += self.content[:html][:recipients_email_link]
+        @html += self.content[:html][:notification_info]
+        @html += self.content[:html][:alert_ack_url]
+      end
+
       def print
         puts "------------------"
         puts "Subject : #{@subject}"
@@ -40,11 +64,14 @@ module NagiosHerald
       end
 
       def send
+        curate_text
+        curate_html
         if @nosend
           self.print
           return
         end
 
+        @subject = self.content[:subject]
         mail = Mail.new({
           :from  => @replyto,
           :to    => @recipients,
@@ -64,6 +91,7 @@ module NagiosHerald
         end
 
         # Load the attachments
+        @attachments = self.content[:attachments]
         @attachments.each do |attachment|
           html_part.attachments[attachment] = File.read(attachment)
         end

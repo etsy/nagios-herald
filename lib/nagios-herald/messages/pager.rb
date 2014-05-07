@@ -15,6 +15,10 @@ module NagiosHerald
         super(recipients, options)
       end
 
+      def curate_text
+        @text += self.content[:text][:additional_info]
+      end
+
       def print
         puts "------------------"
         puts "Subject : #{@subject}"
@@ -23,11 +27,13 @@ module NagiosHerald
       end
 
       def send
+        curate_text
         if @nosend
           self.print
           return
         end
 
+        @subject = self.content[:subject]
         mail = Mail.new({
           :from    => @replyto,
           :to      => @recipients,

@@ -21,22 +21,20 @@ module NagiosHerald
     include NagiosHerald::Logging
     include NagiosHerald::Util
 
-    attr_accessor :attachments  # this is probably more appropriate in the Message class
-    attr_accessor :html
+    attr_accessor :content  # all the content required to generate a message
     attr_accessor :sandbox # @sandbox is the place to save attachments, possibly a tempdir
     attr_accessor :state_type
-    attr_accessor :tag
-    attr_accessor :text
 
     def initialize(options)
-      @attachments = []
-      @html = ""
+      @content = Hash.new{ |h,k| h[k] = Hash.new(&h.default_proc) } # autovivify
+      @content[:attachments] = []
+      @content[:html]
+      @content[:subject] = ""
+      @content[:text]
       @message_type = options[:message_type].downcase
       @nagios_url = options[:nagiosurl]
       @sandbox  = get_sandbox_path
       @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
-      @tag  = ""
-      @text = ""
 
     end
 
@@ -62,23 +60,56 @@ module NagiosHerald
 
     # Public: Concatenates text content.
     #
-    # Returns a string containing all text content.
-    def add_text(text)
-      @text += text
+    # section - The content section name whose text we'll concatenate
+    # text - The text we want to concatenate
+    #
+    # Example:
+    #
+    #   add_text("state_detail", "Service is somewhere in Kansas")
+    #
+    # Returns the concatenated HTML for the given section.
+    def add_text(section, text)
+      # Ensure our key is a symbol, regardless if we're passed a string or symbol
+      section = section.to_sym
+      if @content[:text][section].nil? or @content[:text][section].empty?
+        @content[:text][section] = text
+      else
+        @content[:text][section] += text
+      end
     end
 
     # Public: Concatenates HTML content.
     #
-    # Returns a string containing all HTML content.
-    def add_html(html)
-      @html += html
+    # section - The content section name whose HTML we'll concatenate
+    # text - The HTML we want to concatenate
+    #
+    # Example:
+    #
+    #   add_html("state_detail", "Service is somewhere in Kansas")
+    #
+    # Returns the concatenated HTML for the given section.
+    def add_html(section, html)
+      # Ensure our key is a symbol, regardless if we're passed a string or symbol
+      section = section.to_sym
+      if @content[:html][section].nil? or @content[:html][section].empty?
+        @content[:html][section] = html
+      else
+        @content[:html][section] += html
+      end
     end
 
     # Public: Add an attachment's path to an array.
     #
+    # path - The fully qualified path for a file attachment
+    #
+    # Example:
+    #
+    #   add_attachment("/tmp/file-to-attach.txt")
+    #
     # Returns the array of attachment paths.
     def add_attachment(path)
-      @attachments << path
+      #@attachments << path
+      @content[:attachments] << path
     end
 
     #
@@ -86,192 +117,249 @@ module NagiosHerald
     #
 
     # Public: Appends a newline in text and HTML format.
-    # Generates text and HTML output.
-    def format_line_break
-      add_text "\n"
-      add_html "<br>"
+    #
+    # section - The content section name that needs the line break
+    #
+    # Example
+    #
+    #   line_break(additional_info)
+    #
+    # Appends text and HTML output to the appropriate sections in @content
+    def line_break(section)
+      add_text(section, "\n")
+      add_html(section, "<br>")
     end
 
     # Public: Formats the information about the host that's being alerted on.
     # Generates text and HTML output.
-    def format_host_info
+    def host_info
+      section = __method__
+      text = ""
+      html = ""
       notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       hostname          = get_nagios_var("NAGIOS_HOSTNAME")
       service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
-      add_text "Host: #{hostname} "
-      add_html "<br><b>Host</b>: #{hostname} "
+      text += "Host: #{hostname} "
+      html += "<br><b>Host</b>: #{hostname} "
       if !service_desc.nil? and !service_desc.empty?
-        add_text "Service: #{service_desc}\n"
-        add_html "<b>Service</b>: #{service_desc}<br/>"
+        text += "Service: #{service_desc}\n"
+        html += "<b>Service</b>: #{service_desc}<br/>"
       else
         # we need a trailing newline if no service description
-        format_line_break
+        line_break(section)
       end
-      format_line_break
+      add_text(section, text)
+      add_html(section, html)
+      line_break(section)
     end
 
     # Public: Formats information about the state of the thing being alerted on
     # where 'thing' is either HOST or SERVICE.
     # Generates text and HTML output.
-    def format_state_info
+    def state_info
+      section = __method__
+      text = ""
+      html = ""
       state         = get_nagios_var("NAGIOS_#{@state_type}STATE")
       duration      = get_nagios_var("NAGIOS_#{@state_type}DURATION")
       last_duration = get_nagios_var("NAGIOS_LAST#{@state_type}STATE")
       attempts      = get_nagios_var("NAGIOS_#{@state_type}ATTEMPT")
       max_attempts  = get_nagios_var("NAGIOS_MAX#{@state_type}ATTEMPTS")
-      add_text "State is now: #{state} for #{duration} (was #{last_duration}) after #{attempts} / #{max_attempts} checks\n"
+
+      text += "State is now: #{state} for #{duration} (was #{last_duration}) after #{attempts} / #{max_attempts} checks\n"
+
       if state.eql? 'OK' or state.eql? 'UP'
-          add_html "State is now: <b>#{state}</b> for <b>#{duration}</b> (was #{last_duration}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
+          html += "State is now: <b>#{state}</b> for <b>#{duration}</b> (was #{last_duration}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
       else
-          add_html "State is now: <b><font style='color:red'>#{state}</font></b> for <b>#{duration}</b> (was #{last_duration}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
+          html += "State is now: <b><font style='color:red'>#{state}</font></b> for <b>#{duration}</b> (was #{last_duration}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
       end
-      format_line_break
+      add_text(section, text)
+      add_html(section, html)
+      line_break(section)
     end
 
     # Public: Formats information about the notification.
     # Provides information such as the date and notification number.
     # Generates text and HTML output.
-    def format_notification_info
+    def notification_info
+      section = __method__
+      text = ""
+      html = ""
       date   = get_nagios_var("NAGIOS_LONGDATETIME")
       number = get_nagios_var("NAGIOS_NOTIFICATIONNUMBER")
-      add_text "Notification sent at: #{date} (notification number #{number})\n\n"
-      add_html "Notification sent at: #{date} (notification number #{number})<br><br>"
+      text += "Notification sent at: #{date} (notification number #{number})\n\n"
+      html += "Notification sent at: #{date} (notification number #{number})<br><br>"
+      add_text(section, text)
+      add_html(section, html)
     end
 
     # Public: Formats information provided plugin's output.
     # Generates text and HTML output.
-    def format_additional_info
+    def additional_info
+      section = __method__
+      text = ""
+      html = ""
       output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
       if !output.nil? and !output.empty?
-        add_text "Additional Info: #{unescape_text(output)}\n\n"
-        add_html "<b>Additional Info</b>: #{output}<br><br>"
+        text += "Additional Info: #{unescape_text(output)}\n\n"
+        html += "<b>Additional Info</b>: #{output}<br><br>"
+        add_text(section, text)
+        add_html(section, html)
       end
     end
 
     # Public: Formats information provided plugin's *long* output.
     # Generates text and HTML output.
-    def format_additional_details
+    def additional_details
+      section = __method__
+      text = ""
+      html = ""
       long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
       if !long_output.nil? and !long_output.empty?
-        add_text "Additional Details: #{unescape_text(long_output)}\n"
-        add_html "<b>Additional Details</b>: <pre>#{unescape_text(long_output)}</pre><br><br>"
+        text += "Additional Details: #{unescape_text(long_output)}\n"
+        html += "<b>Additional Details</b>: <pre>#{unescape_text(long_output)}</pre><br><br>"
+        add_text(section, text)
+        add_html(section, html)
       end
     end
 
     # Public: Formats the notes information for this alert.
     # Generates text and HTML output.
-    def format_notes
+    def notes
+      section = __method__
+      text = ""
+      html = ""
       notes = get_nagios_var("NAGIOS_#{@state_type}NOTES")
       if !notes.nil? and !notes.empty?
-        add_text "Notes: #{unescape_text(notes)}\n\n"
-        add_html "<b>Notes</b>: #{notes}<br><br>"
+        text += "Notes: #{unescape_text(notes)}\n\n"
+        html += "<b>Notes</b>: #{notes}<br><br>"
       end
 
       notes_url = get_nagios_var("NAGIOS_#{@state_type}NOTESURL")
       if !notes_url.nil? and !notes_url.empty?
-        add_text "Notes URL: #{notes_url}\n\n"
-        add_html "<b>Notes URL</b>: #{notes_url}<br><br>"
+        text += "Notes URL: #{notes_url}\n\n"
+        html += "<b>Notes URL</b>: #{notes_url}<br><br>"
       end
+      add_text(section, text)
+      add_html(section, html)
     end
 
     # Public: Formats the action URL for this alert.
     # Generates text and HTML output.
-    def format_action_url
+    def action_url
+      section = __method__
+      text = ""
+      html = ""
       action_url = get_nagios_var("NAGIOS_#{@state_type}ACTIONURL")
       if !action_url.nil? and !action_url.empty?
-        add_text "Action URL: #{action_url}\n\n"
-        add_html "<b>Action URL</b>: #{action_url}<br><br>"
+        text += "Action URL: #{action_url}\n\n"
+        html += "<b>Action URL</b>: #{action_url}<br><br>"
       end
+      add_text(section, text)
+      add_html(section, html)
     end
 
-    # Public: Formats details for the state of the alert (if it's a service)
-    # TODO: Nothing for HOST?
-    def format_state_detail
-      if @state_type == "SERVICE"
-        format_notes
-        format_additional_details
-      end
-      format_line_break
-    end
-
-    # FIXME: Looks like a dupe of #format_additional_info (used in pager alerts, it seems)
-    def format_short_state_detail
+    # FIXME: Looks like a dupe of #additional_info (used in pager alerts, it seems)
+    def short_state_detail
+      section = __method__
+      text = ""
+      html = ""
       output   = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
-      add_text = "#{output}\n"
-      add_html = "#{output}<br>"
+      text += "#{output}\n"
+      html += "#{output}<br>"
+      add_text(section, text)
+      add_html(section, html)
     end
 
     # Public: Formats the email recipients and URIs
     # Generates text and HTML output.
-    def format_recipients_email_link
-      hostname      = get_nagios_var("NAGIOS_HOSTNAME")
+    def recipients_email_link
+      section = __method__
+      text = ""
+      html = ""
+      hostname = get_nagios_var("NAGIOS_HOSTNAME")
       if @state_type == "SERVICE"
-        service_desc  = get_nagios_var("NAGIOS_SERVICEDESC")
+        service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
         subject = "#{hostname} - #{service_desc}"
       else
         subject = "#{hostname}"
       end
 
-      recipients      = get_nagios_var("NAGIOS_NOTIFICATIONRECIPIENTS")
+      recipients = get_nagios_var("NAGIOS_NOTIFICATIONRECIPIENTS")
       return if recipients.nil?
-      recipients_list   = recipients.split(',')
-      recipients_mail   = recipients_list.map {|n| n + "@etsy.com"}
+      recipients_list = recipients.split(',')
+      recipients_mail = recipients_list.map {|n| n + "@etsy.com"}
       recipients_mail_str = recipients_mail.join(',')
-      add_text "Sent to #{recipients}\n"
-      add_html %Q(Sent to <a href="mailto:#{recipients_mail_str}?subject=#{subject}">#{recipients}</a><br>)
+      text += "Sent to #{recipients}\n"
+      html += %Q(Sent to <a href="mailto:#{recipients_mail_str}?subject=#{subject}">#{recipients}</a><br>)
+      add_text(section, text)
+      add_html(section, html)
     end
 
     # Public: Formats the information about who ack'd the alert and when
     # Generates text and HTML output.
-    def format_ack_info
-      date    = get_nagios_var("NAGIOS_LONGDATETIME")
-      author    = get_nagios_var("NAGIOS_#{@state_type}ACKAUTHOR")
-      comment   = get_nagios_var("NAGIOS_#{@state_type}ACKCOMMENT")
-      hostname  = get_nagios_var("NAGIOS_HOSTNAME")
+    def ack_info
+      section = __method__
+      text = ""
+      html = ""
+      date = get_nagios_var("NAGIOS_LONGDATETIME")
+      author = get_nagios_var("NAGIOS_#{@state_type}ACKAUTHOR")
+      comment = get_nagios_var("NAGIOS_#{@state_type}ACKCOMMENT")
+      hostname = get_nagios_var("NAGIOS_HOSTNAME")
 
-      add_text "At #{date} #{author}"
-      add_html "At #{date} #{author}"
+      text += "At #{date} #{author}"
+      html += "At #{date} #{author}"
 
       if @state_type == "SERVICE"
         desc = get_nagios_var("NAGIOS_SERVICEDESC")
-        add_text " acknowledged #{desc} on #{hostname}.\n\n"
-        add_html " acknowledged #{desc} on #{hostname}.<br><br>"
+        text += " acknowledged #{desc} on #{hostname}.\n\n"
+        html += " acknowledged #{desc} on #{hostname}.<br><br>"
       else
-        add_text " acknowledged #{hostname}.\n\n"
-        add_html " acknowledged #{hostname}.<br><br>"
+        text += " acknowledged #{hostname}.\n\n"
+        html += " acknowledged #{hostname}.<br><br>"
 
       end
-      add_text "Comment: #{comment}" if comment
-      add_html "Comment: #{comment}" if comment
+      text += "Comment: #{comment}" if comment
+      html += "Comment: #{comment}" if comment
+      add_text(section, text)
+      add_html(section, html)
     end
 
     # Public: Formats brief ack information.
     # Useful for pager messages.
     # Generates text and HTML output.
-    def format_short_ack_info
+    def short_ack_info
+      section = __method__
+      text = ""
+      html = ""
       author    = get_nagios_var("NAGIOS_#{@state_type}ACKAUTHOR")
       comment   = get_nagios_var("NAGIOS_#{@state_type}COMMENT")
       hostname  = get_nagios_var("NAGIOS_HOSTNAME")
 
-      add_text "#{author}  ack'd "
-      add_html "#{author}  ack'd "
+      text += "#{author}  ack'd "
+      html += "#{author}  ack'd "
 
       if @state_type == "SERVICE"
         desc = get_nagios_var("NAGIOS_SERVICEDESC")
-        add_text "#{desc} on #{hostname}.\n"
-        add_html "#{desc} on #{hostname}.<br>"
+        text += "#{desc} on #{hostname}.\n"
+        html += "#{desc} on #{hostname}.<br>"
       else
-        add_text "#{hostname}.\n"
-        add_html "#{hostname}.<br>"
+        text += "#{hostname}.\n"
+        html += "#{hostname}.<br>"
 
       end
-      add_text "Comment: #{comment}" if comment
-      add_html "Comment: #{comment}" if comment
+      text += "Comment: #{comment}" if comment
+      html += "Comment: #{comment}" if comment
+      add_text(section, text)
+      add_html(section, html)
     end
 
     # Public: Formats the URI one can click to acknowledge an alert (i.e. in an email)
     # Generates text and HTML output.
-    def format_alert_ack_url
+    def alert_ack_url
+      section = __method__
+      text = ""
+      html = ""
       hostname  = get_nagios_var("NAGIOS_HOSTNAME")
       service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
 
@@ -281,78 +369,97 @@ module NagiosHerald
         url = "#{@nagios_url}/nagios/cgi-bin/cmd.cgi?cmd_typ=33&host=#{hostname}"
       end
       url = URI.escape(url)
-      add_text "Acknowledge this alert: #{url}\n"
-      add_html "Acknowledge this alert: #{url}<br>"
+      text += "Acknowledge this alert: #{url}\n"
+      html += "Acknowledge this alert: #{url}<br>"
+      add_text(section, text)
+      add_html(section, html)
     end
 
     #
     # structural bits and content generation
     #
 
-    # Public: Starts a format section's HTML DIV block.
+    # Public: Starts a format section's HTML <div> block.
     #
+    # section - The name of the section whose HTML we'll start.
     # *section_style_args - CSS-type attributes used to style the content.
     #
     # Example
     #
-    #   start_section("color:green")
+    #   start_section("additional_details", "color:green")
     #
-    # Generates HTML DIV block with the requested style.
-    def start_section(*section_style_args)
-      if ! section_style_args.nil?
-         style = section_style_args.join(';')
-         add_html "<div style='#{style}'>"
+    # Generates HTML <div> block with the requested style.
+    def start_section(section, *section_style_args)
+      html = ""
+      if !section_style_args.nil?
+        style = section_style_args.join(';')
+        html += "<div style='#{style}'>"
+      else
+        html += "<div>"
       end
+      add_html(section, html)
     end
 
-    # Public: Ends a format section's HTML DIV block.
-    def end_section
-      add_html "</div>"
+    # Public: Ends a format section's HTML <div> block.
+    #
+    # section - The name of the section whose HTML we'll start.
+    #
+    # Example
+    #
+    #   start_section("additional_details")
+    #
+    # Generates an ending HTML <div> tag.
+    def end_section(section)
+      add_html(section, "</div>")
     end
 
     # Public: Wrapper for starting a format section, calling the format method,
     # and ending the section.
-    def generate_section(section_name, *section_style_args)
-      start_section(*section_style_args)
-      self.send(section_name)
-      end_section
+    #
+    # section - The name of the section whose HTML we'll start.
+    # *section_style_args - A list of style attributes to be used in the <div> block for the section.
+    #
+    # Example:
+    #
+    #   generate_section("additional_info", "color:green", "font-weight:bold") - Color all text green and bold it
+    #   generate_section("additional_info") - Color all text green
+    #
+    # Calls the relevant section method to generate content.
+    def generate_section(section, *section_style_args)
+      start_section(section, *section_style_args)
+      self.send(section)
+      end_section(section)
     end
 
     # Public: Generate content for PROBLEM alerts.
     def generate_problem_content
-      self.tag = "ALERT"
-      case @message_type
-      when "pager"
-        generate_section("format_additional_info")
-      else
-        generate_section("format_host_info")
-        generate_section("format_state_info")
-        generate_section("format_additional_info")
-        generate_section("format_action_url")
-        generate_section("format_state_detail") # format_notes and format_additional_details for services
-        generate_section("format_recipients_email_link")
-        generate_section("format_notification_info")
-        generate_section("format_alert_ack_url")
-      end
+      generate_section("host_info")
+      generate_section("state_info")
+      generate_section("additional_info")
+      generate_section("action_url")
+      generate_section("notes")
+      generate_section("additional_details")
+      generate_section("recipients_email_link")
+      generate_section("notification_info")
+      generate_section("alert_ack_url")
     end
 
     # Public: Generate content for RECOVERY alerts.
     def generate_recovery_content
-      self.tag = "OK"
-      generate_section("format_host_info", "color:green")
-      generate_section("format_state_info", "color:green")
-      generate_section("format_additional_info", "color:green")
-      generate_section("format_action_url", "color:green")
-      generate_section("format_state_detail", "color:green") # format_notes and format_additional_details for services
-      generate_section("format_recipients_email_link")
-      generate_section("format_notification_info")
+      generate_section("host_info")
+      generate_section("state_info", "color:green")
+      generate_section("additional_info")
+      generate_section("action_url")
+      generate_section("notes")
+      generate_section("additional_details")
+      generate_section("recipients_email_link")
+      generate_section("notification_info")
     end
 
     # Public: Generate content for ACKNOWLEGEMENT alerts
     def generate_ack_content
-      self.tag = "ACK"
-      generate_section("format_host_info")
-      generate_section("format_ack_info")
+      generate_section("host_info")
+      generate_section("ack_info")
     end
 
     # Public: Dispatch method to help generate content based on notification
@@ -379,40 +486,31 @@ module NagiosHerald
     end
 
     # Public: Generates a subject.
-    # Can, and probably should, be overridden in a subclass.
+    #
+    # Returns a subject.
     def generate_subject
       hostname          = get_nagios_var("NAGIOS_HOSTNAME")
       service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
       notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       state             = get_nagios_var("NAGIOS_#{@state_type}STATE")
 
-      case @message_type
-      when "email"
-        subject="#{hostname}"
-        subject += "/#{service_desc}" if service_desc != ""
+      subject="#{hostname}"
+      subject += "/#{service_desc}" if service_desc != ""
 
-        if @state_type == "SERVICE"
-          subject="** #{notification_type} Service #{subject} is #{state} **"
-        else
-          subject="** #{notification_type} Host #{subject} is #{state} **"
-        end
-      when "pager"
-        subject="#{hostname}"
-        subject += "/#{service_desc}" if service_desc != ""
-
-        if @state_type == "SERVICE"
-          subject="#{notification_type} SVC #{subject} #{state}"
-        else
-          subject="#{notification_type} HST #{subject} #{state}"
-        end
+      if @state_type == "SERVICE"
+        subject="#{notification_type} Service #{subject} is #{state}"
+      else
+        subject="#{notification_type} Host #{subject} is #{state}"
       end
-
-      subject
+      @content[:subject] = subject
+      #subject
     end
 
     # Public: Generates content body.
-    # Can, and probably should, be overridden in a subclass.
-    def generate_body
+    #
+    # Call various formatting methods that each generate content for their given sections.
+    def generate_message_content
+        generate_subject
         nagios_notification_type = get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
         generate_content(nagios_notification_type)
     end

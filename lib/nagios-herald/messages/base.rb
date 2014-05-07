@@ -3,18 +3,17 @@ require 'nagios-herald/logging'
 require 'nagios-herald/util'
 
 # Message objects know best about how to generate and send messages
-# The Base class defines @body and @recipients variables as all messages probably
+# The Base class defines @content and @recipients variables as all messages probably
 # have some notion of these constructs.
 module NagiosHerald
   class Message
     include NagiosHerald::Logging
     include NagiosHerald::Util
 
-    attr_accessor :body
+    attr_accessor :content
     attr_accessor :recipients
 
     def initialize(recipients, options)
-      @body       = ""
       @nosend     = options[:nosend]
       # TODO: instead of passing this in via the subclass, let's set it via message.recipients
       @recipients = recipients

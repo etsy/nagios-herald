@@ -8,7 +8,6 @@
 
 module NagiosHerald
   class Formatter
-    #class CheckDisk < NagiosHerald::Formatter::DefaultFormatter    # pre-refactor
     class CheckDisk < NagiosHerald::Formatter
       include NagiosHerald::Logging
 
@@ -65,42 +64,44 @@ module NagiosHerald
         end
       end
 
-      def format_additional_info
-        output  = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
-        add_text "Additional Info:\n #{unescape_text(output)}\n\n" if output
+      def additional_info
+        section = __method__
+        output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
+        add_text(section, "Additional Info:\n #{unescape_text(output)}\n\n") if output
 
         # Collect partitions data and plot a chart
         # if the check has recovered, $NAGIOS_SERVICEOUTPUT doesn't contain the data we need to parse for images; just give us the A-OK message
         if output =~ /DISK OK/
-            add_html %Q(Additional Info:<br><b><font color="green"> #{output}</font><br><br>)
+            add_html(section, %Q(Additional Info:<br><b><font color="green"> #{output}</font><br><br>))
         else
           partitions = get_partitions_data(output)
           partitions_chart = get_partitions_stackedbars_chart(partitions)
           if partitions_chart
-            add_html "<b>Additional Info</b>:<br> #{output}<br><br>" if output
+            add_html(section, "<b>Additional Info</b>:<br> #{output}<br><br>") if output
             add_attachment partitions_chart
-            add_html %Q(<img src="#{partitions_chart}" width="500" alt="partitions_remaining_space" /><br><br>)
+            add_html(section, %Q(<img src="#{partitions_chart}" width="500" alt="partitions_remaining_space" /><br><br>))
           else
-            add_html "<b>Additional Info</b>:<br> #{output}<br><br>" if output
+            add_html(section, "<b>Additional Info</b>:<br> #{output}<br><br>") if output
           end
         end
 
         # Collect ganglia data
-        hostname  = get_nagios_var("NAGIOS_HOSTNAME")
+        hostname = get_nagios_var("NAGIOS_HOSTNAME")
         # TODO : address building up hostnames in a robust, future-proof manner
-        fqdn    = hostname + ".etsy.com"
+        fqdn  = hostname + ".etsy.com"
         ganglia_graphs = get_ganglia_graphs(fqdn)
         ganglia_graphs.each do |ganglia_graph|
           add_attachment ganglia_graph
-          add_html %Q(<img src="#{ganglia_graph}" alt="ganglia_graph" /><br><br>)
+          add_html(section, %Q(<img src="#{ganglia_graph}" alt="ganglia_graph" /><br><br>))
         end
       end
 
-      def format_additional_details
-        long_output   = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
+      def additional_details
+        section = __method__
+        long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
         lines = long_output.split('\n') # the "newlines" in this value are literal '\n' strings
         # if we've been passed threshold information use it to color-format the df output
-        threshold_line =  lines.grep( /THRESHOLDS - / ) # THRESHOLDS - WARNING:50%;CRITICAL:40%;
+        threshold_line = lines.grep( /THRESHOLDS - / ) # THRESHOLDS - WARNING:50%;CRITICAL:40%;
         threshold_line.each do |line|
           /WARNING:(?<warning_threshold>\d+)%;CRITICAL:(?<critical_threshold>\d+)%;/ =~ line
           @warning_threshold = warning_threshold
@@ -135,20 +136,22 @@ module NagiosHerald
 
           output_lines << "</pre>"
           output_string = output_lines.join( "<br>" )
-          add_html "<b>Additional Details</b>:"
-          add_html output_string
+          add_html(section, "<b>Additional Details</b>:")
+          add_html(section, output_string)
         else  # just spit out what we got from df
-          add_text "Additional Details:\n#{unescape_text(long_output)}\n" if long_output
-          add_html "<b>Additional Details</b>:<br><pre>#{unescape_text(long_output)}</pre><br><br>" if long_output
+          add_text(section, "Additional Details:\n#{unescape_text(long_output)}\n") if long_output
+          add_html(section, "<b>Additional Details</b>:<br><pre>#{unescape_text(long_output)}</pre><br><br>") if long_output
         end
-        format_alert_frequency
+        alert_frequency
+        line_break(section)
 
       end
 
-      def format_alert_frequency
+      def alert_frequency
+        section = "additional_details"
         # find out how frequently we've seen alerts for this service check
-        add_text "Alert Frequency\n"
-        add_html "<h4>Alert Frequency</h4>"
+        add_text(section, "Alert Frequency\n")
+        add_html(section, "<h4>Alert Frequency</h4>")
         hostname  = get_nagios_var("NAGIOS_HOSTNAME")
         service_name  = get_nagios_var("NAGIOS_SERVICEDISPLAYNAME") # expecting 'Disk Space'
 
@@ -165,11 +168,11 @@ module NagiosHerald
           msg += " for SERVICE '#{service_name}'" unless service_name.nil?
           msg += " in the last #{splunk_data[:period]}."
 
-          add_text "#{msg}\n"
-          add_html "#{msg}<br>"
+          add_text(section, "#{msg}\n")
+          add_html(section, "#{msg}<br>")
         else
-          add_text "No matching alerts found.\n"
-          add_html "No matching alerts found.<br>"
+          add_text(section, "No matching alerts found.\n")
+          add_html(section, "No matching alerts found.<br>")
         end
       end
     end
