@@ -14,7 +14,7 @@ module NagiosHerald
     attr_accessor :recipients
 
     def initialize(recipients, options)
-      @nosend     = options[:nosend]
+      @no_send     = options[:no_send]
       # TODO: instead of passing this in via the subclass, let's set it via message.recipients
       @recipients = recipients
     end

@@ -24,7 +24,7 @@ module NagiosHerald
 
       def send
         curate_text
-        if @nosend
+        if @no_send
           self.print
           return
         end

@@ -71,7 +71,7 @@ module NagiosHerald
           desc    "[REQUIRED] Type of message to deliver (i.e. email, IRC, pager)"
         end
 
-        option :nosend do
+        option :no_send do
           short "-N"
           long  "--no-send"
           desc  "Output content to screen but do not send it"
