@@ -11,7 +11,7 @@ module NagiosHerald
       html += "Example <b>HTML</b>"
       add_text(section, text)
       add_html(section, html)
-      format_line_break(section)    # trailing line break
+      line_break(section)    # trailing line break
     end
 
     end
