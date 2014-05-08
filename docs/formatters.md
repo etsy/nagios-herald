@@ -46,6 +46,8 @@ imagination.**
     short_state_detail
     state_info
 
+TODO: Update the above to doc the add_(html|text) methods and any others we've not mentioned.
+
 See below for an example of content generated using some of the above methods.
 
 <img src="/docs/assets/img/nagios-herald-formatter-content-example.png" style="border:1px solid #a1a1a1;">
@@ -87,7 +89,7 @@ TODO: Give the below some attention.
     You can define the text and/or HTML content in a message by calling the ``add_text`` and ``add_html`` methods
     inside a formatting method:
 
-``ruby
+```ruby
 add_text "Something blew up!"
 add_html "Something <b>blew</b> up!"
 ```
