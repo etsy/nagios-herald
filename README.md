@@ -28,7 +28,7 @@ Enter ``nagios-herald``!
 
 A typical example of a Nagios alert comes from the canonical disk space check, an example of which is below:
 
-<img src="/docs/assets/img/vanilla-nagios.png" style="border:1px solid #a1a1a1;">
+![vanilla-nagios-alert](/docs/images/vanilla-nagios.png)
 
 While it does provide necessary information, it could be formatted for better readability.  For example,
 the following line, which contains the information we need, is dense and may be difficult to
@@ -48,18 +48,30 @@ an engineer might refer to can be embedded and/or formatted in the email alert.
 
 The previous disk space alert example can be tailored to look like this:
 
-![html nagios email](docs/assets/img/nagios-herald.png)
+![html nagios email](docs/images/nagios-herald.png)
 
 Notice the handy **stack bar** that clearly illustrates the problematic volume?  See that **Ganglia graph**
 showing disk space utilization for the node in the last 24 hours. Curious why the alert fired?  Check
 the **highlighted ``df`` output** that neatly defines which threshold was exceeded and why.
 
-This is possible due to ``nagios-herald``'s formatter libraries.
+**NOTE**: In this example, the Nagios check ran ``df`` and supplied that input
+
+This is possible because ``nagios-herald`` provides simple and extensible formatters.
 
 It **slices**!  It **dices**!  **Julienne**?  No problem.
 
 What **can't** ``nagios-herald`` do?  Only what your **imagination** hasn't thought up yet.  Want to
 write your own formatter?  Let's get started.
+
+## Formatters
+
+Adding context to alerts is done by the formatters. Formatters generate all the content that may
+be used by one or more message types. For example, certain parts of text returned by a Nagios check
+can be highlighted to grab the operator's attention.
+
+To learn more, see for the [formatters](/docs/formatters.md) page.
+
+TODO: Write doc on messages and helpers.
 
 ### Helpers
 
@@ -256,7 +268,7 @@ Stack bars can be useful for visualizing disk utilization.
 
 For example: **./bin/draw_stack_bars /var=10** will generate:
 
-![stack bars](docs/assets/img/stack-bars.png)
+![stack bars](docs/images/stack-bars.png)
 
 ### Ganglia Graphs ``bin/get_ganglia_graph``
 
