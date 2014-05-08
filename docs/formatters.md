@@ -97,7 +97,7 @@ An example of an overridden ``additional_info`` method could be:
 def additional_info
   section = __method__  # this defines the section key in the formatter's content hash
   hostname  = get_nagios_var("NAGIOS_HOSTNAME")
-  add_text "#{hostname} blew up!"
-  add_html "#{hostname} <b>blew</b> up!"
+  add_text(section, "#{hostname} blew up!")
+  add_html(section, "#{hostname} <b>blew</b> up!")
 end
 ```
