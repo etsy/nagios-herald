@@ -1,8 +1,8 @@
-## Formatters
+# Formatters
 
 Adding context to alerts is done by the formatters.  Formatters are where all the fun happens.
 
-### Writing the Formatter
+## Writing the Formatter
 
 When called, the ``nagios-herald`` invokes various formatting functions on a formatter class
 (that you'll write) and falls back on the default formatter class for any methods that your formatter
@@ -18,11 +18,14 @@ does not override.  The methods available to be overridden are:
     recipients_email_link
     short_ack_info
     short_state_detail
-    state_detail
-    format_state_info
+    state_info
 
 All of these methods are defined in the ``Formatter::Base`` class located at
-``/lib/nagios-herald/formatters/base.rb``.
+``lib/nagios-herald/formatters/base.rb``.
+
+See below for an example of content generated using some of the above methods.
+
+<img src="/docs/assets/img/nagios-herald-formatter-content-example.png" style="border:1px solid #a1a1a1;">
 
 To begin writing your own formatter, create a new create a new Ruby file that inherits from ``NagiosHerald::Formatter``.
 This file will define the formatter class you intend to write.  The file and class should follow a specific naming convention:
@@ -63,7 +66,7 @@ add_html "Something <b>blew</b> up!"
 
     An example of an overridden ``additional_info`` method could be:
 
-``ruby
+```ruby
 def additional_info
   section = __method__  # this defines the section key in the formatter's content hash
   hostname  = get_nagios_var("NAGIOS_HOSTNAME")
