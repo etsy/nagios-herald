@@ -50,32 +50,38 @@ module NagiosHerald
   end
 end
 ```
-```
 
 2. Override the sections you want to customize.
 
     You can define the text and/or HTML content in a message by calling the ``add_text`` and ``add_html`` methods
     inside a formatting method:
 
-        add_text "Something blew up!"
-        add_html "Something <b>blew</b> up!"
+``ruby
+add_text "Something blew up!"
+add_html "Something <b>blew</b> up!"
+```
 
-    An example of an overridden ``format_additional_info`` method could be:
+    An example of an overridden ``additional_info`` method could be:
 
-        def format_additional_info()
-            hostname  = get_nagios_var("NAGIOS_HOSTNAME")
-            add_text "The hostname is #{hostname}"
-            add_html "The hostname is <b>#{hostname}</b>"
-        end
+``ruby
+def additional_info
+  section = __method__  # this defines the section key in the formatter's content hash
+  hostname  = get_nagios_var("NAGIOS_HOSTNAME")
+  add_text(section, "The hostname is #{hostname}")
+  add_html(section, "The hostname is <b>#{hostname}</b>")
+end
+```
 
 3. Optional: Inline static images in the message.
 
     Call the ``add_attachment`` method and specify the full path to the image file to be attached.
     The mailer will then inline the image in the HTML body of the message.
 
-        partitions_chart = "/path/to/partition_chart.png"
-        add_attachment partitions_chart
-        add_html "<img src='#{partitions_chart}' width='300' alt='partitions_remaining_space' />"
+```ruby
+partitions_chart = "/path/to/partition_chart.png"
+add_attachment partitions_chart
+add_html "<img src='#{partitions_chart}' width='300' alt='partitions_remaining_space' />"
+```
 
 4. Optional: Attach documents to the message.
 
