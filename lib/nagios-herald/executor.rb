@@ -5,6 +5,7 @@ require 'app_conf'
 module NagiosHerald
   class Executor
     include NagiosHerald::Logging
+    include NagiosHerald::Util
 
     # Public: Parse the command line options.
     #
@@ -188,8 +189,8 @@ module NagiosHerald
         load_formatters
         load_messages
 
-        recipients = @options.recipients.nil? ? [ ENV['NAGIOS_CONTACTEMAIL'] ] : [ @options.recipients ]
-        nagios_notification_type = @options.notification_type.nil? ? ENV["NAGIOS_NOTIFICATIONTYPE"] : @options.notification_type
+        recipients = @options.recipients.nil? ? [ get_nagios_var("NAGIOS_CONTACTEMAIL") ] : [ @options.recipients ]
+        nagios_notification_type = @options.notification_type.nil? ? get_nagios_var("NAGIOS_NOTIFICATIONTYPE") : @options.notification_type
   
         recipients.each do |recipient|
           if recipient.nil? || recipient.eql?("")
