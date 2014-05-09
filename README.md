@@ -1,50 +1,40 @@
 # nagios-herald
 
-``nagios-herald`` is a set of scripts and libraries that allows Nagios to send alerts with arbitrary
-context and customized formatting.
+``nagios-herald`` is a project that aims to make it easy to provide context in Nagios alerts.
 
-At its core, ``nagios-herald`` is made up of the ``notify-by-handler`` script that sources
-functionality from its formatter libraries.  The formatter libraries can generate **stack bars**,
-inline dynamic **Ganglia graphs** (and Graphite soon), **highligh/colorize text**, and much more.
-
-Nagios generates alerts by calling the ``notify-by-handler`` script as defined in Nagios' ``commands.cfg``
-file.
+It was created from a desire to supplement an on-call engineer's awareness of conditions surrounding a notifying event. In other words, if a computer is going to page me at 3AM, I expect it to do some work for me to help me understand what's failing.
 
 ## Why Customize Nagios Alerts?
 
-Nagios is a good tool for monitoring infrastructure, determining when a host or service check has exceeded
-a given threshold and sending alerts.  The messages it can send when an alert is triggered are fairly
-vanilla and provide the bare minimum information (i.e. Host 'foo' is DOWN).  When a page is received,
-an engineer typically performs a set of procedures to gather more information about the event before
-attempting to correct it.  Wouldn't it be great to have that context in the alert?
+Nagios is a time-tested monitoring and alerting tool used by many Operations teams to keep an eye
+on the shop.  It does an excellent job of executing scheduled checks, determining when a threshold has been exceeded, and sending alerts.
 
-Luckily, we live in the age of computers; they can do the work for us!  Rather than spend time gathering
-information, let's put the relevant context in the alert.  This is especially important when one is on call
-and gets paged at 3AM.
+Past experience with Nagios has shown that, typically, those alerts provide little information beyond the fact that a host is down or a service is not responding as defined by check thresholds. It's bad enough to be woken up by an alert; it would make the on-call experience more bearable if the alerts could tell the engineer more about what's going on.  But what's useful in an alert?
+
+When notified, an engineer often performs a set of procedures to gather information about the event before attempting to correct it.  Imagine being able to automatically perform those procedures (or some subset) at the time of the alert. Imagine further, that the results of those procedures are embedded in the alert!
 
 Enter ``nagios-herald``!
 
-### Vanilla Nagios Alert
+### Generic Nagios Alert
 
-A typical example of a Nagios alert comes from the canonical disk space check, an example of which is below:
+Using the canonical (and oft-cited) disk space check, here's an example notification:
 
 ![vanilla-nagios-alert](/docs/images/vanilla-nagios.png)
 
-While it does provide necessary information, it could be formatted for better readability.  For example,
+While it does provide necessary information, it could be formatted for better legibility.  For example,
 the following line, which contains the information we need, is dense and may be difficult to
 parse in the wee hours of the morning:
 
     Additional Info: DISK WARNING - free space: / 1597 MB (8% inode=57%):
     /dev/shm 24127 MB (100% inode=99%): /boot 152 MB (83% inode=99%):
 
-Common questions would be **"Which volume is problematic?"** and
+Common questions would be **"Which volume is problematic?"** or
 **"Why is this considered a 'WARNING' alert?"**  In this example, it's not readily apparent what
 those answers are.  Let's add that context with ``nagios-herald``.
 
 ### Nagios Alert with Context
 
-With ``nagios-herald``, alerts can provide arbitrary context.  For example, graphs and data that
-an engineer might refer to can be embedded and/or formatted in the email alert.
+``nagios-herald`` can **highlight and colorize text**, **embed images** (such as Ganglia graphs), **include search results**, and much more.
 
 The previous disk space alert example can be tailored to look like this:
 
@@ -54,190 +44,27 @@ Notice the handy **stack bar** that clearly illustrates the problematic volume? 
 showing disk space utilization for the node in the last 24 hours. Curious why the alert fired?  Check
 the **highlighted ``df`` output** that neatly defines which threshold was exceeded and why.
 
-**NOTE**: In this example, the Nagios check ran ``df`` and supplied that input
+**NOTE**: In this example, the Nagios check ran ``df`` and supplied that input.
 
-This is possible because ``nagios-herald`` provides simple and extensible formatters.
-
-It **slices**!  It **dices**!  **Julienne**?  No problem.
-
-What **can't** ``nagios-herald`` do?  Only what your **imagination** hasn't thought up yet.  Want to
-write your own formatter?  Let's get started.
+This is possible because ``nagios-herald`` provides extensible formatters.
 
 ## Formatters
 
 Adding context to alerts is done by the formatters. Formatters generate all the content that may
-be used by one or more message types. For example, certain parts of text returned by a Nagios check
+be used by one or more message types. For example, text returned by a Nagios check
 can be highlighted to grab the operator's attention.
 
 To learn more, see for the [formatters](/docs/formatters.md) page.
 
-TODO: Write doc on messages and helpers.
+## Helpers
 
-### Helpers
+Helpers are libraries available to all formatters that can be used to supplement the content they generate. For example, a helper can pull in external information (such as a graph) that is relevant to a service that Nagios is alerting on.
 
-5. Optional: use the NagiosHerald helpers to retrieve additional data (see [check_disk formatter](https://github.etsycorp.com/Sysops/nagios-herald/blob/master/lib/nagios-herald/formatters/check_disk.rb) for more details)
+``nagios-herald`` comes with the following helpers as examples:
 
-        NagiosHerald::Helpers::GangliaGraph
-        NagiosHerald::Helpers::SplunkReporter
-
-### Defining Formatting Based on Alert Types and Delivery Method
-
-``nagios-herald`` can respond to 5 types of Nagios alert:
-
-* ACKNOWLEDGEMENT
-* FLAPPINGSTART
-* FLAPPINGSTOP
-* PROBLEM
-* RECOVERY
-
-``lib/nagios_herald/engine.rb`` defines what content is generated, based on the alert type and delivery method.
-
-Depending on whether an alert is sent in pager or email mode, content is written as follows:
-
-``PROBLEM`` and ``FLAPPING_START``
-
-    pager:
-        format_short_state_detail
-    email:
-        format_host_info
-        format_state_info
-        format_additional_info
-        format_action_url
-        format_notes (for services)
-        format_additional_details (for services only)
-        format_recipients_email_link
-        format_notification_info
-        format_alert_ack_url
-
-
-``RECOVERY`` and ``FLAPPING_STOP``
-
-    pager:
-        format_short_state_detail
-    email:
-        format_host_info
-        format_state_info
-        format_additional_info
-        format_action_url
-        format_notes (for services only)
-        format_additional_details (for services only)
-        format_recipients_email_link
-        format_notification_info
-
-ACKNOWLEDGEMENT
-
-    pager:
-        format_short_ack_info
-    email:
-        format_host_info
-        format_ack_info
-
-### A Note About Nagios Data
-
-Nagios stores important information in environment variables.  The formatter methods can retrieve that
-information by using the ``get_nagios_var()`` method.  For reference, see
-[example](https://github.etsycorp.com/Sysops/nagios-herald/blob/master/tests/env_files/nagios_vars). Do not directly call
-``env['YOUR_VAR']`` in your Ruby code as it will be harder to test.
-
-## Testing Your Formatter
-
-**PLEASE PLEASE TEST YOUR FORMATTER.  NOT DOING SO INCREASES THE POSSIBILITY THAT A NEW FORMATTER WILL PREVENT
-DELIVERY OF CRITICAL ALERTS.  TEST.  PLEASE.**
-
-``notify-by-handler`` can be called manually from the command line to test new formatters:
-
-The help menu can be accessed via the -h --help flags
-
-    [rfrantz@toolbox.ny4 ~/git/nagios-herald] $ bin/notify-by-handler --help
-    Usage: notify-by-handler [-cdefnrpuy]
-    Nagios handler
-
-        -c, --config-file                Specify an alternate location for the config file.
-        -d, --debug                      BE VERBOSE! B-E V-E-R-B-O-S-E!
-        -e, --env-file                   Path to a file containing environment variables to use for testind/debugging (i.e. nagios_vars).
-        -f, --formatter                  Formatter name
-            --formatter-dir              Formatter directory
-        -n, --notification_type          NAGIOS_NOTIFICATION_TYPE to report - defaults to the nagios env variable.
-                                         Valid options: PROBLEM, FLAPPINGSTART, RECOVERY, FLAPPINGSTOP, ACKNOWLEDGEMENT
-        -r, --recipient                  A recipient's email address. Specify multiple recipients with multiple '-r' arguments.
-                                         If not specified, recipients are looked up in the ENV['NAGIOS_CONTACTEMAIL'] environment variable.
-        -p, --pager                      Enable pager mode
-        -u, --nagios-cgi-url             Nagios CGI url (used for acknowledgement links)
-        -y, --reply-to                   [REQUIRED] Reply-to email address (i.e. nagios@etsy.com) used for acknowledgement replies.
-            --no-email                   Output email content to screen but do not send it.
-            --configuration-manager      Configuration Management Tool
-                                         Valid options: simple, chef
-            --trace                      Show a full traceback on error
-
-    EXAMPLES
-    --------
-    notify-by-handler -r rfrantz@etsy.com --env-file=tests/env_files/nagios_vars -y nagios@etsy.com --formatter=check_disk --configuration-manager simple
-
-### Configuration Manager
-
-Nagios Herald formatters may neeed to access information about your infrastructure, such as the cluster name for a given host. The default
-configuration manager is chef, but you may not be using chef or may not have chef installed. In such case, use the 'simple' configuration manager that does not have any dependencies.
-
-### Testing the Formatter with Offline Data
-
-Because Nagios stores information in environment variables that are generated during runtime, this project
-provides a few files that can be used for testing.  Any ``nagios_vars*`` file can be specified via the
-``--env-file`` argument to mimic an alerting event.  During normal operation ``nagios-herald`` grabs
-the information it needs from Nagios' environment variables.
-
-**NOTE**: When using the ``--no-email`` argument, the text version of the email is displayed on the
-console, and the HTML content is saved in a file (``mail.html``).
-
-    ./bin/notify-by-handler --no-email --env-file=tests/env_files/nagios_vars --formatter=check_disk
-    Email text content
-    ------------------
-    Subject : ** PROBLEM Service ALERT: nkammah.vm.ny4dev/Disk Space is SERVICE **
-    ------------------
-    PROBLEM Host: nkammah.vm.ny4dev
-    Service:    Disk Space
-
-    State is now: CRITICAL for 0d 0h 5m 12s (was CRITICAL) after 3 / 3 checks
-
-    Additional info:
-     DISK CRITICAL - free space: / 7002 MB (18% inode 60%): /data 16273093 MB (26% inode 99%):
-
-    Additional Details:
-    Filesystem            Size  Used Avail Use% Mounted on
-    /dev/vda               40G   31G  6.9G  82% /
-    tmpfs                 2.5G   83M  2.4G   4% /dev/shm
-    nfs01.ny4dev.etsy.com:/mnt/data/homes
-                           59T   43T   16T  74% /data
-
-    Sent to nkammah
-    Notification sent at: Thu May 16 21:06:38 UTC 2013 (notification number 1)
-
-
-
-    Acknowledge this alert: http://nagiosny4dev.etsycorp.com/nagios/cgi-bin/cmd.cgi?cmd_typ=34&host=nkammah.vm.ny4dev&service=Disk%20Space%0A%3Cbr%3E
-    ------------------
-    Email html content saved as mail.html
-
-## Deploying Updates
-
-It couldn't be easier to roll out changes (like a new formatter) to ``nagios-herald``.  A
-[Deployinator stack](http://deployinator.etsycorp.com/nagiosemailhandler) is available to push updates to all
-Nagios instances.  You know what to do.
-
-## Nagios Configuration
-
-Now,for the good stuff.  Once your formatter is created and tested (please test), add the
-``_email_formatter_name`` custom variable in the ``services.cfg`` config file for the check you want
-the formatter to run.  Its value should be the name of the formatter.  An example configuration
-stanza is below:
-
-    define service {
-            use                             generic-service
-            host_name                       devmysql03.ny4dev
-            service_description             Disk Space - Hackweek 2013
-            check_interval                  60  ; every hour
-            check_command                   check_nrpe!check_disk_frantz
-           _email_formatter_name            check_disk
-    }
+* GangliaGraph - Downloads relevant graphs to be embedded in (email) messages.
+* SplunkReporter - Queries Splunk for information to add to an alert.
+* UrlImage - Generic helper to download images.
 
 ## Tools
 
@@ -316,11 +143,6 @@ imported from the ``lib/ganglia_graph.rb`` library.
 * ``mail``
 
 The above gems are installed on all Nagios instances via Chef.
-
-## Ganglia Graphs
-
-In order to pull graphs from Ganglia, each Nagios instance needs to be able to query Chef.  Proper Chef keys
-and configuration are managed on every Nagios instance by, well, Chef.
 
 ## Stack Bars
 

@@ -1,7 +1,7 @@
 # Formatters
 
 Adding context to alerts is done by the formatters. Formatters generate all the content that may
-be used by one or more message types. For example, certain parts of text returned by a Nagios check
+be used by one or more message types. For example, text returned by a Nagios check
 can be highlighted to grab the operator's attention. Helper functions can be called to generate
 additional content such as image attachments or search results.
 
@@ -47,7 +47,7 @@ imagination.**
 ``Formatter::Base`` also includes helper methods that are used to store or manipulate content in the
 ``@content`` hash:
 
-    add_attachments - Add an attachment path to be referenced in an ``Email`` message.
+    add_attachments - Add an attachment path to be referenced in an Email message.
     add_html - Concatenate HTML for the given section.
     add_text - Concatenate HTML for the given section.
     line_break - Generate a line break for both text and HTML content.
@@ -100,4 +100,70 @@ def additional_info
   add_text(section, "#{hostname} blew up!")
   add_html(section, "#{hostname} <b>blew</b> up!")
 end
+```
+
+## Testing Your Formatter
+
+**PLEASE TEST YOUR FORMATTER. NOT DOING SO INCREASES THE POSSIBILITY THAT A NEW FORMATTER WILL PREVENT DELIVERY OF CRITICAL ALERTS.**
+
+There are two ways that formatters can be tested: unit tests and manually running ``notify-by-handler``.
+
+### Unit Tests
+
+**THIS IS A WORK IN PROGRESS. BETTER TESTING IS ON THE ROADMAP**
+
+### ``notify-by-handler
+
+``notify-by-handler`` can be called manually from the command line to test new formatters:
+
+```
+INSERT EXAMPLE
+```
+
+For a full listing of available options, run ``notify-by-handler --help``.
+
+### A Note About Nagios Data
+
+Nagios stores important information in environment variables.  The formatter methods can retrieve that
+information by using the ``get_nagios_var()`` method.  For reference, see
+[example](https://github.etsycorp.com/Sysops/nagios-herald/blob/master/tests/env_files/nagios_vars). Do not directly call
+``env['YOUR_VAR']`` in your Ruby code as it will be harder to test.
+
+### Testing the Formatter with Offline Data
+
+Because Nagios stores information in environment variables that are generated during runtime, ``nagios-herald``
+provides a few example environment files that can be used for testing. Files in ``test/env_files/`` can be specified via the
+``--env-file`` argument to mimic an alerting event.  During normal operation ``nagios-herald`` grabs
+the information it needs from Nagios' environment variables.
+
+One can generate environment files for testing by using the [dump_env.sh](/docs/tools.md#dump_env.sh) tool.
+
+**NOTE**: ``--no-send`` forces ``nagios-herald`` to output content to the terminal.
+
+```
+./bin/notify-by-handler --no-send --env-file=tests/env_files/nagios_vars --formatter=check_disk
+------------------
+Subject : ** PROBLEM Service ALERT: web.example.com/Disk Space is CRITICAL **
+------------------
+Host: web.example.com
+Service: Disk Space
+
+State is now: CRITICAL for 0d 0h 5m 12s (was CRITICAL) after 3 / 3 checks
+
+Additional info:
+ DISK CRITICAL - free space: / 7002 MB (18% inode 60%): /data 16273093 MB (26% inode 99%):
+
+Additional Details:
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/vda               40G   31G  6.9G  82% /
+tmpfs                 2.5G   83M  2.4G   4% /dev/shm
+nfs01.ny4dev.etsy.com:/mnt/data/homes
+                       59T   43T   16T  74% /data
+
+Sent to ops-engineer
+Notification sent at: Thu May 16 21:06:38 UTC 2013 (notification number 1)
+
+Acknowledge this alert: http://nagiosny4dev.etsycorp.com/nagios/cgi-bin/cmd.cgi?cmd_typ=34&host=nkammah.vm.ny4dev&service=Disk%20Space%0A%3Cbr%3E
+
+------------------
 ```
