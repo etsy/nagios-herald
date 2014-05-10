@@ -43,15 +43,13 @@ define command {
 }
 ```
 
-**NOTE**: ``$_HOSTMESSGE_FORMATTER_NAME$`` and ``$_SERVICEMESSGE_FORMATTER_NAME$`` are Nagios macros, generated
-from a custom variable in the service check definition. See below for an example of this:
+**NOTE**: ``$_HOSTMESSAGE_FORMATTER_NAME$`` and ``$_SERVICEMESSAGE_FORMATTER_NAME$`` are Nagios macros, generated
+from a custom variable in a relevant service check definition.
 
 ## Service Configuration
 
-To apply a formatter to a service check, add the ``_message_formatter_name`` custom variable in the relevant stanza in the ``services.cfg``:
+To apply a formatter to a service check, add the ``_message_formatter_name`` custom variable in the relevant stanza in ``services.cfg``:
 The value of the variable is the name of the formatter.
-
-**NOTE**: If no formatter is specified, ``nagios-herald`` defaults to the base formatter and generates generic content for messages.
 
 ```
 define service {
@@ -63,3 +61,5 @@ define service {
     contact_groups                  ops
 }
 ```
+
+**NOTE**: If no formatter is specified, ``nagios-herald`` defaults to the base formatter and generates generic content for messages.
