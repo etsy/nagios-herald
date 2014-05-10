@@ -17,6 +17,8 @@ The environment file that is generated can be used to test new formatters.
 
 ``draw_stack_bars`` can generate horizontal stacked bars.
 
+TODO: This needs better documentation. Are we missing command line arguments in the below output?
+
 ```
 $ ./draw_stack_bars -h
 usage: draw_stack_bars [options] label=value label=value
@@ -40,7 +42,9 @@ For example: ``./draw_stack_bars /var=10`` will generate:
 
 ![stack bars](/docs/images/stack-bars.png)
 
-## ``bin/get_ganglia_graph`` Draw Ganglia Graphs 
+## ``get_ganglia_graph.rb`` - Draw Ganglia Graphs
+
+``get_ganglia_graph.rb`` will download one or more images of Ganglia graphs.
 
 ```
 $ ./get_ganglia_graph -h
