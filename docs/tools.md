@@ -7,7 +7,7 @@ really useful for testing functionality outside of ``notify-by-handler``.
 ## Dump Nagios Environment ``dump_nagios_env.sh``
 
 ``dump_nagios_env.sh`` is a handy script that dumps the Nagios environment variables at the time an alert fires.
-Follow the instuctions in the [script]("/bin/dump_nagios_env.sh") to configure and use it.
+Follow the instuctions in the [script](/bin/dump_nagios_env.sh) to configure and use it.
 
 The environment file that is generated can be used to test new formatters.
 
