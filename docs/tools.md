@@ -1,9 +1,17 @@
-## Tools
+# Tools
 
-The repository comes with a few tools you can use to provide additional context to your formatter.  These are
+This project comes with a few tools you can use that mimic the behavior of helpers and formatters.  These are
 really useful for testing functionality outside of ``notify-by-handler``.
 
-### Stack Bars ``bin/draw_stack_bars``
+<a name="dump_nagios_env.sh"></a>
+## Dump Nagios Environment ``dump_nagios_env.sh``
+
+``dump_nagios_env.sh`` is a handy script that dumps the Nagios environment variables at the time an alert fires.
+Follow the instuctions in the [script]("/bin/dump_nagios_env.sh") to configure and use it.
+
+The environment file that is generated can be used to test new formatters.
+
+## Stack Bars ``bin/draw_stack_bars``
 
 Stack bars can be useful for visualizing disk utilization.
 
@@ -29,7 +37,7 @@ For example: **./bin/draw_stack_bars /var=10** will generate:
 
 ![stack bars](docs/images/stack-bars.png)
 
-### Ganglia Graphs ``bin/get_ganglia_graph``
+## Ganglia Graphs ``bin/get_ganglia_graph``
 
     $ ./bin/get_ganglia_graph -h
     Usage: get_ganglia_graph [-hmpr]

@@ -139,7 +139,7 @@ provides a few example environment files that can be used for testing. Files in 
 ``--env-file`` argument to mimic an alerting event.  During normal operation ``nagios-herald`` grabs
 the information it needs from Nagios' environment variables.
 
-One can generate environment files for testing by using the [dump_env.sh](/docs/tools.md#dump_env.sh) tool.
+One can generate environment files for testing by using the [dump_nagios_env.sh](/docs/tools.md#dump_nagios_env.sh) tool.
 
 **NOTE**: ``--no-send`` forces ``nagios-herald`` to output content to the terminal.
 
@@ -154,12 +154,13 @@ Service: Disk Space
 State is now: CRITICAL for 0d 0h 5m 12s (was CRITICAL) after 3 / 3 checks
 
 Additional info:
- DISK CRITICAL - free space: / 7002 MB (18% inode 60%): /data 16273093 MB (26% inode 99%):
+ DISK CRITICAL - free space: / 7002 MB (82% inode 60%): /data 16273093 MB (99% inode 99%):
 
 Additional Details:
 Filesystem            Size  Used Avail Use% Mounted on
-/dev/vda               40G   31G  6.9G  82% /
+/dev/sda               40G   33G  7.2G  82% /
 tmpfs                 2.5G   83M  2.4G   4% /dev/shm
+/dev/sdb               16G   16G  158M  99% /data
 
 Sent to ops-engineer
 Notification sent at: Thu May 16 21:06:38 UTC 2013 (notification number 1)
