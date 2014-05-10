@@ -54,83 +54,13 @@ Adding context to alerts is done by the formatters. Formatters generate all the 
 be used by one or more message types. For example, text returned by a Nagios check
 can be highlighted to grab the operator's attention.
 
-To learn more, see for the [formatters](/docs/formatters.md) page.
+To learn more, see the [formatters](/docs/formatters.md) page.
 
 ## Helpers
 
 Helpers are libraries available to all formatters that can be used to supplement the content they generate. For example, a helper can pull in external information (such as a graph) that is relevant to a service that Nagios is alerting on.
 
-``nagios-herald`` comes with the following helpers as examples:
-
-* GangliaGraph - Downloads relevant graphs to be embedded in (email) messages.
-* SplunkReporter - Queries Splunk for information to add to an alert.
-* UrlImage - Generic helper to download images.
-
-## Tools
-
-The repository comes with a few tools you can use to provide additional context to your formatter.  These are
-really useful for testing functionality outside of ``notify-by-handler``.
-
-### Stack Bars ``bin/draw_stack_bars``
-
-Stack bars can be useful for visualizing disk utilization.
-
-    $ ./bin/draw_stack_bars -h
-    usage: draw_stack_bars [options] label=value label=value
-
-    options:
-      -h, --help            show this help message and exit
-      -w WIDTH, --width=WIDTH
-                            Picture width
-      -o OUTPUT_FILE, --output=OUTPUT_FILE
-                            The file name to save the results in
-      --bar-area-ratio=BAR_AREA_RATIO
-                            How wide should the bar area be compared to the total
-                            width
-      --bar-height-ratio=BAR_HEIGHT_RATIO
-                            How tall should the bars be compared to their width
-      --bar-border=BAR_BORDER
-                            Width of the border around the bars
-
-
-For example: **./bin/draw_stack_bars /var=10** will generate:
-
-![stack bars](docs/images/stack-bars.png)
-
-### Ganglia Graphs ``bin/get_ganglia_graph``
-
-    $ ./bin/get_ganglia_graph -h
-    Usage: get_ganglia_graph [-hmpr]
-
-    get_ganglia_graph is used to generate images from Ganglia graphs.
-
-    It takes one or more hostnames and a single metric to build the appropriate URI(s) from which to generate images.
-    The script outputs the full path for each of the images that have been written.
-
-        -h, --host *HOST                 The FQDN of the host required to look up a metric/image in Ganglia. Specify multiple hosts with multiple '-h' arguments.
-        -m, --metric                     The name of the metric we want to see.
-        -p, --path                       An optional path in which to write the image files.
-                                         DEFAULT: /tmp
-        -r, --range                      The range of time for which the graph should look back.
-                                         Acceptable values are the same as thouse used by Ganglia (i.e '8hours', '8h, '1day', '1d', '3weeks', '3w')
-                                         DEFAULT: 8h (8 hours)
-
-    EXAMPLES
-    --------
-    1. Passing a single hostname and metric to get_ganglia_graph:
-
-        get_ganglia_graph -h dbshard12.ny4.etsy.com -m part_max_used
-
-    2. Passing multiple hostnames and a metric to get_ganglia_graph:
-
-        get_ganglia_graph -h dbshard12.ny4.etsy.com -h memcached01.ny4.etsy.com -m disk_free
-
-    3. Including an optional time range (12 hours):
-
-        get_ganglia_graph -h dbshard12.ny4.etsy.com -h memcached01.ny4.etsy.com -m disk_free -r 12h
-
-**NOTE**: Formatters can inline Ganglia graphs by calling the ``generate_ganglia_graphs()`` method,
-imported from the ``lib/ganglia_graph.rb`` library.
+To learn more, see the [helpers](/docs/helpers.md) page.
 
 # Dependencies
 

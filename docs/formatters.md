@@ -112,7 +112,7 @@ There are two ways that formatters can be tested: unit tests and manually runnin
 
 **THIS IS A WORK IN PROGRESS. BETTER TESTING IS ON THE ROADMAP**
 
-### ``notify-by-handler
+### ``notify-by-handler``
 
 ``notify-by-handler`` can be called manually from the command line to test new formatters:
 
@@ -140,6 +140,8 @@ One can generate environment files for testing by using the [dump_env.sh](/docs/
 
 **NOTE**: ``--no-send`` forces ``nagios-herald`` to output content to the terminal.
 
+TODO: Need better, more up-to-date example.
+
 ```
 ./bin/notify-by-handler --no-send --env-file=tests/env_files/nagios_vars --formatter=check_disk
 ------------------
@@ -157,13 +159,13 @@ Additional Details:
 Filesystem            Size  Used Avail Use% Mounted on
 /dev/vda               40G   31G  6.9G  82% /
 tmpfs                 2.5G   83M  2.4G   4% /dev/shm
-nfs01.ny4dev.etsy.com:/mnt/data/homes
-                       59T   43T   16T  74% /data
 
 Sent to ops-engineer
 Notification sent at: Thu May 16 21:06:38 UTC 2013 (notification number 1)
 
-Acknowledge this alert: http://nagiosny4dev.etsycorp.com/nagios/cgi-bin/cmd.cgi?cmd_typ=34&host=nkammah.vm.ny4dev&service=Disk%20Space%0A%3Cbr%3E
+Acknowledge this alert: http://nagios.example.com/nagios/cgi-bin/cmd.cgi?cmd_typ=34&host=web.example.com&service=Disk%20Space%0A%3Cbr%3E
 
 ------------------
 ```
+
+Formatters are located in ``lib/nagios-herald/formatters/``.

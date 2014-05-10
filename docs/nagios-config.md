@@ -3,7 +3,7 @@
 ## Notification Command Configuration
 
 To configure Nagios to generate alerts via ``nagios-herald``, update the relevant stanza(s) in ``commands.cfg``.
-The below example assumes ``nagios-herald`` is installed in ``/usr/local/bin`.
+The below example assumes ``nagios-herald`` is installed in ``/usr/local/bin``.
 
 by calling the ``notify-by-handler`` script as defined in Nagios' ``commands.cfg``
 file.
