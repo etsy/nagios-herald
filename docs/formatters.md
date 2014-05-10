@@ -67,7 +67,9 @@ module NagiosHerald
       include NagiosHerald::Logging
 
       def additional_details
-        "nagios-herald makes alerting more bearable."
+      section = __method__  # this defines the section key in the formatter's content hash
+      add_text(section, "nagios-herald makes alerting more bearable.")
+      add_html(section, "<b>nagios-herald</b> makes alerting more bearable.<br>")
       end
 
     end
@@ -117,7 +119,7 @@ There are two ways that formatters can be tested: unit tests and manually runnin
 ``notify-by-handler`` can be called manually from the command line to test new formatters:
 
 ```
-INSERT EXAMPLE
+./bin/notify-by-handler --env-file ../test/env_files/check_mem.vars --formatter=check_mem -r ops@example.com -y nagios@example.com --message-type email -u http://nagios.example.com --trace
 ```
 
 For a full listing of available options, run ``notify-by-handler --help``.
@@ -125,9 +127,10 @@ For a full listing of available options, run ``notify-by-handler --help``.
 ### A Note About Nagios Data
 
 Nagios stores important information in environment variables.  The formatter methods can retrieve that
-information by using the ``get_nagios_var()`` method.  For reference, see
-[example](https://github.etsycorp.com/Sysops/nagios-herald/blob/master/tests/env_files/nagios_vars). Do not directly call
-``env['YOUR_VAR']`` in your Ruby code as it will be harder to test.
+information by using the ``get_nagios_var()`` method.  For reference, see an
+example [environment file](/test/env_files/nagios_vars.EXAMPLE).
+
+**NOTE**: Do not directly call ``env['YOUR_VAR']`` in your Ruby code as it will be harder to test.
 
 ### Testing the Formatter with Offline Data
 
@@ -140,10 +143,8 @@ One can generate environment files for testing by using the [dump_env.sh](/docs/
 
 **NOTE**: ``--no-send`` forces ``nagios-herald`` to output content to the terminal.
 
-TODO: Need better, more up-to-date example.
-
 ```
-./bin/notify-by-handler --no-send --env-file=tests/env_files/nagios_vars --formatter=check_disk
+./bin/notify-by-handler --no-send --env-file ../test/env_files/check_disk.vars --formatter=check_disk -r ops@example.com -y nagios@example.com --message-type email -u http://nagios.example.com --trace
 ------------------
 Subject : ** PROBLEM Service ALERT: web.example.com/Disk Space is CRITICAL **
 ------------------
