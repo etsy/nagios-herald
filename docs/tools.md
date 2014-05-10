@@ -42,9 +42,9 @@ For example: ``./draw_stack_bars /var=10`` will generate:
 
 ![stack bars](/docs/images/stack-bars.png)
 
-## ``get_ganglia_graph.rb`` - Draw Ganglia Graphs
+## ``get_ganglia_graph`` - Draw Ganglia Graphs
 
-``get_ganglia_graph.rb`` will download one or more images of Ganglia graphs.
+``get_ganglia_graph`` will download one or more images of Ganglia graphs.
 
 ```
 $ ./get_ganglia_graph -h
