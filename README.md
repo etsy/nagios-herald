@@ -20,7 +20,7 @@ Enter ``nagios-herald``!
 Using the canonical (and oft-cited) disk space check, here's an example notification:
 
 ![vanilla-nagios-alert](/docs/images/vanilla-nagios.png)
-<img src="/docs/images/vanilla-nagios.png" border="1">
+<img src="/docs/images/vanilla-nagios.png" border="10">
 
 While it does provide necessary information, it could be formatted for better legibility.  For example,
 the following line, which contains the information we need, is dense and may be difficult to
