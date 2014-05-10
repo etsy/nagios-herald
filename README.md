@@ -72,8 +72,6 @@ To learn more, see the [helpers](/docs/helpers.md) page.
 * ``choice``
 * ``mail``
 
-The above gems are installed on all Nagios instances via Chef.
-
 ## Stack Bars
 
 Generating stack bars requires the following (which are included in this project for your convenience):
