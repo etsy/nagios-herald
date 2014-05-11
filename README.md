@@ -4,7 +4,7 @@
 
 It was created from a desire to supplement an on-call engineer's awareness of conditions surrounding a notifying event. In other words, if a computer is going to page me at 3AM, I expect it to do some work for me to help me understand what's failing.
 
-## Why Customize Nagios Alerts?
+## Customizing Nagios Alerts
 
 Nagios is a time-tested monitoring and alerting tool used by many Operations teams to keep an eye
 on the shop.  It does an excellent job of executing scheduled checks, determining when a threshold has been exceeded, and sending alerts.
@@ -17,7 +17,7 @@ Enter ``nagios-herald``!
 
 ### Generic Nagios Alert
 
-Using the canonical (and oft-cited) disk space check, here's an example notification:
+Using the canonical (and oft-maligned) disk space check, here's an example notification:
 
 ![vanilla-nagios-alert](/docs/images/vanilla-nagios.png)
 

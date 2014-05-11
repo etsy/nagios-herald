@@ -49,7 +49,7 @@ imagination.**
 
     add_attachments - Add an attachment path to be referenced in an Email message.
     add_html - Concatenate HTML for the given section.
-    add_text - Concatenate HTML for the given section.
+    add_text - Concatenate text for the given section.
     line_break - Generate a line break for both text and HTML content.
 
 See below for an example of content generated using some of the above methods.
@@ -79,7 +79,7 @@ end
 
 ### Naming Convention
 
-* Formatters live in ``lib/nagios-herald/formatters``.
+* Formatters live in ``lib/nagios-herald/formatters/``.
 * The file names **MUST** lower-cased and underscored.
 * The class names **MUST** be CamelCased.
 
@@ -130,7 +130,7 @@ Nagios stores important information in environment variables.  The formatter met
 information by using the ``get_nagios_var()`` method.  For reference, see an
 example [environment file](/test/env_files/nagios_vars.EXAMPLE).
 
-**NOTE**: Do not directly call ``env['YOUR_VAR']`` in your Ruby code as it will be harder to test.
+**NOTE**: Do not directly call ``ENV['YOUR_VAR']`` in your Ruby code as it will be harder to test.
 
 ### Testing the Formatter with Offline Data
 
@@ -169,5 +169,3 @@ Acknowledge this alert: http://nagios.example.com/nagios/cgi-bin/cmd.cgi?cmd_typ
 
 ------------------
 ```
-
-Formatters are located in ``lib/nagios-herald/formatters/``.
