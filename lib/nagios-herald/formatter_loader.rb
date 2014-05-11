@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 # This is why open source rocks my worl'! I lifted this pattern of loading classes
 # from the good folks at Chef. The gist is that a given directory contains a set
 # of class files that we want to load into the namespace for use later.
