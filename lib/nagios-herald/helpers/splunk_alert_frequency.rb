@@ -104,6 +104,9 @@ module NagiosHerald
       def query_splunk(params)
         http = Net::HTTP.new( @splunk_host, @splunk_port )
         http.use_ssl = true
+        http.open_timeout = 1
+        http.read_timeout = 2
+        http.ssl_timeout = 1
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE    # don't validate the cert
         request = Net::HTTP::Post.new( @splunk_uri )
         request.basic_auth( @username, @password )
