@@ -62,9 +62,17 @@ Helpers are libraries available to all formatters that can be used to supplement
 
 To learn more, see the [helpers](/docs/helpers.md) page.
 
-# Dependencies
+# Installing ``nagios-herald``
 
-## Ruby Gems
+Installation of ``nagios-herald`` should be as easy as installing the Ruby gem:
+
+```
+gem install nagios-herald
+```
+
+## Dependencies
+
+### Ruby Gems
 
 ``nagios-herald`` and its tools depend on the following Ruby gems:
 
@@ -72,9 +80,14 @@ To learn more, see the [helpers](/docs/helpers.md) page.
 * ``choice``
 * ``mail``
 
-## Stack Bars
+### Stack Bars
 
 Generating stack bars requires the following (which are included in this project for your convenience):
 
 * Python
 * Python Image Library (PIL)
+
+## Configuring Nagios
+
+To configure Nagios to use ``nagios-herald`` for notifications, see the [Nagios Configuration](/docs/nagios-config.md) page.
+

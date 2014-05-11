@@ -3,12 +3,12 @@ require "nagios-herald/version"
 
 Gem::Specification.new do |spec|
   spec.name        = 'nagios-herald'
-  spec.summary     = "A set of scripts to improve Nagios email alerts."
+  spec.summary     = "A project that aims to make it easy to provide context in Nagios alerts."
   spec.version     = NagiosHerald::VERSION
   spec.authors     = ['Ryan Frantz', 'Nassim Kammah']
   spec.email       = ['rfrantz@etsy.com', 'nkammah@etsy.com']
-  spec.homepage    = "https://github.etsycorp.com/Sysops/nagios-email-handler"
-  spec.license     = "GPL"
+  spec.homepage    = "https://github.com/etsy/nagios-herald"
+  spec.license     = "MIT"
 
   spec.files       = `git ls-files`.split("\n")
   spec.test_files  = Dir["tests/**/*_test.rb"]
@@ -20,8 +20,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'mail'
 
   spec.description = <<-END
-  A set of scripts to improve Nagios email alerts. The project consists of a core notifier script
-  that can be called with a specific format helper to add context to email alerts sent from Nagios.
+  A project that aims to make it easy to provide context in Nagios alerts.
+  The project consists of a core notifier script that can be called with a formatter
+  to tailor the content of the message sent to an operator.
 END
 
   spec.post_install_message = <<-END
