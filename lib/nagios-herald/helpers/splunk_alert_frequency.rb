@@ -1,9 +1,3 @@
-#!/usr/bin/env ruby
-
-#
-# splunk_alert_frequency.rb
-#
-
 require 'net/http'
 require 'uri'
 require 'json'
@@ -21,13 +15,19 @@ require 'json'
 #
 #  If the :service_name argument is not present, this performs a search
 #  for host alerts.
-#
 
 module NagiosHerald
   module Helpers
     class SplunkReporter
       include NagiosHerald::Logging
 
+      # Public: Initialize a new SplunkReporter object.
+      #
+      # splunk_url - The URI of the Splunk search API.
+      # username - A username that's authorized to perform Splunk queries.
+      # password - Yeah, a password.
+      #
+      # Returns a new SplunkReporter object.
       def initialize(splunk_url, username, password)
         uri = URI.parse( splunk_url )
         @splunk_host = uri.host
@@ -39,6 +39,31 @@ module NagiosHerald
         @fields = ['hostname', 'service_name', 'state', 'date_year', 'date_month', 'date_mday', 'date_hour', 'date_minute']
       end
 
+      # Public: Generate the Splunk query.
+      #
+      # hostname - The name of the alerting host we want to query.
+      # service - Optional service name that may be alerting.
+      #
+      # Returns the generated Splunk query.
+      def get_splunk_alert_query(hostname, service = nil)
+        # query for service alerts or host alerts, depending on which args were selected
+        query = "search index=nagios hostname=\"#{hostname}\""
+        if service.nil?
+            query += " state=\"DOWN\""
+        else
+            query += " service_name=\"#{service}\" (state=\"WARNING\" OR state=\"CRITICAL\" OR state=\"UNKNOWN\" OR state=\"DOWN\")"
+        end
+        query +=  "| fields #{@fields.join(',')}"
+        return query
+      end
+
+      # Public: Queries Splunk to determine how frequently an alert has fired in a given period.
+      #
+      # hostname - The name of the alerting host we want to query.
+      # service - Optional service name that may be alerting.
+      # options - The options hash containing parameters for manipulatin the query.
+      #
+      # Returns a hash containing results from the search.
       def get_alert_frequency(hostname, service = nil, options = {})
         duration = options[:duration] ? options[:duration] : 7
 
@@ -71,18 +96,11 @@ module NagiosHerald
         }
       end
 
-      def get_splunk_alert_query(hostname, service = nil)
-        # query for service alerts or host alerts, depending on which args were selected
-        query = "search index=nagios hostname=\"#{hostname}\""
-        if service.nil?
-            query += " state=\"DOWN\""
-        else
-            query += " service_name=\"#{service}\" (state=\"WARNING\" OR state=\"CRITICAL\" OR state=\"UNKNOWN\" OR state=\"DOWN\")"
-        end
-        query +=  "| fields #{@fields.join(',')}"
-        return query
-      end
-
+      # Public: Performs the Splunk query.
+      #
+      # params - The parameters of the query.
+      #
+      # Returns the JSON results from the query.
       def query_splunk(params)
         http = Net::HTTP.new( @splunk_host, @splunk_port )
         http.use_ssl = true
@@ -108,13 +126,18 @@ module NagiosHerald
         return json
       end
 
+      # Public: Aggregate the results from Splunk.
+      # Nagios logs an entry for each entity that got alerted; a single alert can
+      # result in many log entries so we need to account for this by creating a
+      # unique key to ensure we don't count duplicate log lines.
+      # Chances are we *won't* see a duplicate except in cases where an alert fires
+      # on the cusp of a minute (I've seen up to 4-second skew in timestamp for
+      # alert results returned from Splunk; this _can_ happen).
+      #
+      # json - The Splunk query results in JSON.
+      #
+      # Returns a string containing a message useful for outputting into a notification.
       def aggregate_splunk_events(json)
-        # Nagios logs an entry for each entity that got alerted; a single alert can
-        # result in many log entries so we need to account for this by creating a
-        # unique key to ensure we don't count duplicate log lines.
-        # Chances are we *won't* see a duplicate except in cases where an alert fires
-        # on the cusp of a minute (I've seen up to 4-second skew in timestamp for
-        # alert results returned from Splunk; this _can_ happen).
         events = {}
         json.each do |alert|
             state = alert['state']
@@ -138,6 +161,7 @@ module NagiosHerald
         msg += " in the last #{duration} #{period}."
         return msg
       end
+
     end
   end
 end

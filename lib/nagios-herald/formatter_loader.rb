@@ -23,13 +23,17 @@ module NagiosHerald
       formatter_class_files = Dir.glob(File.expand_path("*.rb", formatter_path))
     end
 
-    # Public: Return an array of class files' paths.
+    # Public: An array of class files' paths.
+    #
+    # Returns an array of class files' paths.
     def formatter_class_files
       @formatter_class_files ||= enum_formatter_class_files(@formatter_path)
     end
 
     # Public: Load the formatters into the namespace.
     # A formatter can then easily be instantiated later.
+    #
+    # Returns nothing but loads the classes into the namespace.
     def load_formatters
       if formatter_class_files.empty?
         puts "#{$0}: No formatters were found in '#{@formatter_path}'"
