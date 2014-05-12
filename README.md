@@ -56,12 +56,6 @@ can be highlighted to grab the operator's attention.
 
 To learn more, see the [formatters](/docs/formatters.md) page.
 
-## Helpers
-
-Helpers are libraries available to all formatters that can be used to supplement the content they generate. For example, a helper can pull in external information (such as a graph) that is relevant to a service that Nagios is alerting on.
-
-To learn more, see the [helpers](/docs/helpers.md) page.
-
 # Installing ``nagios-herald``
 
 Installation of ``nagios-herald`` should be as easy as installing the Ruby gem:

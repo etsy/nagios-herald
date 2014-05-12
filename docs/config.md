@@ -1,7 +1,7 @@
 # Configuration
 
 ``nagios-herald`` supports a YAML-based configuration file.  The configuration file is named
-``config.yml`` and lives in the ``etc/`` directory of this project. This project provides an [example](etc/config.yml.example) configuration file that you can use to get started.
+``config.yml`` and lives in the ``etc/`` directory of this project. This project provides an [example](/etc/config.yml.example) configuration file that you can use to get started.
 
 ## Command Line Options
 

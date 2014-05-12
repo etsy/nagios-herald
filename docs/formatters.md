@@ -44,7 +44,7 @@ imagination.**
     short_state_detail
     state_info
 
-``Formatter::Base`` also includes helper methods that are used to store or manipulate content in the
+``Formatter::Base`` also includes basic methods that are used to store or manipulate content in the
 ``@content`` hash:
 
     add_attachments - Add an attachment path to be referenced in an Email message.
@@ -103,6 +103,12 @@ def additional_info
   add_html(section, "#{hostname} <b>blew</b> up!")
 end
 ```
+
+## Helpers
+
+Helpers are libraries available to all formatters that can be used to supplement the content they generate. For example, a helper can pull in external information (such as a graph) that is relevant to a service that Nagios is alerting on.
+
+To learn more, see the [helpers](/docs/helpers.md) page.
 
 ## Testing Your Formatter
 
