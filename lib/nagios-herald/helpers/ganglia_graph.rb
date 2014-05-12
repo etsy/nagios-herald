@@ -5,10 +5,18 @@ module NagiosHerald
     class GangliaGraph
       include NagiosHerald::Logging
 
+      # Public: Initialize a GangliaGraph helper object.
+      #
+      # Returns GangliaGraph helper object.
       def initialize
         @ganglia_base_uri = Config.config['servers']['ganglia']
       end
 
+      # Public: Loads a Chef knife config.
+      # I recognize not everyone uses Chef, or any CM for that matter.
+      # Still, I like having this example here.
+      #
+      # Returns true/false depending on whether a Chef knife config was loaded.
       def load_knife_config
         return @knife_config_loaded unless @knife_config_loaded.nil?
 
@@ -24,6 +32,14 @@ module NagiosHerald
         @knife_config_loaded
       end
 
+      # Public: Get the Ganglia cluster name for a given host.
+      # So, if you're still reading this *and* you use Chef,
+      # I recognize that you may not store the Ganglia cluster name as a node
+      # attribute. If you do, it's probably not called 'cluster_name'...
+      #
+      # host - The name of the host whose Ganglia cluster name we need to look up.
+      #
+      # Returns the Ganglia cluster name for the host.
       def get_cluster_name_for_host(host)
         return nil unless load_knife_config
         query = Chef::Search::Query.new
