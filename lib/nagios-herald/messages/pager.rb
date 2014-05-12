@@ -8,6 +8,13 @@ module NagiosHerald
       attr_accessor :subject
       attr_accessor :text
 
+      # Public: Initializes a new Message::Pager object.
+      #
+      # recipients - A list of recipients for this message.
+      # options - The options hash from Executor.
+      # FIXME: Is that ^^ necessary now with Config.config available?
+      #
+      # Returns a new Message::Pager object.
       def initialize(recipients, options = {})
         @replyto     = options[:replyto]
         @subject     = ""
@@ -15,10 +22,17 @@ module NagiosHerald
         super(recipients, options)
       end
 
+      # Public: Generates the text portion of the content hash.
+      #
+      # Returns the full text portion of the content hash.
       def curate_text
         @text += self.content[:text][:additional_info]
       end
 
+      # Public: Prints the subject and text content to the terminal.
+      # Useful for debugging.
+      #
+      # Returns nothing.
       def print
         puts "------------------"
         puts "Subject : #{@subject}"
@@ -26,6 +40,9 @@ module NagiosHerald
         puts @text
       end
 
+      # Public: Sends the pager message.
+      #
+      # Returns nothing.
       def send
         curate_text
         if @no_send

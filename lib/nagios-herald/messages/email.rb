@@ -10,6 +10,13 @@ module NagiosHerald
       attr_accessor :subject
       attr_accessor :text
 
+      # Public: Initializes a new Message::Email object.
+      #
+      # recipients - A list of recipients for this message.
+      # options - The options hash from Executor.
+      # FIXME: Is that ^^ necessary now with Config.config available?
+      # 
+      # Returns a new Message::Email object.
       def initialize(recipients, options = {})
         @replyto     = options[:replyto]
         @subject     = ""
@@ -21,6 +28,12 @@ module NagiosHerald
 
       # this is a list of Mail::Part
       # => #<Mail::Part:19564000, Multipart: false, Headers: <Content-Type: ; filename="Rakefile">, <Content-Transfer-Encoding: binary>, <Content-Disposition: attachment; filename="Rakefile">, <Content-ID: <530e1814464a9_3305aaef88979a2@blahblahbl.blah.blah.blah.mail>>>
+      # Public: Updates HTML content so that attachments are referenced via the 'cid:' URI scheme and neatly embedded in the body
+      # of a(n email) message.
+      #
+      # attachments - The list of attachments defined in the formatter content hash.
+      #
+      # Returns the updated HTML content.
       def inline_body_with_attachments(attachments)
         inline_html = @html
         attachments.each do |attachment|
@@ -31,6 +44,9 @@ module NagiosHerald
         inline_html
       end
 
+      # Public: Generates the text portion of the content hash.
+      #
+      # Returns the full text portion of the content hash.
       def curate_text
         @text += self.content[:text][:host_info]
         @text += self.content[:text][:state_info]
@@ -43,6 +59,9 @@ module NagiosHerald
         @text += self.content[:text][:alert_ack_url]
       end
 
+      # Public: Generates the HTML portion of the content hash.
+      #
+      # Returns the full HTML portion of the content hash.
       def curate_html
         @html += self.content[:html][:host_info]
         @html += self.content[:html][:state_info]
@@ -55,6 +74,10 @@ module NagiosHerald
         @html += self.content[:html][:alert_ack_url]
       end
 
+      # Public: Prints the subject, text and HTML content to the terminal.
+      # Useful for debugging.
+      #
+      # Returns nothing.
       def print
         puts "------------------"
         puts "Subject : #{@subject}"
@@ -63,6 +86,9 @@ module NagiosHerald
         puts @html if !@html.empty?
       end
 
+      # Public: Sends the email message.
+      #
+      # Returns nothing.
       def send
         curate_text
         curate_html
@@ -110,6 +136,7 @@ module NagiosHerald
 
         mail.deliver!
       end
+
     end
   end
 end
