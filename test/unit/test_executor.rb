@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 
 # I assume cat'ing to the LOAD path goes away when we're a real gem.
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', '..', 'lib')
 require 'nagios-herald'
 require 'nagios-herald/executor'
 
@@ -13,7 +13,7 @@ class TestExecutor < MiniTest::Unit::TestCase
   def setup
     @executor = NagiosHerald::Executor.new
     @options = {}
-    @options[:env] = File.join(File.dirname(__FILE__), 'env_files', 'nagios_vars.EXAMPLE')
+    @options[:env] = File.join(File.dirname(__FILE__), '..', 'env_files', 'nagios_vars.EXAMPLE')
   end
 
   # We expect a NagiosHerald::Executor object.

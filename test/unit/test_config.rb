@@ -1,18 +1,17 @@
 require 'minitest/autorun'
 
 # I assume cat'ing to the LOAD path goes away when we're a real gem.
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', '..', 'lib')
 require 'nagios-herald'
 require 'nagios-herald/config'
 
 # Test the Config module.
 class TestConfig < MiniTest::Unit::TestCase
-#  include NagiosHerald::Util
 
   # Initial setup before we execute tests
   def setup
     @options = {}
-    @options['config_file'] = File.expand_path(File.join(File.dirname(__FILE__), '..', 'etc', 'config.yml.example'))
+    @options['config_file'] = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'etc', 'config.yml.example'))
     @options['message_type'] = "pager"
   end
 
