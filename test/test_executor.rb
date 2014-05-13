@@ -5,6 +5,7 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'nagios-herald'
 require 'nagios-herald/executor'
 
+# Test the Executor class.
 class TestExecutor < MiniTest::Unit::TestCase
   include NagiosHerald::Util
 

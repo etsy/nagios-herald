@@ -13,9 +13,9 @@ module NagiosHerald
     #
     # Returns a hash of the parsed config file merged with the command line options.
     def load(options = {})
-      abort("Config file not found #{options.config_file}") unless File.exists? options.config_file
+      abort("Config file not found #{options['config_file']}") unless File.exists? options['config_file']
       @config = AppConf.new
-      @config.load(options.config_file)
+      @config.load(options['config_file'])
       @config = @config.to_hash
       @config.merge!(options)   # runtime options should override
       @config
