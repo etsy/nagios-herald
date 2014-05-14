@@ -25,7 +25,6 @@ module NagiosHerald
         html << lines[0]  # TOP 5 PROCESSES BY MEMORY USAGE:
         html << lines[1]  # %MEM|         RSS|        USER|   PID|COMMAND
         html << "<font color='red'>#{lines[2]}</font>"  # Color the first result red...
-        last_item = lines.length - 1
         for i in 3..lines.length-1
           html << "<font color='orange'>#{lines[i]}</font>" # ...and the remainder orange.
         end
