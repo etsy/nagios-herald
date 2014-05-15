@@ -31,8 +31,7 @@ module NagiosHerald
       @content[:html]
       @content[:subject] = ""
       @content[:text]
-      @message_type = options[:message_type].downcase
-      @nagios_url = options[:nagiosurl]
+      @nagios_url = options[:nagios_url]
       @sandbox  = get_sandbox_path
       @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
 

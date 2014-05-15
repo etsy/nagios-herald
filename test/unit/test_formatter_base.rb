@@ -15,19 +15,13 @@ class TestFormatterBase < MiniTest::Unit::TestCase
   def setup
     @options = {}
     @options[:message_type] = 'EMAIL'
-    @options[:nagiosurl] = "http://nagios.example.com"
+    @options[:nagios_url] = "http://nagios.example.com"
     @formatter = NagiosHerald::Formatter.new(@options)
   end
 
   # Test that we have a new NagiosHerald::Formatter object.
   def test_new_formatter
     assert_instance_of NagiosHerald::Formatter, @formatter
-  end
-
-  # Validate the options passed to the constructor.
-  def test_options
-    # content, sandbox, and state_type are accessors
-    assert_equal "PROBLEM", @formatter.state_type
   end
 
 end

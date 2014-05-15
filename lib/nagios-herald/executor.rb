@@ -105,7 +105,7 @@ module NagiosHerald
           default false
         end
 
-        option :nagiosurl do
+        option :nagios_url do
           short "-u"
           long  "--nagios-cgi-url"
           desc  "Nagios CGI url (used for acknowledgement links)"
