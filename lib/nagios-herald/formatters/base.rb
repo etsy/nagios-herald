@@ -502,7 +502,6 @@ module NagiosHerald
         subject="#{notification_type} Host #{subject} is #{state}"
       end
       @content[:subject] = subject
-      #subject
     end
 
     # Public: Generates content body.
