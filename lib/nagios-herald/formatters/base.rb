@@ -369,7 +369,9 @@ module NagiosHerald
       end
       url = URI.escape(url)
       text += "Acknowledge this alert: #{url}\n"
+      text += "Alternatively, reply to this message with the word 'ack' in the body to acknowledge the alert.\n"
       html += "Acknowledge this alert: #{url}<br>"
+      html += "Alternatively, <b>reply</b> to this message with the word '<b><font color='green'>ack</font></b>' in the body to acknowledge the alert.<br>"
       add_text(section, text)
       add_html(section, html)
     end
