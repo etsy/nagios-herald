@@ -57,15 +57,15 @@ Choice.options do
   footer "--------"
   footer "1. Passing a single hostname and metric to #{program_name}:"
   footer ""
-  footer "#{program_name} -h dbshard12.ny4.etsy.com -m part_max_used"
+  footer "#{program_name} -h mysql01.example.com -m part_max_used"
   footer ""
   footer "2. Passing multiple hostnames and a metric to #{program_name}:"
   footer ""
-  footer "#{program_name} -h dbshard12.ny4.etsy.com -h memcached01.ny4.etsy.com -m disk_free"
+  footer "#{program_name} -h mysql01.example.com -h memcached01.example.com -m disk_free"
   footer ""
   footer "3. Including an optional time range (12 hours):"
   footer ""
-  footer "#{program_name} -h dbshard12.ny4.etsy.com -h memcached01.ny4.etsy.com -m disk_free -r 12h"
+  footer "#{program_name} -h mysql01.example.com -h memcached01.example.com -m disk_free -r 12h"
   footer ""
 end
 

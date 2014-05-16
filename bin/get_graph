@@ -33,13 +33,13 @@ Choice.options do
   footer "--------"
   footer "1. Passing a single URI to #{program_name}:"
   footer ""
-  footer "#{program_name} -u \"http://graphite.etsycorp.com/render/?width=1606&height=790&target=cdn.fastly.img.AMS.body_size\""
+  footer "#{program_name} -u \"http://graphite.example.com/render/?target=mysql.connections.count\""
   footer ""
   footer "2. Passing multiple URIs to #{program_name}:"
   footer "(line breaks added for clarity)"
   footer ""
-  footer "#{program_name} -u \"http://graphite.etsycorp.com/render/?width=1606&height=790&target=cdn.fastly.img.AMS.body_size\" \\"
-  footer " -u \"http://graphite.etsycorp.com/render/?width=1606&height=790&target=logster.ApiDeviceMetricLogster.exec_time\""
+  footer "#{program_name} -u \"http://graphite.example.com/render/?target=mysql.connections.count\" \\"
+  footer " -u \"http://graphite.example.com/render/?target=apache.requests_per_second\""
   footer ""
 end
 

@@ -276,21 +276,11 @@ module NagiosHerald
       section = __method__
       text = ""
       html = ""
-      hostname = get_nagios_var("NAGIOS_HOSTNAME")
-      if @state_type == "SERVICE"
-        service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
-        subject = "#{hostname} - #{service_desc}"
-      else
-        subject = "#{hostname}"
-      end
-
       recipients = get_nagios_var("NAGIOS_NOTIFICATIONRECIPIENTS")
       return if recipients.nil?
       recipients_list = recipients.split(',')
-      recipients_mail = recipients_list.map {|n| n + "@etsy.com"}
-      recipients_mail_str = recipients_mail.join(',')
       text += "Sent to #{recipients}\n"
-      html += %Q(Sent to <a href="mailto:#{recipients_mail_str}?subject=#{subject}">#{recipients}</a><br>)
+      html += "Sent to #{recipients}<br>"
       add_text(section, text)
       add_html(section, html)
     end

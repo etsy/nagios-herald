@@ -12,7 +12,7 @@ module NagiosHerald
       #   2.4|     1231696|       larry|  6658|tmux
       #   1.5|      777204|         moe| 32234|tmux/tmux -CC
       #   0.8|      399964|       curly| 12161|/usr/sbin/gmond
-      #   0.7|      384772|        shep|  1945|/usr/sbin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib64/mysql/plugin --user=mysql --log-error=/var/lib/mysql/toolbox.ny4.etsy.com.err --pid-file=/var/lib/mysql/toolbox.ny4.etsy.com.pid
+      #   0.7|      384772|        shep|  1945|/usr/sbin/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib64/mysql/plugin --user=mysql --log-error=/var/lib/mysql/mysql.example.com.err --pid-file=/var/lib/mysql/mysql.example.com.pid
       #   0.7|      355148|        root|  1245|SCREEN
       #
       # Returns nothing. Updates the formatter content hash.
