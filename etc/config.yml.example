@@ -6,3 +6,4 @@ splunk:
   url: https://splunk.example.com:8089/services/search/jobs
   username: splunkuser
   password: splunkpass
+logfile: /usr/nagios/var/nagios.log
