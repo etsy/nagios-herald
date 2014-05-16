@@ -4,9 +4,6 @@
 # Queries Splunk to determine how many times this alert has fired for this host
 # in the last 7 days.
 
-# FIXME: Something about the below line gives me the willies.
-['ganglia_graph', 'splunk_alert_frequency'].each {|h| NagiosHerald::Util::load_helper(h)}
-
 module NagiosHerald
   class Formatter
     class CheckDisk < NagiosHerald::Formatter
@@ -63,25 +60,6 @@ module NagiosHerald
         end
       end
 
-      # Public: Retrieves one or more Ganglia graphs.
-      #
-      # hostname - The name of the host for which we're alerting.
-      #
-      # Returns the file names of all retrieved graphs. These can be attached to the message.
-      def get_ganglia_graphs(hostname)
-        begin
-          ganglia = NagiosHerald::Helpers::GangliaGraph.new
-          graph =  ganglia.get_graphs( [hostname], 'part_max_used', @sandbox, '1day')
-          return graph
-        rescue Exception => e
-          logger.error "Exception encountered retrieving Ganglia graphs - #{e.message}"
-          e.backtrace.each do |line|
-            logger.error "#{line}"
-          end
-          return []
-        end
-      end
-
       # Public: Overrides Formatter::Base#additional_info.
       # Calls on methods defined in this class to generate stack bars and download
       # Ganglia graphs.
@@ -106,16 +84,6 @@ module NagiosHerald
           else
             add_html(section, "<b>Additional Info</b>:<br> #{output}<br><br>") if output
           end
-        end
-
-        # Collect ganglia data
-        hostname = get_nagios_var("NAGIOS_HOSTNAME")
-        # TODO : address building up hostnames in a robust, future-proof manner
-        fqdn  = hostname + ".etsy.com"
-        ganglia_graphs = get_ganglia_graphs(fqdn)
-        ganglia_graphs.each do |ganglia_graph|
-          add_attachment ganglia_graph
-          add_html(section, %Q(<img src="#{ganglia_graph}" alt="ganglia_graph" /><br><br>))
         end
       end
 
@@ -170,43 +138,9 @@ module NagiosHerald
           add_text(section, "Additional Details:\n#{unescape_text(long_output)}\n") if long_output
           add_html(section, "<b>Additional Details</b>:<br><pre>#{unescape_text(long_output)}</pre><br><br>") if long_output
         end
-        alert_frequency
         line_break(section)
-
       end
 
-      # Public: Calls on Splunk to determine how often this alert has fired for the given host.
-      # Called on to supplement #additional_details.
-      #
-      # Returns nothing. Updates the formatter content hash.
-      def alert_frequency
-        section = "additional_details"
-        # find out how frequently we've seen alerts for this service check
-        add_text(section, "Alert Frequency\n")
-        add_html(section, "<h4>Alert Frequency</h4>")
-        hostname  = get_nagios_var("NAGIOS_HOSTNAME")
-        service_name  = get_nagios_var("NAGIOS_SERVICEDISPLAYNAME") # expecting 'Disk Space'
-
-        splunk_url      = Config.config['splunk']['url']
-        splunk_username = Config.config['splunk']['username']
-        splunk_password = Config.config['splunk']['password']
-        reporter = NagiosHerald::Helpers::SplunkReporter.new( splunk_url, splunk_username, splunk_password )
-        splunk_data = reporter.get_alert_frequency(hostname, service_name, {:duration => 7})
-
-        if splunk_data
-          msg = "HOST '#{hostname}' has experienced "
-          msg += splunk_data[:events_count].map{|k,v|  v.to_s + ' ' + k}.join(', ')
-          msg += ' alerts'
-          msg += " for SERVICE '#{service_name}'" unless service_name.nil?
-          msg += " in the last #{splunk_data[:period]}."
-
-          add_text(section, "#{msg}\n")
-          add_html(section, "#{msg}<br>")
-        else
-          add_text(section, "No matching alerts found.\n")
-          add_html(section, "No matching alerts found.<br>")
-        end
-      end
     end
   end
 end
