@@ -46,6 +46,10 @@ the **highlighted ``df`` output** that neatly defines which threshold was exceed
 
 **NOTE**: In this example, the Nagios check ran ``df`` and supplied that input.
 
+### More Examples
+
+For more examples of ``nagios-herald`` in action, see the [example alerts](/docs/example_alerts.md) page.
+
 This is possible because ``nagios-herald`` provides extensible formatters.
 
 ## Formatters
