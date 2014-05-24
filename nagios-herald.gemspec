@@ -12,23 +12,19 @@ Gem::Specification.new do |spec|
 
   spec.files       = `git ls-files`.split("\n")
   spec.test_files  = Dir["tests/**/*_test.rb"]
-  spec.executables = ["draw_stack_bars", "dump_nagios_env.sh", "get_ganglia_graph", "get_graph", "notify-by-handler", "send_html_email", "splunk_alert_frequency"]
+  spec.executables = ["draw_stack_bars", "dump_nagios_env.sh", "get_ganglia_graph", "get_graph", "notify-by-handler", "splunk_alert_frequency"]
   spec.required_ruby_version = '>=1.9.2'
 
-  spec.add_dependency 'app_conf'
-  spec.add_dependency 'choice'
-  spec.add_dependency 'mail'
+  spec.add_runtime_dependency 'app_conf', '~> 0.4', '>= 0.4.2'
+  spec.add_runtime_dependency 'choice', '~> 0.1', '>= 0.1.6'
+  spec.add_runtime_dependency 'mail', '~> 2.5', '>= 2.5.4'
 
-  spec.description = <<-END
+  spec.description = <<-DESCRIPTION_END
   A project that aims to make it easy to provide context in Nagios alerts.
   The project consists of a core notifier script that can be called with a formatter
   to tailor the content of the message sent to an operator.
-END
+DESCRIPTION_END
 
-  spec.post_install_message = <<-END
-Have fun and write your own formatters!
-
-END
-
+  spec.post_install_message = "Have fun and write your own formatters!"
 
 end
