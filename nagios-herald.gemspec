@@ -12,7 +12,8 @@ Gem::Specification.new do |spec|
 
   spec.files       = `git ls-files`.split("\n")
   spec.test_files  = Dir["tests/**/*_test.rb"]
-  spec.executables = ["draw_stack_bars", "dump_nagios_env.sh", "get_ganglia_graph", "get_graph", "notify-by-handler", "splunk_alert_frequency"]
+  #spec.executables = ["draw_stack_bars", "dump_nagios_env.sh", "get_ganglia_graph", "get_graph", "notify-by-handler", "splunk_alert_frequency"]
+  spec.executables = ["nagios-herald"]
   spec.required_ruby_version = '>=1.9.2'
 
   spec.add_runtime_dependency 'app_conf', '~> 0.4', '>= 0.4.2'
