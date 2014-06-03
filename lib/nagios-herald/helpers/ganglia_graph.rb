@@ -23,7 +23,7 @@ module NagiosHerald
         knife_config_file = Config.config['knife_config'] ? Config.config['knife_config'] : '~/.chef/knife.rb'
         knife_config_file = File.expand_path(knife_config_file)
         if !File.exist?(knife_config_file)
-          $stderr.puts "Knife config file not found (#{knife_config_file})"
+          logger.warn("Knife config file not found (#{knife_config_file})")
           @knife_config_loaded = false
         else
           Chef::Config.from_file(knife_config_file)
