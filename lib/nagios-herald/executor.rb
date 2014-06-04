@@ -226,12 +226,22 @@ module NagiosHerald
       rescue Exception => e
         logger.fatal "#{e.class}: #{e.message}"
         logger.fatal "COMMAND LINE #{File.basename $0} #{ARGV.join(" ")}"
-        if @options[:trace].nil?
-          logger.fatal "Use --trace for backtrace."
-        else
+        if @options[:trace]
           e.backtrace.each do |line|
             logger.fatal "TRACE #{line}"
           end
+        else
+          logger.fatal "Use --trace for backtrace."
+        end
+        # Tell us which host/service check is failing (assuming we can read the env)
+        state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
+        hostname = get_nagios_var("NAGIOS_HOSTNAME")
+        service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
+        state = get_nagios_var("NAGIOS_#{state_type}STATE")
+        if !service_desc.nil? and !service_desc.empty?
+          logger.fatal "FAILING CHECK (SERVICE): #{hostname}/#{service_desc} is #{state}"
+        else
+          logger.fatal "FAILING CHECK (HOST): #{hostname} is #{state}"
         end
         raise e if @options[:trace] || e.is_a?(SystemExit)
         exit 1
