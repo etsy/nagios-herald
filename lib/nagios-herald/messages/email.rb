@@ -50,10 +50,10 @@ module NagiosHerald
       def curate_text
         @text += self.content[:text][:host_info]
         @text += self.content[:text][:state_info]
-        @text += self.content[:text][:additional_info]
-        @text += self.content[:text][:action_url]
-        @text += self.content[:text][:notes]
-        @text += self.content[:text][:additional_details]
+        @text += self.content[:text][:additional_info] unless self.content[:text][:additional_info].nil?
+        @text += self.content[:text][:action_url] unless self.content[:text][:action_url].nil?
+        @text += self.content[:text][:notes] unless self.content[:text][:notes].nil?
+        @text += self.content[:text][:additional_details] unless self.content[:text][:additional_details].nil?
         @text += self.content[:text][:recipients_email_link]
         @text += self.content[:text][:notification_info]
         @text += self.content[:text][:alert_ack_url]
@@ -65,10 +65,10 @@ module NagiosHerald
       def curate_html
         @html += self.content[:html][:host_info]
         @html += self.content[:html][:state_info]
-        @html += self.content[:html][:additional_info]
-        @html += self.content[:html][:action_url]
-        @html += self.content[:html][:notes]
-        @html += self.content[:html][:additional_details]
+        @html += self.content[:html][:additional_info] unless self.content[:html][:additional_info].nil?
+        @html += self.content[:html][:action_url] unless self.content[:html][:action_url].nil?
+        @html += self.content[:html][:notes] unless self.content[:html][:notes].nil?
+        @html += self.content[:html][:additional_details] unless self.content[:html][:additional_details].nil?
         @html += self.content[:html][:recipients_email_link]
         @html += self.content[:html][:notification_info]
         @html += self.content[:html][:alert_ack_url]
