@@ -48,14 +48,14 @@ module NagiosHerald
       #
       # Returns the full text portion of the content hash.
       def curate_text
-        @text += self.content[:text][:host_info]
-        @text += self.content[:text][:state_info]
+        @text += self.content[:text][:host_info] unless self.content[:text][:host_info].empty?
+        @text += self.content[:text][:state_info] unless self.content[:text][:state_info].empty?
         @text += self.content[:text][:additional_info] unless self.content[:text][:additional_info].empty?
         @text += self.content[:text][:action_url] unless self.content[:text][:action_url].empty?
         @text += self.content[:text][:notes] unless self.content[:text][:notes].empty?
         @text += self.content[:text][:additional_details] unless self.content[:text][:additional_details].empty?
-        @text += self.content[:text][:recipients_email_link]
-        @text += self.content[:text][:notification_info]
+        @text += self.content[:text][:recipients_email_link] unless self.content[:text][:recipients_email_link].empty?
+        @text += self.content[:text][:notification_info] unless self.content[:text][:notification_info].empty?
         @text += self.content[:text][:alert_ack_url] unless self.content[:text][:alert_ack_url].empty?
       end
 
@@ -63,14 +63,14 @@ module NagiosHerald
       #
       # Returns the full HTML portion of the content hash.
       def curate_html
-        @html += self.content[:html][:host_info]
-        @html += self.content[:html][:state_info]
+        @html += self.content[:html][:host_info] unless self.content[:html][:host_info].empty?
+        @html += self.content[:html][:state_info] unless self.content[:html][:state_info].empty?
         @html += self.content[:html][:additional_info] unless self.content[:html][:additional_info].empty?
         @html += self.content[:html][:action_url] unless self.content[:html][:action_url].empty?
         @html += self.content[:html][:notes] unless self.content[:html][:notes].empty?
         @html += self.content[:html][:additional_details] unless self.content[:html][:additional_details].empty?
-        @html += self.content[:html][:recipients_email_link]
-        @html += self.content[:html][:notification_info]
+        @html += self.content[:html][:recipients_email_link] unless self.content[:html][:recipients_email_link].empty?
+        @html += self.content[:html][:notification_info] unless self.content[:html][:notification_info].empty?
         @html += self.content[:html][:alert_ack_url] unless self.content[:html][:alert_ack_url].empty?
       end
 
