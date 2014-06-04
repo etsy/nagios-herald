@@ -192,6 +192,17 @@ module NagiosHerald
         recipients = @options.recipients.nil? ? [ get_nagios_var("NAGIOS_CONTACTEMAIL") ] : [ @options.recipients ]
         nagios_notification_type = @options.notification_type.nil? ? get_nagios_var("NAGIOS_NOTIFICATIONTYPE") : @options.notification_type
   
+        # Log the host and service that's notifying (assuming we can read the environment)
+        state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
+        hostname = get_nagios_var("NAGIOS_HOSTNAME")
+        service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
+        state = get_nagios_var("NAGIOS_#{state_type}STATE")
+        if !service_desc.nil? and !service_desc.empty?
+          logger.info "CHECK (SERVICE): #{hostname}/#{service_desc} is #{state}"
+        else
+          logger.info "CHECK (HOST): #{hostname} is #{state}"
+        end
+
         recipients.each do |recipient|
           if recipient.nil? || recipient.eql?("")
             logger.error "No recipient defined for this notification!"
@@ -232,16 +243,6 @@ module NagiosHerald
           end
         else
           logger.fatal "Use --trace for backtrace."
-        end
-        # Tell us which host/service check is failing (assuming we can read the env)
-        state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
-        hostname = get_nagios_var("NAGIOS_HOSTNAME")
-        service_desc = get_nagios_var("NAGIOS_SERVICEDESC")
-        state = get_nagios_var("NAGIOS_#{state_type}STATE")
-        if !service_desc.nil? and !service_desc.empty?
-          logger.fatal "FAILING CHECK (SERVICE): #{hostname}/#{service_desc} is #{state}"
-        else
-          logger.fatal "FAILING CHECK (HOST): #{hostname} is #{state}"
         end
         raise e if @options[:trace] || e.is_a?(SystemExit)
         exit 1
