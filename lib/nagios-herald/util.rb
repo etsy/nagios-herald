@@ -1,5 +1,8 @@
+require 'nagios-herald/logging'
+
 module NagiosHerald
   module Util
+  include NagiosHerald::Logging
 
     # TODO: add methods for handling HTTP(s) requests so we can control timeouts
 
@@ -15,12 +18,12 @@ module NagiosHerald
 
     def self.load_helper(name)
       helper_path = File.expand_path(File.join(File.dirname(__FILE__), 'helpers', name))
-      $stderr.puts "Helper '#{name}' not found" unless File.exist?(helper_path + ".rb")
+      logger.warn "Helper '#{name}' not found" unless File.exist?(helper_path + ".rb")
       begin
         require helper_path
         return true
       rescue LoadError
-        $stderr.puts "Exception encountered loading '#{name}' helper library!"
+        logger.fatal "Exception encountered loading '#{name}' helper library!"
         return false
       end
     end

@@ -174,7 +174,7 @@ module NagiosHerald
       begin
         @options = parse_options
       rescue SystemExit
-        $stderr.puts "Invalid or missing options\n"
+        logger.fatal "Invalid or missing options\n"
         exit 1
       end
 

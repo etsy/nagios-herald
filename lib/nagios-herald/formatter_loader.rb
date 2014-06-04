@@ -8,6 +8,7 @@
 # an example of this in action via the #inherited method.
 module NagiosHerald
   class FormatterLoader
+  include NagiosHerald::Logging
 
     attr_accessor :formatter_path
 
@@ -36,7 +37,7 @@ module NagiosHerald
     # Returns nothing but loads the classes into the namespace.
     def load_formatters
       if formatter_class_files.empty?
-        puts "#{$0}: No formatters were found in '#{@formatter_path}'"
+        logger.fatal "#{$0}: No formatters were found in '#{@formatter_path}'"
         exit 1
       else
         formatter_class_files.each do |formatter_class_file|

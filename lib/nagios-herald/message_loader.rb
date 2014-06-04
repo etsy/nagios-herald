@@ -1,6 +1,7 @@
 # Load all Message classes similar to how messageLoader does its thang.
 module NagiosHerald
   class MessageLoader
+  include NagiosHerald::Logging
 
     attr_accessor :message_path
 
@@ -25,7 +26,7 @@ module NagiosHerald
     # A message can then easily be instantiated later.
     def load_messages
       if message_class_files.empty?
-        puts "#{$0}: No messages were found in '#{@message_path}'"
+        logger.fatal "#{$0}: No messages were found in '#{@message_path}'"
         exit 1
       else
         message_class_files.each do |message_class_file|

@@ -113,7 +113,7 @@ module NagiosHerald
         request.set_form_data( params )
         response = http.request( request )
         unless response.code.eql?( "200" )
-          puts "Failed to submit search to Splunk."
+          logger.warn "Failed to submit search to Splunk."
           return nil
         end
 
