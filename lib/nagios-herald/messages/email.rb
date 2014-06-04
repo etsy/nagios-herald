@@ -56,7 +56,7 @@ module NagiosHerald
         @text += self.content[:text][:additional_details] unless self.content[:text][:additional_details].nil?
         @text += self.content[:text][:recipients_email_link]
         @text += self.content[:text][:notification_info]
-        @text += self.content[:text][:alert_ack_url] unless self.content[:text][:alert_ack_url].nil?
+        @text += self.content[:text][:alert_ack_url] unless self.content[:text].has_key?(:alert_ack_url) or self.content[:text][:alert_ack_url].nil?
       end
 
       # Public: Generates the HTML portion of the content hash.
@@ -71,7 +71,7 @@ module NagiosHerald
         @html += self.content[:html][:additional_details] unless self.content[:html][:additional_details].nil?
         @html += self.content[:html][:recipients_email_link]
         @html += self.content[:html][:notification_info]
-        @html += self.content[:html][:alert_ack_url] unless self.content[:html][:alert_ack_url].nil?
+        @html += self.content[:html][:alert_ack_url] unless self.content[:html].has_key?(:alert_ack_url) or self.content[:html][:alert_ack_url].nil?
       end
 
       # Public: Prints the subject, text and HTML content to the terminal.
