@@ -1,7 +1,7 @@
 # Tools
 
 This project comes with a few tools you can use that mimic the behavior of helpers and formatters.  These are
-really useful for testing functionality outside of ``notify-by-handler``.
+really useful for testing functionality outside of ``nagios-herald``.
 
 The following tools reside under the ``bin/`` directory.
 

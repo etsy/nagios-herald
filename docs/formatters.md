@@ -114,21 +114,21 @@ To learn more, see the [helpers](/docs/helpers.md) page.
 
 **PLEASE TEST YOUR FORMATTER. NOT DOING SO INCREASES THE POSSIBILITY THAT A NEW FORMATTER WILL PREVENT DELIVERY OF CRITICAL ALERTS.**
 
-There are two ways that formatters can be tested: unit tests and manually running ``notify-by-handler``.
+There are two ways that formatters can be tested: unit tests and manually running ``nagios-herald``.
 
 ### Unit Tests
 
 **THIS IS A WORK IN PROGRESS. BETTER TESTING IS ON THE ROADMAP**
 
-### ``notify-by-handler``
+### ``nagios-herald``
 
-``notify-by-handler`` can be called manually from the command line to test new formatters:
+``nagios-herald`` can be called manually from the command line to test new formatters:
 
 ```
-./bin/notify-by-handler --env-file ../test/env_files/check_mem.vars --formatter=check_mem -r ops@example.com -y nagios@example.com --message-type email -u http://nagios.example.com --trace
+./bin/nagios-herald --env-file ../test/env_files/check_mem.vars --formatter=check_mem -r ops@example.com -y nagios@example.com --message-type email -u http://nagios.example.com --trace
 ```
 
-For a full listing of available options, run ``notify-by-handler --help``.
+For a full listing of available options, run ``nagios-herald --help``.
 
 ### A Note About Nagios Data
 
@@ -150,7 +150,7 @@ One can generate environment files for testing by using the [dump_nagios_env.sh]
 **NOTE**: ``--no-send`` forces ``nagios-herald`` to output content to the terminal.
 
 ```
-./bin/notify-by-handler --no-send --env-file ../test/env_files/check_disk.vars --formatter=check_disk -r ops@example.com -y nagios@example.com --message-type email -u http://nagios.example.com --trace
+./bin/nagios-herald --no-send --env-file ../test/env_files/check_disk.vars --formatter=check_disk -r ops@example.com -y nagios@example.com --message-type email -u http://nagios.example.com --trace
 ------------------
 Subject : ** PROBLEM Service ALERT: web.example.com/Disk Space is CRITICAL **
 ------------------
