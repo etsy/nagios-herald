@@ -15,9 +15,10 @@ define command {
     command_line    /usr/local/nagios-herald/bin/nagios-herald --message-type email --formatter=$_HOSTMESSAGE_FORMATTER_NAME$ --nagios-cgi-url=http://nagios.example.com/nagios/cgi-bin/cmd.cgi --reply-to=nagios@example.com
 }
 
+# specify the location of custom formatters
 define command {
     command_name    notify-service-by-email
-    command_line    /usr/local/nagios-herald/bin/nagios-herald --message-type email --formatter=$_SERVICEMESSAGE_FORMATTER_NAME$ --nagios-cgi-url=http://nagios.example.com/nagios/cgi-bin/cmd.cgi --reply-to=nagios@example.com
+    command_line    /usr/local/nagios-herald/bin/nagios-herald --message-type email --formatter=$_SERVICEMESSAGE_FORMATTER_NAME$ --nagios-cgi-url=http://nagios.example.com/nagios/cgi-bin/cmd.cgi --reply-to=nagios@example.com --formatter-dir=/usr/local/nagios-herald-formatters
 }
 
 # pager
@@ -51,7 +52,7 @@ If ``nagios-herald`` is failing to notify, you can turn up the logging via the `
 more information, like so:
 
 ```
-    command_line    /usr/local/nagios-herald/bin/nagios-herald --message-type email --formatter=$_SERVICEMESSAGE_FORMATTER_NAME$ --nagios-cgi-url=http://nagios.example.com/nagios/cgi-bin/cmd.cgi --reply-to=nagios@example.com --trace
+command_line    /usr/local/nagios-herald/bin/nagios-herald --message-type email --formatter=$_SERVICEMESSAGE_FORMATTER_NAME$ --nagios-cgi-url=http://nagios.example.com/nagios/cgi-bin/cmd.cgi --reply-to=nagios@example.com --trace
 ```
 
 ## Service Configuration

@@ -79,7 +79,10 @@ end
 
 ### Naming Convention
 
-* Formatters live in ``lib/nagios-herald/formatters/``.
+* Built-in formatters live in ``lib/nagios-herald/formatters/``.
+* Custom formatters (those **you'll** write) can live in any location.
+ * Specify the location of your custom formatters via the ``--formatter-dir`` option
+ on the command line or the ``formatter_dir`` variable in the configuration file.
 * The file names **MUST** lower-cased and underscored.
 * The class names **MUST** be CamelCased.
 
