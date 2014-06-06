@@ -62,11 +62,10 @@ To learn more, see the [formatters](/docs/formatters.md) page.
 
 # Installing ``nagios-herald``
 
-Installation of ``nagios-herald`` should be as easy as installing the Ruby gem:
-
-```
-gem install nagios-herald
-```
+Installation of ``nagios-herald`` is as easy as cloning this repository to a location of your choice.
+To enable ``nagios-herald`` to send notifications, [configure Nagios](/docs/nagios-config.md) and,
+optionally, write a [config.yml](/docs/config.md) file. At a minimum, specify the ``logfile`` configuration
+variable.
 
 ## Dependencies
 
