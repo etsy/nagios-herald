@@ -34,3 +34,16 @@ To access the value for the Ganglia server URI, one would write code similar to 
 ```ruby
 ganglia_uri = Config.config[:servers][:ganglia]
 ```
+
+### Notable Configuration Values
+
+Two of the most important configuration values are ``formatter_dir`` and ``logfile``.
+
+``formatter_dir`` (equivalent to the ``--formatter-dir`` command line option) tells **nagios-herald**
+where to locate **your custom formatters**. It will load those in addition to the built-in formatters.
+Custom formatters are given precedence allowing formatter authors to override the built-in formatters
+
+``logfile`` tells **nagios-herald** where to log its output. This is especially critical to catch errors
+should they arise. If **nagios-herald** isn't sending notifications, it's a bug; consult ``logfile`` for
+details. Optionally, setting ``trace`` to **true** (equivalent to ``--trace`` on the command line) will
+provide a backtrace.
