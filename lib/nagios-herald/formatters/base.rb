@@ -279,8 +279,8 @@ module NagiosHerald
       recipients = get_nagios_var("NAGIOS_NOTIFICATIONRECIPIENTS")
       return if recipients.nil?
       recipients_list = recipients.split(',')
-      text += "Sent to #{recipients}\n"
-      html += "Sent to #{recipients}<br>"
+      text += "Sent to #{recipients}\n\n"
+      html += "Sent to #{recipients}<br><br>"
       add_text(section, text)
       add_html(section, html)
     end
