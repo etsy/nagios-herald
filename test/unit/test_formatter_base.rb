@@ -100,14 +100,14 @@ class TestFormatterBase < MiniTest::Unit::TestCase
 
   def test_recipients_email_link
     @formatter.recipients_email_link
-    assert_equal "Sent to ops<br>", @formatter.content[:html][:recipients_email_link]
-    assert_equal "Sent to ops\n", @formatter.content[:text][:recipients_email_link]
+    assert_equal "Sent to ops<br><br>", @formatter.content[:html][:recipients_email_link]
+    assert_equal "Sent to ops\n\n", @formatter.content[:text][:recipients_email_link]
   end
 
   def test_ack_info
     @formatter.ack_info
-    assert_equal "At Thu May 16 21:06:38 UTC 2013 ops acknowledged Disk Space on web.example.com.<br><br>Comment: ", @formatter.content[:html][:ack_info]
-    assert_equal "At Thu May 16 21:06:38 UTC 2013 ops acknowledged Disk Space on web.example.com.\n\nComment: ", @formatter.content[:text][:ack_info]
+    assert_equal "At Thu May 16 21:06:38 UTC 2013 ops acknowledged web.example.com/Disk Space.<br><br>Comment: ", @formatter.content[:html][:ack_info]
+    assert_equal "At Thu May 16 21:06:38 UTC 2013 ops acknowledged web.example.com/Disk Space.\n\nComment: ", @formatter.content[:text][:ack_info]
   end
 
   def test_short_ack_info
