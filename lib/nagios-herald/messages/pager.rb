@@ -26,7 +26,12 @@ module NagiosHerald
       #
       # Returns the full text portion of the content hash.
       def curate_text
-        @text += self.content[:text][:additional_info]
+        notification_type = get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
+        if notification_type.eql?('ACKNOWLEDGEMENT')
+          @text += self.content[:text][:ack_info]
+        else
+          @text += self.content[:text][:additional_info]
+        end
       end
 
       # Public: Prints the subject and text content to the terminal.

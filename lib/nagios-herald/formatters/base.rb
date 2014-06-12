@@ -301,8 +301,8 @@ module NagiosHerald
 
       if @state_type == "SERVICE"
         desc = get_nagios_var("NAGIOS_SERVICEDESC")
-        text += " acknowledged #{desc} on #{hostname}.\n\n"
-        html += " acknowledged #{desc} on #{hostname}.<br><br>"
+        text += " acknowledged #{hostname}/#{desc}.\n\n"
+        html += " acknowledged #{hostname}/#{desc}.<br><br>"
       else
         text += " acknowledged #{hostname}.\n\n"
         html += " acknowledged #{hostname}.<br><br>"

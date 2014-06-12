@@ -57,6 +57,8 @@ module NagiosHerald
         @text += self.content[:text][:recipients_email_link] unless self.content[:text][:recipients_email_link].empty?
         @text += self.content[:text][:notification_info] unless self.content[:text][:notification_info].empty?
         @text += self.content[:text][:alert_ack_url] unless self.content[:text][:alert_ack_url].empty?
+        # Hack to ensure we get ack info, if it's populated.
+        @text += self.content[:text][:ack_info] if self.content[:text][:ack_info]
       end
 
       # Public: Generates the HTML portion of the content hash.
@@ -72,6 +74,8 @@ module NagiosHerald
         @html += self.content[:html][:recipients_email_link] unless self.content[:html][:recipients_email_link].empty?
         @html += self.content[:html][:notification_info] unless self.content[:html][:notification_info].empty?
         @html += self.content[:html][:alert_ack_url] unless self.content[:html][:alert_ack_url].empty?
+        # Hack to ensure we get ack info, if it's populated.
+        @html += self.content[:html][:ack_info] if self.content[:html][:ack_info]
       end
 
       # Public: Prints the subject, text and HTML content to the terminal.
