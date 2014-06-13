@@ -191,8 +191,10 @@ module NagiosHerald
 
         recipients = {}
         if @options.recipients.nil?
-          recipients['email'] = get_nagios_var("NAGIOS_CONTACTEMAIL")
-          recipients['pager'] = get_nagios_var("NAGIOS_CONTACTPAGER")
+          contact_email = get_nagios_var("NAGIOS_CONTACTEMAIL")
+          contact_pager = get_nagios_var("NAGIOS_CONTACTPAGER")
+          recipients['email'] = contact_email if !contact_email.empty?
+          recipients['pager'] = contact_pager if !contact_pager.empty?
         else
           recipients['command_line'] = @options.recipients
         end
