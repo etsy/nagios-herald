@@ -189,7 +189,13 @@ module NagiosHerald
         load_formatters
         load_messages
 
-        recipients = @options.recipients.nil? ? [ get_nagios_var("NAGIOS_CONTACTEMAIL") ] : [ @options.recipients ]
+        recipients = {}
+        if @options.recipients.nil?
+          recipients['email'] = get_nagios_var("NAGIOS_CONTACTEMAIL")
+          recipients['pager'] = get_nagios_var("NAGIOS_CONTACTPAGER")
+        else
+          recipients['command_line'] = @options.recipients
+        end
         nagios_notification_type = @options.notification_type.nil? ? get_nagios_var("NAGIOS_NOTIFICATIONTYPE") : @options.notification_type
   
         # Log the host and service that's notifying (assuming we can read the environment)
@@ -203,10 +209,13 @@ module NagiosHerald
           logger.info "CHECK (HOST): #{hostname} is #{state}"
         end
 
-        recipients.each do |recipient|
+        recipients.each do |recipient_type, recipient|
+          contact_name = get_nagios_var("NAGIOS_CONTACTALIAS")
           if recipient.nil? || recipient.eql?("")
-            logger.error "No recipient defined for this notification!"
+            logger.error "No recipient defined for #{contact_name} (type=#{recipient_type})!"
             next
+          else
+            logger.info "Notifying #{contact_name} (#{recipient}, type=#{recipient_type})"
           end
 
           # bail if can't identify the message type because we don't know what sort of thing to send
@@ -224,7 +233,7 @@ module NagiosHerald
 
           formatter_class = Formatter.formatters[@options.formatter_name]
           if formatter_class.nil?
-              logger.warn "Undefined formatter! Defaulting to the base formatter."
+              logger.info "Undefined formatter. Defaulting to the base formatter."
               formatter_class = NagiosHerald::Formatter   # default to the base formatter
           end
           formatter = formatter_class.new(@options)
