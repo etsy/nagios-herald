@@ -49,6 +49,11 @@ module NagiosHerald
       #
       # Returns the results of the query in the requested format, nil otherwise.
       def query(query)
+
+        # Strip leading and following single quotes from query if present
+        query = query[1..-1] if query[0] == "'"
+        query = query[0..-2] if query[-1] == "'"
+
         query_body = {
             "from" => 0,
             "size" => @logstash_num_results,
@@ -110,7 +115,6 @@ module NagiosHerald
       end
 
       def truncate_results(results)
-        puts "truncating results" if @logstash_result_truncate
         results["hits"]["hits"].each{|result|result["_source"].each{|field_name,field_value|result["_source"][field_name] = field_value[0..@logstash_result_truncate]}} if @logstash_result_truncate
         return results
       end
