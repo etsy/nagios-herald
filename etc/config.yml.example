@@ -9,4 +9,5 @@ splunk:
 logstash:
   url: http://logstash.example.com:9200
   result_field_trucate: 200
-logfile: /usr/nagios/var/nagios.log
+logfile: /tmp/nagios-herald.log
+formatter_dir: /usr/local/nagios-herald-formatters
