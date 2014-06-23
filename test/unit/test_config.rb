@@ -22,6 +22,7 @@ class TestConfig < MiniTest::Unit::TestCase
     assert_equal "pager", NagiosHerald::Config.config['message_type']                       # Command line
     assert_equal "ganglia.example.com", NagiosHerald::Config.config['servers']['ganglia']   # Config file
     assert_equal "splunkuser",  NagiosHerald::Config.config['splunk']['username']           # Config file
+    assert_equal "http://logstash.example.com:9200",  NagiosHerald::Config.config['logstash']['url']           # Config file
   end
 
 end

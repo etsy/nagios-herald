@@ -25,8 +25,9 @@ splunk:
   url: https://splunk.example.com:8089/services/search/jobs
   username: splunkuser
   password: splunkpass
-logfile: /tmp/nagios-herald.log
-formatter_dir: /usr/local/nagios-herald-formatters
+logstash:
+  url: http://logstash.example.com:9200
+  result_field_truncate: 200
 ```
 
 To access the value for the Ganglia server URI, one would write code similar to the below:

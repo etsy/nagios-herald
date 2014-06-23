@@ -6,4 +6,7 @@ splunk:
   url: https://splunk.example.com:8089/services/search/jobs
   username: splunkuser
   password: splunkpass
+logstash:
+  url: http://logstash.example.com:9200
+  result_field_trucate: 200
 logfile: /usr/nagios/var/nagios.log
