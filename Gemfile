@@ -3,3 +3,4 @@ gemspec
 
 gem 'rake'
 gem 'chef', '= 11.8.2'
+gem 'elasticsearch'
