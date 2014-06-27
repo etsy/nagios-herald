@@ -28,7 +28,7 @@ module NagiosHerald
         today = Time.now.strftime("%Y.%m.%d")
         @logstash_index = options[:index] ? options[:index] : "logstash-#{today}"
         @logstash_time_period = options[:time_period] ? options[:time_period] : "1h"
-        @logstash_num_results = options[:num_results] ? options[:num_results] : 10
+        @logstash_num_results = Config.config['logstash']['num_results'] ? Config.config['logstash']['num_results'] : 10
         @logstash_result_truncate = Config.config['logstash']['result_field_trucate'] ? Config.config['logstash']['result_field_trucate'] : nil
 
         # Pull the Logstash URI, username, and password from the config.
