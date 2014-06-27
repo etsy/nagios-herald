@@ -1,4 +1,4 @@
-# nagios-herald
+# nagios-herald [![Travis Build Status](https://travis-ci.org/etsy/nagios-herald.svg?branch=master)](https://travis-ci.org/etsy/nagios-herald)
 
 ``nagios-herald`` is a project that aims to make it easy to provide context in Nagios alerts.
 
