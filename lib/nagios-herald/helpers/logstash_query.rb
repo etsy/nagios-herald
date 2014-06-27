@@ -9,6 +9,8 @@ module NagiosHerald
   module Helpers
     class LogstashQuery
 
+      attr_reader :query
+
       # Public: Initialize a new LogstashQuery object.
       #
       # query - A string representing the query to send to Logstash.
@@ -48,13 +50,13 @@ module NagiosHerald
       # results = logstash_query.query
       #
       # Returns the results of the query in the requested format, nil otherwise.
-      def query(query)
+      def kibana_style_query(query_string)
 
         # Strip leading and following single quotes from query if present
-        query = query[1..-1] if query[0] == "'"
-        query = query[0..-2] if query[-1] == "'"
+        query_string = query_string[1..-1] if query_string[0] == "'"
+        query_string = query_string[0..-2] if query_string[-1] == "'"
 
-        query_body = {
+        @query = {
             "from" => 0,
             "size" => @logstash_num_results,
             "query" => {
@@ -64,7 +66,7 @@ module NagiosHerald
                             "should" => [
                                 {
                                     "query_string" => {
-                                        "query" => "#{query}"
+                                        "query" => "#{query_string}"
                                     }
                                 }
                             ]
@@ -90,18 +92,17 @@ module NagiosHerald
                 }
             }
         }
-        truncate_results(run_logstash_query(query_body))
-        #run_logstash_query(query_body)
+        truncate_results(run_logstash_query(@query))
       end
 
       def query_from_file(query_file)
         if File.exists? query_file
-          query_body = JSON.parse(File.readlines(query_file).join)
+          @query = JSON.parse(File.readlines(query_file).join)
         else
           raise "Query file #{query_file} does not exist"
         end
 
-        truncate_results(run_logstash_query(query_body))
+        truncate_results(run_logstash_query(@query))
       end
 
       private
