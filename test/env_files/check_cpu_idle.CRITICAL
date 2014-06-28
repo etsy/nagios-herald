@@ -105,7 +105,7 @@ NAGIOS_TOTALHOSTSERVICESWARNING=0
 NAGIOS_ARG17=
 PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 NAGIOS_HOSTOUTPUT=PING OK - Packet loss = 0%, RTA = 0.25 ms
-NAGIOS_NOTIFICATIONRECIPIENTS=ops,akachler,jallspaw,ldenness,irccat,jgoulah,dschauenberg,kmurphy,dyurkiewicz,pbellisano
+NAGIOS_NOTIFICATIONRECIPIENTS=ops
 NAGIOS_ARG16=
 NAGIOS_MAXHOSTATTEMPTS=1
 NAGIOS_ARG15=

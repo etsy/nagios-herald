@@ -14,6 +14,8 @@ module NagiosHerald
         section = __method__
         output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
         #if match = /(?<state>\w+ CPU) (?<metric>\w+) (?<threshold_and_stats>.*) (?<iowait>iowait=.*%) (?<idle>idle=.*%)/.match(output)
+        add_html(section, "<b>Additional Info</b>:<br>")
+        add_text(section, "Additional Info: ")
         if match = /(?<state>\w+ CPU) (?<metric>iowait) (?<threshold_and_stats>.*) (?<iowait>iowait=.*%) (?<idle>idle=.*%)/.match(output)
           iowait_info = "#{match[:state]} <b><font color='red'>#{match[:metric]}</font></b> "
           iowait_info += "#{match[:threshold_and_stats]} <b><font color='red'>#{match[:iowait]}</font></b> "
