@@ -26,6 +26,9 @@ module NagiosHerald
     # default to STDOUT
     def configure_logger_for(classname)
       logfile = Config.config['logfile'] ? Config.config['logfile'] : STDOUT
+      if logfile.eql?("STDOUT")
+        logfile = STDOUT
+      end
       begin
         logger = Logger.new(logfile)
       rescue Exception => e
