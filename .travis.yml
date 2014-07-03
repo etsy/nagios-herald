@@ -1,6 +1,7 @@
 language: ruby
 rvm:
  - 1.9.2
+sudo: false
 before_install:
  - "echo 'gem: --no-ri --no-rdoc' >> ~/.gemrc"
 before_script:
