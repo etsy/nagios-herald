@@ -48,7 +48,7 @@ module NagiosHerald
       # Public: Sends the pager message.
       #
       # Returns nothing.
-      def send
+      def build_message
         curate_text
         if @no_send
           self.print
@@ -62,9 +62,13 @@ module NagiosHerald
           :subject => @subject,
           :body    => @text
         })
+      end
 
+      def send
+        self.build_message
         mail.deliver!
       end
+
     end
   end
 end
