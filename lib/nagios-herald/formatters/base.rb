@@ -471,7 +471,7 @@ module NagiosHerald
         when "ACKNOWLEDGEMENT"
           generate_ack_content
         else
-          logger.fatal "Invalid Nagios notification type! Expecting something like PROBLEM or RECOVERY."
+          logger.fatal "Invalid Nagios notification type! Expecting something like PROBLEM or RECOVERY. We got #{nagios_notification_type}."
           exit 1
         end
     end
