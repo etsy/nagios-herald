@@ -90,10 +90,10 @@ module NagiosHerald
         puts @html if !@html.empty?
       end
 
-      # Public: Sends the email message.
+      # Public: Builds the email message.
       #
-      # Returns nothing.
-      def send
+      # Returns the mail object.
+      def build_message
         curate_text
         curate_html
         if @no_send
@@ -137,7 +137,11 @@ module NagiosHerald
         end
 
         mail.add_part(html_part)
+        mail
+      end
 
+      def send
+        mail = self.build_message
         mail.deliver!
       end
 
