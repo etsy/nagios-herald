@@ -16,6 +16,11 @@ class TestExecutor < MiniTest::Unit::TestCase
     @options[:env] = File.join(File.dirname(__FILE__), '..', 'env_files', 'nagios_vars.EXAMPLE')
   end
 
+  def teardown
+    # Clear the environment variables so we are certain they're being re-delcared.
+    ENV.clear
+  end
+
   # We expect a NagiosHerald::Executor object.
   def test_new_executor
     assert_instance_of NagiosHerald::Executor, @executor
@@ -26,6 +31,16 @@ class TestExecutor < MiniTest::Unit::TestCase
   def test_load_env_file
     @executor.load_env_from_file(@options[:env])
     assert_equal "ops@example.com", get_nagios_var('NAGIOS_CONTACTEMAIL')
+    assert_equal "PROBLEM",  get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
+  end
+
+  # Read Icinga environment variables.
+  def test_icinga_variables
+    @options[:env] = File.join(File.dirname(__FILE__), '..', 'env_files', 'check_disk.CRITICAL_ICINGA')
+    NagiosHerald::Config.config['icinga'] = true
+    @executor.load_env_from_file(@options[:env])
+    assert_equal "ops@example.com", get_nagios_var('NAGIOS_CONTACTEMAIL')
+    assert_equal "ops@example.com", get_nagios_var('ICINGA_CONTACTEMAIL')
     assert_equal "PROBLEM",  get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
   end
 
