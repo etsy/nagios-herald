@@ -48,3 +48,15 @@ Custom formatters are given precedence allowing formatter authors to override th
 should they arise. If **nagios-herald** isn't sending notifications, **it's a bug**; consult ``logfile`` for
 details. Optionally, setting ``trace`` to **true** (equivalent to ``--trace`` on the command line) will
 provide a backtrace to aid in debugging.
+
+### Icinga Support
+
+``nagios-herald`` relies on the environment variables set when a notification is sent.
+Those variables are prefixed with ``NAGIOS_``. Icinga, a popular variant of Nagios,
+prefixes those variables with ``ICINGA_``. To enable support for Icinga, set the
+``icinga`` configuraion value:
+
+``icinga: true``
+
+If that value is set, calling ``Util#get_nagios_var`` will replace ``NAGIOS_``
+with ``ICINGA_`` in the environment variable's name.

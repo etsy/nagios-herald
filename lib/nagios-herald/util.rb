@@ -29,6 +29,10 @@ module NagiosHerald
     end
 
     def get_nagios_var(name)
+      # If we're running Icinga, change the variable prefix.
+      if Config.config['icinga']
+        name.gusb!(/^NAGIOS_/, 'ICINGA_')
+      end
       value = ENV[name]
     end
 
