@@ -15,6 +15,9 @@ class TestConfig < MiniTest::Unit::TestCase
     @options['message_type'] = "pager"
   end
 
+  def teardown
+  end
+
   # Make sure we can load the config and read values from it.
   # Read values from command-line options and the config file.
   def test_load_config
