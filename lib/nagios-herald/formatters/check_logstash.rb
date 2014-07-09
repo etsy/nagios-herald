@@ -22,6 +22,12 @@ module NagiosHerald
         logstash_helper = NagiosHerald::Helpers::LogstashQuery.new
         results = get_logstash_results(logstash_helper, command_components[:query])
 
+        # Handle the case when an exception is thrown inside get_logstash_results
+        if results.empty?
+          add_text(section, "Something went wrong while getting logstash results\n\n")
+          return
+        end
+
         if results["hits"]["hits"].empty? && results["aggregations"]
           # We have aggregations
 
