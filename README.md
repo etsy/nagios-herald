@@ -88,3 +88,7 @@ Generating stack bars requires the following (which are included in this project
 
 To configure Nagios to use ``nagios-herald`` for notifications, see the [Nagios Configuration](/docs/nagios-config.md) page.
 
+### Icinga Support
+
+``nagios-herald`` supports Icinga too! Follow the instructions [here](/docs/config.md#icinga-support) to make it so.
+
