@@ -68,7 +68,13 @@ module NagiosHerald
         download_image(image_url, image_path)
         if show_historical
           historical_image_path = "#{path}/#{image_uuid}#{@graphite_historical_lookup}.png"
-          uri.query.gsub!(/from=([^&]*)/, "from=#{@graphite_historical_lookup}")
+          if uri.query =~ /&from/
+            # Replace the &from value.
+            uri.query.gsub!(/from=([^&]*)/, "from=#{@graphite_historical_lookup}")
+          else
+            # Set the &from value.
+            uri.query = "#{uri.query}&from=#{@graphite_historical_lookup}"
+          end
           historical_url = uri.to_s
           download_image(historical_url, historical_image_path)
         end
