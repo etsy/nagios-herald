@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+require 'choice'
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'nagios-herald'
+
+program_name = File.basename($0)
+
+Choice.options do
+  header ""
+  header "#{program_name} is used to generate images from Graphite URIs."
+  header ""
+  header "It takes a URI from which to generate a Graphite image."
+  header "Optionally, an historical graph can be generated to compare to the first."
+  header "The script outputs the full path for each of the images that have been written."
+  header ""
+
+  option :historical_graph do
+    short "-h"
+    long  "--historical-graph"
+    desc  "Generate an historical graph to compare to the original image (i.e. past 24-hour period)."
+    default false
+  end
+
+  option :path do
+    short "-p"
+    long  "--path"
+    desc  "An optional path in which to write the image files."
+    desc  "DEFAULT: /tmp"
+    default "/tmp"
+  end
+
+  option :uri, :required => true do
+    short "-u"
+    long  "--uri"
+    desc  "The URI from which to generate an image."
+  end
+
+  footer ""
+  footer "EXAMPLES"
+  footer "--------"
+  footer "1. Passing a URI to #{program_name}:"
+  footer ""
+  footer "#{program_name} -u \"http://graphite.example.com/render/?target=mysql.connections.count\""
+  footer ""
+  footer "2. Passing a URI to #{program_name} and generating an historical graph:"
+  footer ""
+  footer "#{program_name} -u \"http://graphite.example.com/render/?target=mysql.connections.count\" -h"
+  footer ""
+end
+
+historical_graph = true if Choice[:historical_graph]
+path = Choice[:path]
+uri = Choice[:uri]
+
+graphite = NagiosHerald::Helpers::GraphiteGraph.new
+image_paths = graphite.get_graph(uri, path, historical_graph)
+puts image_paths.join(", ") if image_paths

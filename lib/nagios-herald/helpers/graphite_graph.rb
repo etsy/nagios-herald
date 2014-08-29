@@ -25,7 +25,7 @@ module NagiosHerald
       def download_image(url, download_path)
         success = NagiosHerald::Helpers::UrlImage.download_image(url, download_path)
         if success
-          image_paths.push(download_path)
+          @image_paths.push(download_path)
         else
           logger.warn("Could not download Graphite graph for '#{url}'")
         end
@@ -53,7 +53,7 @@ module NagiosHerald
       #   get_graph("http://graphite.example.com/render/?target=foo.bar.baz?from=-15min", "/tmp/img1234", true)
       #
       # Returns the local path of the downloaded image to be attached/inlined with a message.
-      def get_graph(url, path, show_historical=false)
+      def get_graph(url, path, show_historical=nil)
         uri = URI(url)
         # Strip &rawData parameter.
         uri.query.gsub!(/&rawData([^&]*)/, '')
