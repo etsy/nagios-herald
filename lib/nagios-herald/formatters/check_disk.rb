@@ -41,9 +41,9 @@ module NagiosHerald
       # Returns the filename of the generated image or nil if the image was not generated.
       def get_partitions_stackedbars_chart(partitions_data)
         # Sort results by the most full partition
-        partitions_data.sort! { |a,b| a[:free_percent] <=> b[:free_percent] }
+        partitions_data.sort! { |a,b| a['free_percent'] <=> b['free_percent'] }
         # generate argument as string
-        volumes_space_str = partitions_data.map {|x| "#{x[:partition]}=#{100 - x[:free_percent].to_i}"}.compact
+        volumes_space_str = partitions_data.map {|x| "#{x['partition']}=#{100 - x['free_percent'].to_i}"}.compact
         output_file = File.join(@sandbox, "host_status.png")
         command = ""
         command += NagiosHerald::Util::get_script_path('draw_stack_bars')
