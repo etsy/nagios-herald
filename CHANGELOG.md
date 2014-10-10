@@ -1,3 +1,17 @@
+## 0.0.3 (10th Oct, 2014)
+
+Features:
+
+    - check_graphite_graph formatter allows nagios-herald to embed Graphite graphs
+
+Bug fixes:
+
+    - Corrected a regression in the check_disk formatter so that it generates a correct stack bar
+
+Thanks:
+
+    - Shout out to @kdaniels for the new formatter and @v for fixing up the check_disk formatter!
+
 ## 0.0.2 (23rd June, 2014)
 
 Features:
