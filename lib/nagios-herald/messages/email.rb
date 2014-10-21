@@ -15,7 +15,7 @@ module NagiosHerald
       # recipients - A list of recipients for this message.
       # options - The options hash from Executor.
       # FIXME: Is that ^^ necessary now with Config.config available?
-      # 
+      #
       # Returns a new Message::Email object.
       def initialize(recipients, options = {})
         @replyto     = options[:replyto]
@@ -96,12 +96,12 @@ module NagiosHerald
       def build_message
         curate_text
         curate_html
+        @subject = self.content[:subject]
         if @no_send
           self.print
           return
         end
 
-        @subject = self.content[:subject]
         mail = Mail.new({
           :from  => @replyto,
           :to    => @recipients,
@@ -142,7 +142,7 @@ module NagiosHerald
 
       def send
         mail = self.build_message
-        mail.deliver!
+        mail.deliver! unless mail.nil?
       end
 
     end

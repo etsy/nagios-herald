@@ -28,9 +28,11 @@ module NagiosHerald
       def curate_text
         notification_type = get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
         if notification_type.eql?('ACKNOWLEDGEMENT')
-          @text += self.content[:text][:ack_info]
+          @text += self.content[:short_text][:ack_info] unless self.content[:short_text][:ack_info].empty?
         else
-          @text += self.content[:text][:additional_info]
+          [:state_info, :additional_info, :additional_details].each do |info|
+            @text += self.content[:short_text][info] unless self.content[:short_text][info].empty?
+          end
         end
       end
 
@@ -39,9 +41,7 @@ module NagiosHerald
       #
       # Returns nothing.
       def print
-        puts "------------------"
-        puts "Subject : #{@subject}"
-        puts "------------------"
+        puts @subject
         puts @text
       end
 
@@ -49,24 +49,29 @@ module NagiosHerald
       #
       # Returns nothing.
       def build_message
+        @subject = self.content[:short_subject]
         curate_text
-        if @no_send
-          self.print
-          return
-        end
 
-        @subject = self.content[:subject]
+
         mail = Mail.new({
           :from    => @replyto,
           :to      => @recipients,
           :subject => @subject,
           :body    => @text
         })
+
+        if @no_send
+          self.print
+          return
+        end
+
+
+        return mail
       end
 
       def send
-        self.build_message
-        mail.deliver!
+        mail = self.build_message
+        mail.deliver! unless mail.nil?
       end
 
     end
