@@ -39,6 +39,17 @@ class TestMessagePager < MiniTest::Unit::TestCase
         :recipients_email_link=>"Sent to ops\n\n",
         :notification_info=>"Notification sent at: Thu May 16 21:06:38 UTC 2013 (notification number 1)\n\n",
         :alert_ack_url=>"Acknowledge this alert: http://nagios.example.com/nagios/cgi-bin/cmd.cgi?cmd_typ=34&host=web.example.com&service=Disk%20Space\nAlternatively, reply to this message with the word 'ack' in the body to acknowledge the alert.\n"
+      },
+      :short_text => {
+        :host_info=>"web.example.com/Disk Space\n\n",
+        :state_info=>"CRITICAL for 0d 0h 5m 12s (was CRITICAL) after 3 / 3 checks\n\n",
+        :additional_info=>"DISK CRITICAL - free space: / 7002 MB (18% inode 60%): /data 16273093 MB (26% inode 99%):\n\n",
+        :action_url=>"Action URL: http://runbook.example.com/disk_space_alerts.html\n\n",
+        :notes=>"",
+        :additional_details=>"THRESHOLDS - WARNING:15%;CRITICAL:20%;\n\nFilesystem            Size  Used Avail Use% Mounted on\n/dev/vda               40G   31G  6.9G  82% /\ntmpfs                 2.5G   83M  2.4G   4% /dev/shm\nnfs.example.example.com:/mnt/user/homes\n                       59T   43T   16T  74% /data\n\n",
+        :recipients_email_link=>"Sent to ops\n\n",
+        :notification_info=>"Notification sent at: Thu May 16 21:06:38 UTC 2013 (notification number 1)\n\n",
+        :alert_ack_url=>"Acknowledge this alert: http://nagios.example.com/nagios/cgi-bin/cmd.cgi?cmd_typ=34&host=web.example.com&service=Disk%20Space\nAlternatively, reply to this message with the word 'ack' in the body to acknowledge the alert.\n"
       }
     }
   end
