@@ -366,7 +366,7 @@ module NagiosHerald
         html       += " acknowledged #{hostname}/#{desc}.<br><br>"
       else
         text       += " acknowledged #{hostname}.\n\n"
-        short_text += " acknowledged #{hostname}.\n\n"
+        short_text += " acked #{hostname}.\n\n"
         html       += " acknowledged #{hostname}.<br><br>"
 
       end
