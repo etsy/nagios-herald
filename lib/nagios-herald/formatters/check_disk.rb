@@ -64,8 +64,9 @@ module NagiosHerald
       # Returns nothing. Updates the formatter content hash.
       def additional_info
         section = __method__
+        super
+        delete_html(section)
         output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
-        add_text(section, "Additional Info:\n #{unescape_text(output)}\n\n") if output
 
         # Collect partitions data and plot a chart
         # if the check has recovered, $NAGIOS_SERVICEOUTPUT doesn't contain the data we need to parse for images; just give us the A-OK message

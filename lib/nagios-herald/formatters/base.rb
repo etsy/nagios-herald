@@ -31,6 +31,7 @@ module NagiosHerald
       @content[:html]
       @content[:subject] = ""
       @content[:text]
+      @content[:short_text]
       @nagios_url = options[:nagios_url]
       @sandbox  = get_sandbox_path
       @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
@@ -57,6 +58,30 @@ module NagiosHerald
       formatters[subclass_base_name] = subclass
     end
 
+    # Public: remove a section from the content hash
+    #
+    # section - section to remove
+    #
+    # Returns the content that got removed or nil if the type or section
+    # doesn't exist
+    def delete_section_for_type(type, section)
+      return nil if @content[type].nil?
+      @content[type].delete(section)
+    end
+
+    def delete_html(section)
+      delete_section_for_type(:html, section)
+    end
+
+    def delete_text(section)
+      delete_section_for_type(:text, section)
+    end
+
+    def delete_short_text(section)
+      delete_section_for_type(:short_text, section)
+    end
+
+
     # Public: Concatenates text content.
     #
     # section - The content section name whose text we'll concatenate
@@ -74,6 +99,27 @@ module NagiosHerald
         @content[:text][section] = text
       else
         @content[:text][section] += text
+      end
+    end
+
+    # Public: Concatenates short text content. This is really for usage in
+    # limited space messages like SMS or chat based mediums.
+    #
+    # section - The content section name whose text we'll concatenate
+    # text - The text we want to concatenate
+    #
+    # Example:
+    #
+    #   add_short_text("state_detail", "Service is somewhere in Kansas")
+    #
+    # Returns the concatenated short text for the given section.
+    def add_short_text(section, text)
+      # Ensure our key is a symbol, regardless if we're passed a string or symbol
+      section = section.to_sym
+      if @content[:short_text][section].nil? or @content[:short_text][section].empty?
+        @content[:short_text][section] = text
+      else
+        @content[:short_text][section] += text
       end
     end
 
@@ -126,6 +172,7 @@ module NagiosHerald
     # Appends text and HTML output to the appropriate sections in @content
     def line_break(section)
       add_text(section, "\n")
+      add_short_text(section, "\n")
       add_html(section, "<br>")
     end
 
@@ -134,20 +181,23 @@ module NagiosHerald
     def host_info
       section = __method__
       text = ""
+      short_text = ""
       html = ""
-      notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       hostname          = get_nagios_var("NAGIOS_HOSTNAME")
       service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
       text += "Host: #{hostname} "
+      short_text += "#{hostname}"
       html += "<br><b>Host</b>: #{hostname} "
       if !service_desc.nil? and !service_desc.empty?
         text += "Service: #{service_desc}\n"
+        short_text += "/#{service_desc}\n"
         html += "<b>Service</b>: #{service_desc}<br/>"
       else
         # we need a trailing newline if no service description
         line_break(section)
       end
       add_text(section, text)
+      add_short_text(section, short_text)
       add_html(section, html)
       line_break(section)
     end
@@ -158,21 +208,24 @@ module NagiosHerald
     def state_info
       section = __method__
       text = ""
+      short_text = ""
       html = ""
       state         = get_nagios_var("NAGIOS_#{@state_type}STATE")
       duration      = get_nagios_var("NAGIOS_#{@state_type}DURATION")
-      last_duration = get_nagios_var("NAGIOS_LAST#{@state_type}STATE")
+      last_state    = get_nagios_var("NAGIOS_LAST#{@state_type}STATE")
       attempts      = get_nagios_var("NAGIOS_#{@state_type}ATTEMPT")
       max_attempts  = get_nagios_var("NAGIOS_MAX#{@state_type}ATTEMPTS")
 
-      text += "State is now: #{state} for #{duration} (was #{last_duration}) after #{attempts} / #{max_attempts} checks\n"
+      text += "State is now: #{state} for #{duration} (was #{last_state}) after #{attempts} / #{max_attempts} checks\n"
+      short_text += "#{state} for #{duration} (was #{last_state}) after #{attempts} / #{max_attempts} checks\n"
 
       if state.eql? 'OK' or state.eql? 'UP'
-          html += "State is now: <b>#{state}</b> for <b>#{duration}</b> (was #{last_duration}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
+          html += "State is now: <b>#{state}</b> for <b>#{duration}</b> (was #{last_state}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
       else
-          html += "State is now: <b><font style='color:red'>#{state}</font></b> for <b>#{duration}</b> (was #{last_duration}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
+          html += "State is now: <b><font style='color:red'>#{state}</font></b> for <b>#{duration}</b> (was #{last_state}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
       end
       add_text(section, text)
+      add_short_text(section, short_text)
       add_html(section, html)
       line_break(section)
     end
@@ -197,12 +250,15 @@ module NagiosHerald
     def additional_info
       section = __method__
       text = ""
+      short_text = ""
       html = ""
       output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
       if !output.nil? and !output.empty?
         text += "Additional Info: #{unescape_text(output)}\n\n"
+        short_text += "#{unescape_text(output)}\n\n"
         html += "<b>Additional Info</b>: #{output}<br><br>"
         add_text(section, text)
+        add_short_text(section, short_text)
         add_html(section, html)
       end
     end
@@ -212,12 +268,15 @@ module NagiosHerald
     def additional_details
       section = __method__
       text = ""
+      short_text = ""
       html = ""
       long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
       if !long_output.nil? and !long_output.empty?
         text += "Additional Details: #{unescape_text(long_output)}\n"
+        short_text += "#{unescape_text(long_output)}\n"
         html += "<b>Additional Details</b>: <pre>#{unescape_text(long_output)}</pre><br><br>"
         add_text(section, text)
+        add_short_text(section, short_text)
         add_html(section, html)
       end
     end
@@ -278,7 +337,6 @@ module NagiosHerald
       html = ""
       recipients = get_nagios_var("NAGIOS_NOTIFICATIONRECIPIENTS")
       return if recipients.nil?
-      recipients_list = recipients.split(',')
       text += "Sent to #{recipients}\n\n"
       html += "Sent to #{recipients}<br><br>"
       add_text(section, text)
@@ -290,27 +348,33 @@ module NagiosHerald
     def ack_info
       section = __method__
       text = ""
+      short_text = ""
       html = ""
       date = get_nagios_var("NAGIOS_LONGDATETIME")
       author = get_nagios_var("NAGIOS_#{@state_type}ACKAUTHOR")
       comment = get_nagios_var("NAGIOS_#{@state_type}ACKCOMMENT")
       hostname = get_nagios_var("NAGIOS_HOSTNAME")
 
-      text += "At #{date} #{author}"
-      html += "At #{date} #{author}"
+      text       += "At #{date} #{author}"
+      short_text += "At #{date} #{author}"
+      html       += "At #{date} #{author}"
 
       if @state_type == "SERVICE"
         desc = get_nagios_var("NAGIOS_SERVICEDESC")
-        text += " acknowledged #{hostname}/#{desc}.\n\n"
-        html += " acknowledged #{hostname}/#{desc}.<br><br>"
+        text       += " acknowledged #{hostname}/#{desc}.\n\n"
+        short_text += " acked #{hostname}/#{desc}.\n\n"
+        html       += " acknowledged #{hostname}/#{desc}.<br><br>"
       else
-        text += " acknowledged #{hostname}.\n\n"
-        html += " acknowledged #{hostname}.<br><br>"
+        text       += " acknowledged #{hostname}.\n\n"
+        short_text += " acknowledged #{hostname}.\n\n"
+        html       += " acknowledged #{hostname}.<br><br>"
 
       end
-      text += "Comment: #{comment}" if comment
-      html += "Comment: #{comment}" if comment
+      text       += "Comment: #{comment}" if comment
+      short_text += "#{comment}" if comment
+      html       += "Comment: #{comment}" if comment
       add_text(section, text)
+      add_short_text(section, short_text)
       add_html(section, html)
     end
 
@@ -473,7 +537,7 @@ module NagiosHerald
         else
           logger.fatal "Invalid Nagios notification type! Expecting something like PROBLEM or RECOVERY. We got #{nagios_notification_type}."
           exit 1
-        end
+      end
     end
 
     # Public: Generates a subject.
@@ -489,11 +553,19 @@ module NagiosHerald
       subject += "/#{service_desc}" if service_desc != ""
 
       if @state_type == "SERVICE"
-        subject="#{notification_type} Service #{subject} is #{state}"
+        long_subject="#{notification_type} Service #{subject} is #{state}"
       else
-        subject="#{notification_type} Host #{subject} is #{state}"
+        long_subject="#{notification_type} Host #{subject} is #{state}"
       end
-      @content[:subject] = subject
+
+      if notification_type == "ACKNOWLEDGEMENT"
+        short_subject="ACK: #{subject} is #{state}"
+      else
+        short_subject="#{subject} is #{state}"
+      end
+
+      @content[:subject] = long_subject
+      @content[:short_subject] = short_subject
     end
 
     # Public: Generates content body.
