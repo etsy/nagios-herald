@@ -1,3 +1,12 @@
+## 0.0.4 (29th Oct, 2014)
+
+Features:
+
+    - Support for short messages (i.e. SMS) added.
+
+Thanks:
+    - @mrtazz is my hero.
+
 ## 0.0.3 (10th Oct, 2014)
 
 Features:
