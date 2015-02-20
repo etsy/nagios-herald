@@ -19,11 +19,11 @@ module NagiosHerald
         agg_level_limit = 3
 
         elasticsearch_helper = NagiosHerald::Helpers::ElasticsearchQuery.new
-        results = get_logstash_results(elasticsearch_helper, command_components[:query])
+        results = get_elasticsearch_results(elasticsearch_helper, command_components[:query])
 
-        # Handle the case when an exception is thrown inside get_logstash_results
-        if results.empty?
-          add_text(section, "Something went wrong while getting logstash results\n\n")
+        # Handle the case when an exception is thrown inside get_elasticsearch_results
+        if results.nil? or results.empty?
+          add_text(section, "Something went wrong while getting Elasticsearch results\n\n")
           return
         end
 
@@ -85,7 +85,7 @@ module NagiosHerald
         agg_level
       end
 
-      def get_logstash_results(elasticsearch_helper, query)
+      def get_elasticsearch_results(elasticsearch_helper, query)
         begin
           if query.include?(".json")
             elasticsearch_helper.query_from_file(query)
@@ -93,7 +93,7 @@ module NagiosHerald
             elasticsearch_helper.query_from_string(query)
           end
         rescue Exception => e
-          logger.error "Exception encountered retrieving Logstash Query - #{e.message}"
+          logger.error "Exception encountered retrieving Elasticsearch Query - #{e.message}"
           e.backtrace.each do |line|
             logger.error "#{line}"
           end
