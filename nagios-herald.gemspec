@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'app_conf', '~> 0.4', '>= 0.4.2'
   spec.add_runtime_dependency 'choice', '~> 0.1', '>= 0.1.6'
   spec.add_runtime_dependency 'mail', '~> 2.5', '>= 2.5.4'
+  spec.add_runtime_dependency 'ohai', ['>= 7.4.0', '< 8.0']
   spec.add_runtime_dependency 'chef', '>= 11.8.2'
   spec.add_runtime_dependency 'elasticsearch', '>= 1.0.2'
 
