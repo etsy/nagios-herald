@@ -6,9 +6,9 @@ splunk:
   url: https://splunk.example.com:8089/services/search/jobs
   username: splunkuser
   password: splunkpass
-logstash:
+elasticsearch:
   url: http://logstash.example.com:9200
-  result_field_trucate: 200
+  result_field_truncate: 200
   num_results: 10
 logfile: /tmp/nagios-herald.log
 formatter_dir: /usr/local/nagios-herald-formatters
