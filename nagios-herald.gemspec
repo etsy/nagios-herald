@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
   spec.executables = ["nagios-herald"]
   spec.required_ruby_version = '>=1.9.2'
 
+  spec.add_runtime_dependency 'minitest', ['>= 4.3.2', '< 5.0']
   spec.add_runtime_dependency 'app_conf', '~> 0.4', '>= 0.4.2'
   spec.add_runtime_dependency 'choice', '~> 0.1', '>= 0.1.6'
   spec.add_runtime_dependency 'mail', '~> 2.5', '>= 2.5.4'
