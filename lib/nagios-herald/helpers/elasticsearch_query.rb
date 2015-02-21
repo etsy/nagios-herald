@@ -27,7 +27,7 @@ module NagiosHerald
       # Returns a new ElasticsearchQuery object.
       def initialize(options={})
         today = Time.now.strftime("%Y.%m.%d")
-        @elasticsearch_index = options[:index] ? options[:index] : "elasticsearch-#{today}"
+        @elasticsearch_index = options[:index] ? options[:index] : "logstash-#{today}"
         @elasticsearch_time_period = options[:time_period] ? options[:time_period] : "1h"
         @elasticsearch_num_results = Config.config['elasticsearch']['num_results'] ? Config.config['elasticsearch']['num_results'] : 10
         @elasticsearch_result_field_truncate = Config.config['elasticsearch']['result_field_truncate'] ? Config.config['elasticsearch']['result_field_truncate'] : nil
@@ -133,9 +133,7 @@ module NagiosHerald
         end
       end
 
-      private
-
-      # Private: Executes an Elasticsearch query.
+      # Public: Executes an Elasticsearch query.
       #
       # query_json - A JSON-encoded Elasticsearch query.
       #
@@ -156,7 +154,7 @@ module NagiosHerald
         end
       end
 
-      # Private: Truncate the field values in results.
+      # Public: Truncate the field values in results.
       # Some fields can have very long values that aren't conducive to
       # media like email and SMS. We can optionaly truncate them and still get
       # important data through.
