@@ -70,7 +70,9 @@ module NagiosHerald
                             "should" => [
                                 {
                                     "query_string" => {
-                                        "query" => "#{query_string}"
+                                        "query" => "#{query_string}",
+                                        "default_operator" => "AND",
+                                        "lowercase_expanded_terms" => false
                                     }
                                 }
                             ]
