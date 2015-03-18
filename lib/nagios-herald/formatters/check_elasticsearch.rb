@@ -18,7 +18,7 @@ module NagiosHerald
         # The aggregation level limit for which we can render results
         agg_level_limit = 3
 
-        elasticsearch_helper = NagiosHerald::Helpers::ElasticsearchQuery.new
+        elasticsearch_helper = NagiosHerald::Helpers::ElasticsearchQuery.new({ :time_period => command_components[:time_period]})
         results = get_elasticsearch_results(elasticsearch_helper, command_components[:query])
 
         # Handle the case when an exception is thrown inside get_elasticsearch_results
@@ -59,6 +59,38 @@ module NagiosHerald
 
       end
 
+      # Public: Formats the notes information for this alert.
+      # Generates text and HTML output.
+      def notes
+          super()
+
+          section = __method__
+          text = ""
+          html = ""
+
+          service_output = get_nagios_var("NAGIOS_SERVICECHECKCOMMAND")
+          command_components =  parse_command(service_output)
+
+          frontend_url_format = NagiosHerald::Config.config['elasticsearch']['frontend_url']
+
+          if !frontend_url_format.nil? and !frontend_url_format.empty?
+            from_period = get_frontend_start_from_time_period(command_components[:time_period])
+            query_string = command_components[:query]
+
+            # Strip leading and following single quotes from query if present
+            query_string = query_string[1..-1] if query_string[0] == "'"
+            query_string = query_string[0..-2] if query_string[-1] == "'"
+
+            frontend_url = frontend_url_format % { :query => URI.escape(query_string), :to => 'now', :from => URI.escape(from_period) }
+
+            text += "Frontend URL: #{frontend_url}\n\n"
+            html += "<b>Frontend URL</b>: #{frontend_url}<br><br>"
+          end
+
+          add_text(section, text)
+          add_html(section, html)
+      end
+
       private
 
       def parse_command(service_command)
@@ -68,8 +100,17 @@ module NagiosHerald
             :query => command_components[1],
             :warn_threshold => command_components[2],
             :crit_threshold => command_components[3],
-            :time_perdiod => command_components[4]
+            :time_period => command_components[4]
         }
+      end
+
+      # Private: Takes in a string like '20m'
+      # returns a string like '60m'
+      def get_frontend_start_from_time_period(time_period)
+        parts = /(\d+)(\w+)/.match(time_period)
+        from = (parts[1].to_i) * 3
+
+        from.to_s + parts[2]
       end
 
       def agg_depth(agg_data)
