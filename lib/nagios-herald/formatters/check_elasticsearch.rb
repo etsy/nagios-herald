@@ -74,14 +74,14 @@ module NagiosHerald
           frontend_url_format = NagiosHerald::Config.config['elasticsearch']['frontend_url']
 
           if !frontend_url_format.nil? and !frontend_url_format.empty?
-            from_period = get_frontend_start_from_time_period(command_components[:time_period])
+            bounds = get_frontend_bounds_from_time_period(command_components[:time_period])
             query_string = command_components[:query]
 
             # Strip leading and following single quotes from query if present
             query_string = query_string[1..-1] if query_string[0] == "'"
             query_string = query_string[0..-2] if query_string[-1] == "'"
 
-            frontend_url = frontend_url_format % { :query => URI.escape(query_string), :to => 'now', :from => URI.escape(from_period) }
+            frontend_url = frontend_url_format % { :query => URI.escape(query_string), :to => bounds[:to], :from => bounds[:from] }
 
             text += "Frontend URL: #{frontend_url}\n\n"
             html += "<b>Frontend URL</b>: #{frontend_url}<br><br>"
@@ -105,12 +105,40 @@ module NagiosHerald
       end
 
       # Private: Takes in a string like '20m'
-      # returns a string like '60m'
-      def get_frontend_start_from_time_period(time_period)
+      # returns (utc timestamp - '60m' , utc timestamp + '60m')
+      def get_frontend_bounds_from_time_period(time_period)
         parts = /(\d+)(\w+)/.match(time_period)
-        from = (parts[1].to_i) * 3
 
-        from.to_s + parts[2]
+        if parts.nil? or parts.size < 3 or parts[2].size < 1
+            return {
+                :from => time_period,
+                :to => 'now',
+            }
+        end
+
+        delta = (parts[1].to_i) * 3
+        period = 0
+
+        # really naive parsing of a time period
+        case parts[2][0]
+            when 's'
+                period = 1
+            when 'm'
+                period = 60
+            when 'h'
+                period = 60 * 60
+            when 'd'
+                period = 60 * 60 * 24
+            when 'w'
+                period = 60 * 60 * 24 * 7
+            else
+                period = 60
+        end
+
+        {
+            :from => Time.now.to_i - period * delta,
+            :to   => Time.now.to_i + period * delta
+        }
       end
 
       def agg_depth(agg_data)
