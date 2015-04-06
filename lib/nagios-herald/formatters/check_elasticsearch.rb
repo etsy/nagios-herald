@@ -137,7 +137,7 @@ module NagiosHerald
 
         {
             :from => Time.now.to_i - period * delta,
-            :to   => Time.now.to_i + period * delta
+            :to   => Time.now.to_i
         }
       end
 
