@@ -8,6 +8,7 @@ splunk:
   password: splunkpass
 elasticsearch:
   url: http://logstash.example.com:9200
+  frontend_url: https://kibana.example.com/#/dashboard/file/logstash.json?from=%{from}&to=%{to}&query=%{query}
   result_field_truncate: 200
   num_results: 10
 logfile: /tmp/nagios-herald.log
