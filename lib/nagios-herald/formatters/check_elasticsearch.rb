@@ -1,5 +1,7 @@
 # CheckElasticsearch formatter
 
+require 'erb'
+
 module NagiosHerald
   class Formatter
     class CheckElasticsearch < NagiosHerald::Formatter
@@ -81,7 +83,7 @@ module NagiosHerald
             query_string = query_string[1..-1] if query_string[0] == "'"
             query_string = query_string[0..-2] if query_string[-1] == "'"
 
-            frontend_url = frontend_url_format % { :query => URI.escape(query_string), :to => bounds[:to], :from => bounds[:from] }
+            frontend_url = frontend_url_format % { :query => ERB::Util.url_encode(query_string), :to => bounds[:to], :from => bounds[:from] }
 
             text += "Frontend URL: #{frontend_url}\n\n"
             html += "<b>Frontend URL</b>: #{frontend_url}<br><br>"
