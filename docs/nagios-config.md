@@ -47,6 +47,8 @@ define command {
 **NOTE**: ``$_HOSTMESSAGE_FORMATTER_NAME$`` and ``$_SERVICEMESSAGE_FORMATTER_NAME$`` are Nagios macros, generated
 from a custom variable in a relevant service check definition.
 
+You must also add command definitions for any custom message classes that you plan to use.  See the [messages](/docs/messages.md) page for details.
+
 ### Tracing Errors
 If ``nagios-herald`` is failing to notify, you can turn up the logging via the ``--trace`` option to gather
 more information, like so:
