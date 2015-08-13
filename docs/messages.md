@@ -4,7 +4,7 @@ While [formatters](/docs/formatters.md) are crucial to contextualizing alerts, i
 
 ``nagios-herald`` provides a base Message class (``Message::Base``) from which all Message subclasses inherit.  ``Message::Base`` knows that all messages have content and recipients; it's the job of the Message subclasses to define additional behavior (such as how to send a message).
 
-Three message types are defined in ``nagios-herald``: Email, Pager, and IRC.  Feel free to cook up any new message types (i.e. CarrierPigeon, SmokeSignal) as you see fit.
+Three message types are defined in ``nagios-herald``: Email, Pager, and IRC.  The IRC class must be subclassed by a custom message class so that the ``send`` function can be implemented.  Feel free to cook up any new message types (i.e. CarrierPigeon, SmokeSignal) as you see fit.
 
 ## Getting Content into Messages
 

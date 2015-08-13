@@ -47,9 +47,7 @@ module NagiosHerald
           return
         end
 
-        # TODO: Actually make this send to an IRC server
-        # I expect the IRC server will be a value in the config
-        self.print
+        raise NotImplementedError.new("#{self.class.name}#send is an abstract method and must be implemented by a subclass.")
       end
 
     end
