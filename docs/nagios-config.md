@@ -34,8 +34,8 @@ define command {
 
 # IRC (optional)
 define command {
-    command_name    notify-service-by-irc
-    command_line    /usr/local/nagios-herald/bin/nagios-herald --message-type irc --formatter=$_SERVICEMESSAGE_FORMATTER_NAME$ --nagios-cgi-url=http://nagios.example.com/nagios/cgi-bin/cmd.cgi --reply-to=nagios@example.com
+    command_name    notify-host-by-irc
+    command_line    /usr/local/nagios-herald/bin/nagios-herald --message-type irc --formatter=$_HOSTMESSAGE_FORMATTER_NAME$ --nagios-cgi-url=http://nagios.example.com/nagios/cgi-bin/cmd.cgi --reply-to=nagios@example.com
 }
 
 define command {
@@ -46,6 +46,8 @@ define command {
 
 **NOTE**: ``$_HOSTMESSAGE_FORMATTER_NAME$`` and ``$_SERVICEMESSAGE_FORMATTER_NAME$`` are Nagios macros, generated
 from a custom variable in a relevant service check definition.
+
+You must also add command definitions for any custom message classes that you plan to use.  See the [messages](/docs/messages.md) page for details.
 
 ### Tracing Errors
 If ``nagios-herald`` is failing to notify, you can turn up the logging via the ``--trace`` option to gather

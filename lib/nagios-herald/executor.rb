@@ -36,6 +36,13 @@ module NagiosHerald
           desc  "Path to a file containing environment variables to use for testing/debugging (i.e. nagios_vars)."
         end
 
+        option :message_dir do
+          short   "-M"
+          long    "--message-dir"
+          desc    "Message class directory"
+          default nil
+        end
+
         option :formatter_dir do
           short   "-F"
           long    "--formatter-dir"
