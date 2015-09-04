@@ -184,8 +184,12 @@ module NagiosHerald
       @short_text = ""
       html = ""
       hostname          = get_nagios_var("NAGIOS_HOSTNAME")
+      notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
       text += "Host: #{hostname} "
+      if notification_type == "ACKNOWLEDGEMENT"
+        @short_text += "(ACK) "
+      end
       @short_text += "#{hostname}"
       html += "<br><b>Host</b>: #{hostname} "
       if !service_desc.nil? and !service_desc.empty?
@@ -557,14 +561,8 @@ module NagiosHerald
         long_subject="#{notification_type} Host #{subject} is #{state}"
       end
 
-      if notification_type == "ACKNOWLEDGEMENT"
-        short_subject="ACK: #{subject} is #{state}"
-      else
-        short_subject="#{subject} is #{state}"
-      end
-
       @content[:subject] = long_subject
-      @content[:short_subject] = short_subject
+      @content[:short_subject] = ""
     end
 
     # Public: Generates content body.
