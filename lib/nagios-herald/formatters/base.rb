@@ -190,7 +190,7 @@ module NagiosHerald
       html += "<br><b>Host</b>: #{hostname} "
       if !service_desc.nil? and !service_desc.empty?
         text += "Service: #{service_desc}\n"
-        @short_text += "/#{service_desc}\n"
+        @short_text += "/#{service_desc} "
         html += "<b>Service</b>: #{service_desc}<br/>"
       else
         # we need a trailing newline if no service description
@@ -216,7 +216,7 @@ module NagiosHerald
       max_attempts  = get_nagios_var("NAGIOS_MAX#{@state_type}ATTEMPTS")
 
       text += "State is now: #{state} for #{duration} (was #{last_state}) after #{attempts} / #{max_attempts} checks\n"
-      @short_text += "#{state} for #{duration} (was #{last_state}) after #{attempts} / #{max_attempts} checks\n"
+      @short_text += "is #{state}\nfor #{duration} (was #{last_state})\ncheck #{attempts} / #{max_attempts}\n"
 
       if state.eql? 'OK' or state.eql? 'UP'
           html += "State is now: <b>#{state}</b> for <b>#{duration}</b> (was #{last_state}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
