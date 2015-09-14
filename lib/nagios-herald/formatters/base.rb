@@ -31,7 +31,7 @@ module NagiosHerald
       @content[:html]
       @content[:subject] = ""
       @content[:text]
-      @content[:@short_text]
+      @content[:short_text]
       @nagios_url = options[:nagios_url]
       @sandbox  = get_sandbox_path
       @state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
@@ -78,7 +78,7 @@ module NagiosHerald
     end
 
     def delete_short_text(section)
-      delete_section_for_type(:@short_text, section)
+      delete_section_for_type(:short_text, section)
     end
 
 
@@ -116,10 +116,10 @@ module NagiosHerald
     def add_short_text(section, text)
       # Ensure our key is a symbol, regardless if we're passed a string or symbol
       section = section.to_sym
-      if @content[:@short_text][section].nil? or @content[:@short_text][section].empty?
-        @content[:@short_text][section] = text
+      if @content[:short_text][section].nil? or @content[:short_text][section].empty?
+        @content[:short_text][section] = text
       else
-        @content[:@short_text][section] += text
+        @content[:short_text][section] += text
       end
     end
 
@@ -181,29 +181,28 @@ module NagiosHerald
     def host_info
       section = __method__
       text = ""
-      @short_text = ""
+      short_text = ""
       html = ""
       hostname          = get_nagios_var("NAGIOS_HOSTNAME")
       notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
       text += "Host: #{hostname} "
       if notification_type == "ACKNOWLEDGEMENT"
-        @short_text += "(ACK) "
+        short_text += "(ACK) "
       end
-      @short_text += "#{hostname}"
+      short_text += "#{hostname}"
       html += "<br><b>Host</b>: #{hostname} "
       if !service_desc.nil? and !service_desc.empty?
         text += "Service: #{service_desc}\n"
-        @short_text += "/#{service_desc} "
+        short_text += "/#{service_desc} "
         html += "<b>Service</b>: #{service_desc}<br/>"
       else
         # we need a trailing newline if no service description
         line_break(section)
       end
       add_text(section, text)
-      add_short_text(section, @short_text)
+      add_short_text(section, short_text)
       add_html(section, html)
-      line_break(section)
     end
 
     # Public: Formats information about the state of the thing being alerted on
@@ -212,6 +211,7 @@ module NagiosHerald
     def state_info
       section = __method__
       text = ""
+      short_text = ""
       html = ""
       state         = get_nagios_var("NAGIOS_#{@state_type}STATE")
       duration      = get_nagios_var("NAGIOS_#{@state_type}DURATION")
@@ -220,7 +220,7 @@ module NagiosHerald
       max_attempts  = get_nagios_var("NAGIOS_MAX#{@state_type}ATTEMPTS")
 
       text += "State is now: #{state} for #{duration} (was #{last_state}) after #{attempts} / #{max_attempts} checks\n"
-      @short_text += "is #{state}\nfor #{duration} (was #{last_state})\ncheck #{attempts} / #{max_attempts}\n"
+      short_text += "is #{state}\nfor #{duration} (was #{last_state})\ncheck #{attempts} / #{max_attempts}\n"
 
       if state.eql? 'OK' or state.eql? 'UP'
           html += "State is now: <b>#{state}</b> for <b>#{duration}</b> (was #{last_state}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
@@ -228,7 +228,7 @@ module NagiosHerald
           html += "State is now: <b><font style='color:red'>#{state}</font></b> for <b>#{duration}</b> (was #{last_state}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
       end
       add_text(section, text)
-      add_short_text(section, @short_text)
+      add_short_text(section, short_text)
       add_html(section, html)
       line_break(section)
     end
@@ -253,15 +253,15 @@ module NagiosHerald
     def additional_info
       section = __method__
       text = ""
-      @short_text = ""
+      short_text = ""
       html = ""
       output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
       if !output.nil? and !output.empty?
         text += "Additional Info: #{unescape_text(output)}\n\n"
-        @short_text += "#{unescape_text(output)}\n\n"
+        short_text += "#{unescape_text(output)}\n\n"
         html += "<b>Additional Info</b>: #{output}<br><br>"
         add_text(section, text)
-        add_short_text(section, @short_text)
+        add_short_text(section, short_text)
         add_html(section, html)
       end
     end
@@ -271,15 +271,15 @@ module NagiosHerald
     def additional_details
       section = __method__
       text = ""
-      @short_text = ""
+      short_text = ""
       html = ""
       long_output = get_nagios_var("NAGIOS_LONG#{@state_type}OUTPUT")
       if !long_output.nil? and !long_output.empty?
         text += "Additional Details: #{unescape_text(long_output)}\n"
-        @short_text += "#{unescape_text(long_output)}\n"
+        short_text += "#{unescape_text(long_output)}\n"
         html += "<b>Additional Details</b>: <pre>#{unescape_text(long_output)}</pre><br><br>"
         add_text(section, text)
-        add_short_text(section, @short_text)
+        add_short_text(section, short_text)
         add_html(section, html)
       end
     end
@@ -351,7 +351,7 @@ module NagiosHerald
     def ack_info
       section = __method__
       text = ""
-      @short_text = ""
+      short_text = ""
       html = ""
       date = get_nagios_var("NAGIOS_LONGDATETIME")
       author = get_nagios_var("NAGIOS_#{@state_type}ACKAUTHOR")
@@ -359,25 +359,25 @@ module NagiosHerald
       hostname = get_nagios_var("NAGIOS_HOSTNAME")
 
       text += "At #{date} #{author}"
-      @short_text += "At #{date} #{author}"
+      short_text += "At #{date} #{author}"
       html += "At #{date} #{author}"
 
       if @state_type == "SERVICE"
         desc = get_nagios_var("NAGIOS_SERVICEDESC")
         text       += " acknowledged #{hostname}/#{desc}.\n\n"
-        @short_text += " acked #{hostname}/#{desc}.\n\n"
+        short_text += " acked #{hostname}/#{desc}.\n\n"
         html       += " acknowledged #{hostname}/#{desc}.<br><br>"
       else
         text       += " acknowledged #{hostname}.\n\n"
-        @short_text += " acked #{hostname}.\n\n"
+        short_text += " acked #{hostname}.\n\n"
         html       += " acknowledged #{hostname}.<br><br>"
 
       end
       text       += "Comment: #{comment}" if comment
-      @short_text += "#{comment}" if comment
+      short_text += "#{comment}" if comment
       html       += "Comment: #{comment}" if comment
       add_text(section, text)
-      add_short_text(section, @short_text)
+      add_short_text(section, short_text)
       add_html(section, html)
     end
 
