@@ -193,9 +193,9 @@ module NagiosHerald
       short_text += "#{hostname}"
       html += "<br><b>Host</b>: #{hostname} "
       if !service_desc.nil? and !service_desc.empty?
-        text += "Service: #{service_desc}\n"
+        text += "Service: #{service_desc}\n\n"
         short_text += "/#{service_desc} "
-        html += "<b>Service</b>: #{service_desc}<br/>"
+        html += "<b>Service</b>: #{service_desc}<br/><br>"
       else
         # we need a trailing newline if no service description
         line_break(section)
