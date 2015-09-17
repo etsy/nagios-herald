@@ -184,14 +184,18 @@ module NagiosHerald
       short_text = ""
       html = ""
       hostname          = get_nagios_var("NAGIOS_HOSTNAME")
+      notification_type = get_nagios_var("NAGIOS_NOTIFICATIONTYPE")
       service_desc      = get_nagios_var("NAGIOS_SERVICEDESC")
       text += "Host: #{hostname} "
+      if notification_type == "ACKNOWLEDGEMENT"
+        short_text += "(ACK) "
+      end
       short_text += "#{hostname}"
       html += "<br><b>Host</b>: #{hostname} "
       if !service_desc.nil? and !service_desc.empty?
-        text += "Service: #{service_desc}\n"
-        short_text += "/#{service_desc}\n"
-        html += "<b>Service</b>: #{service_desc}<br/>"
+        text += "Service: #{service_desc}\n\n"
+        short_text += "/#{service_desc} "
+        html += "<b>Service</b>: #{service_desc}<br/><br>"
       else
         # we need a trailing newline if no service description
         line_break(section)
@@ -199,7 +203,6 @@ module NagiosHerald
       add_text(section, text)
       add_short_text(section, short_text)
       add_html(section, html)
-      line_break(section)
     end
 
     # Public: Formats information about the state of the thing being alerted on
@@ -217,7 +220,7 @@ module NagiosHerald
       max_attempts  = get_nagios_var("NAGIOS_MAX#{@state_type}ATTEMPTS")
 
       text += "State is now: #{state} for #{duration} (was #{last_state}) after #{attempts} / #{max_attempts} checks\n"
-      short_text += "#{state} for #{duration} (was #{last_state}) after #{attempts} / #{max_attempts} checks\n"
+      short_text += "is #{state}\nfor #{duration} (was #{last_state})\ncheck #{attempts} / #{max_attempts}\n"
 
       if state.eql? 'OK' or state.eql? 'UP'
           html += "State is now: <b>#{state}</b> for <b>#{duration}</b> (was #{last_state}) after <b>#{attempts} / #{max_attempts}</b> checks<br/>"
@@ -355,9 +358,9 @@ module NagiosHerald
       comment = get_nagios_var("NAGIOS_#{@state_type}ACKCOMMENT")
       hostname = get_nagios_var("NAGIOS_HOSTNAME")
 
-      text       += "At #{date} #{author}"
+      text += "At #{date} #{author}"
       short_text += "At #{date} #{author}"
-      html       += "At #{date} #{author}"
+      html += "At #{date} #{author}"
 
       if @state_type == "SERVICE"
         desc = get_nagios_var("NAGIOS_SERVICEDESC")
@@ -558,14 +561,8 @@ module NagiosHerald
         long_subject="#{notification_type} Host #{subject} is #{state}"
       end
 
-      if notification_type == "ACKNOWLEDGEMENT"
-        short_subject="ACK: #{subject} is #{state}"
-      else
-        short_subject="#{subject} is #{state}"
-      end
-
       @content[:subject] = long_subject
-      @content[:short_subject] = short_subject
+      @content[:short_subject] = ""
     end
 
     # Public: Generates content body.

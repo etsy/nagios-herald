@@ -30,7 +30,7 @@ module NagiosHerald
         if notification_type.eql?('ACKNOWLEDGEMENT')
           @text += self.content[:short_text][:ack_info] unless self.content[:short_text][:ack_info].empty?
         else
-          [:state_info, :additional_info, :additional_details].each do |info|
+          [:host_info, :state_info, :additional_info, :additional_details].each do |info|
             @text += self.content[:short_text][info] unless self.content[:short_text][info].empty?
           end
         end
