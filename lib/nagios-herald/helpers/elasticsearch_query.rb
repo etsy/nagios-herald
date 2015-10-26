@@ -29,7 +29,11 @@ module NagiosHerald
         today = Time.now.strftime("%Y.%m.%d")
         @elasticsearch_index = options[:index] ? options[:index] : "logstash-#{today}"
         @elasticsearch_time_period = options[:time_period] ? options[:time_period] : "1h"
-        @elasticsearch_num_results = Config.config['elasticsearch']['num_results'] ? Config.config['elasticsearch']['num_results'] : 10
+        if options[:num_results].nil?
+          @elasticsearch_num_results = Config.config['elasticsearch']['num_results'] ? Config.config['elasticsearch']['num_results'] : 10
+        else
+          @elasticsearch_num_results = options[:num_results]
+        end
         @elasticsearch_result_field_truncate = Config.config['elasticsearch']['result_field_truncate'] ? Config.config['elasticsearch']['result_field_truncate'] : nil
 
         # Pull the elasticsearch URI from the config.
