@@ -30,7 +30,7 @@ module NagiosHerald
       def additional_info
         section = __method__
         output = get_nagios_var("NAGIOS_#{@state_type}OUTPUT")
-        # Output is formmated like: Current value: 18094.25, warn threshold: 100.0, crit threshold: 1000.0
+        # Output is formatted like: Current value: 18094.25, warn threshold: 100.0, crit threshold: 1000.0
         add_text(section, "Additional Info:\n #{unescape_text(output)}\n\n") if output
         output_match = output.match(/Current value: (?<current_value>[^,]*), warn threshold: (?<warn_threshold>[^,]*), crit threshold: (?<crit_threshold>[^,]*)/)
         if output_match
