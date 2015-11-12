@@ -27,7 +27,7 @@ class TestExecutorIcingaVariables < MiniTest::Unit::TestCase
     @executor.load_env_from_file(@options[:env])
     assert_equal "ops@example.com", get_nagios_var('NAGIOS_CONTACTEMAIL')
     assert_equal "ops@example.com", get_nagios_var('ICINGA_CONTACTEMAIL')
-    assert_equal "PROBLEM",  get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
+    assert_equal "PROBLEM", get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
   end
 
 end

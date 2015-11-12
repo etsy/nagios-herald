@@ -29,7 +29,7 @@ class TestExecutor < MiniTest::Unit::TestCase
   def test_load_env_file
     @executor.load_env_from_file(@options[:env])
     assert_equal "ops@example.com", get_nagios_var('NAGIOS_CONTACTEMAIL')
-    assert_equal "PROBLEM",  get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
+    assert_equal "PROBLEM", get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
   end
 
   # Get the file names of each of the formatter classes and confirm they load properly.
@@ -39,8 +39,8 @@ class TestExecutor < MiniTest::Unit::TestCase
     formatter_class_files = Dir["#{formatter_dir}/*.rb"]
     @executor.load_formatters
     formatter_class_files.each do |formatter_class_file|
-      class_file = File.basename(formatter_class_file, '.rb')   # strip the extension
-      next if class_file.eql?('base')   # base.rb doesn't get loaded
+      class_file = File.basename(formatter_class_file, '.rb') # strip the extension
+      next if class_file.eql?('base') # base.rb doesn't get loaded
       assert NagiosHerald::Formatter.formatters.has_key?(class_file), "'#{formatter_dir}/#{class_file}.rb' was not loaded. "\
       "Check that it's named and subclassed properly.\n"\
       "See https://github.com/etsy/nagios-herald/blob/master/docs/formatters.md for help."
@@ -54,8 +54,8 @@ class TestExecutor < MiniTest::Unit::TestCase
     message_class_files = Dir["#{message_dir}/*.rb"]
     @executor.load_messages
     message_class_files.each do |message_class_file|
-      class_file = File.basename(message_class_file, '.rb')   # strip the extension
-      next if class_file.eql?('base')   # base.rb doesn't get loaded
+      class_file = File.basename(message_class_file, '.rb') # strip the extension
+      next if class_file.eql?('base') # base.rb doesn't get loaded
       assert NagiosHerald::Message.message_types.has_key?(class_file), "'#{message_dir}/#{class_file}.rb' was not loaded. "\
       "Check that it's named and subclassed properly.\n"\
       "See https://github.com/etsy/nagios-herald/blob/master/docs/messages.md for help."
