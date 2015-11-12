@@ -92,20 +92,3 @@ To configure Nagios to use ``nagios-herald`` for notifications, see the [Nagios 
 
 ``nagios-herald`` supports Icinga too! Follow the instructions [here](/docs/config.md#icinga-support) to make it so.
 
-# Developing Nagios-Herald
-
-## Setup
-
-``git clone`` the repository.
-
-Run ``bundle install`` and resolve any dependency issues.
-
-## Tests
-
-``rake test`` will run both the unit and integration test suites.
-
-``rake unit_test`` runs all tests under test/unit.
-These tests have no external dependencies.
-
-``rake integration_test`` runs all tests under test/integration.
-These tests do have external dependencies, and may need services (like mailcatcher) to be already running before they will pass.
