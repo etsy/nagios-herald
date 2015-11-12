@@ -6,7 +6,7 @@ require 'nagios-herald'
 require 'nagios-herald/executor'
 
 # Test the Executor class.
-class TestIcingaVariables < MiniTest::Unit::TestCase
+class TestExecutorIcingaVariables < MiniTest::Unit::TestCase
   include NagiosHerald::Util
 
   # initial setup before we execute tests
@@ -17,6 +17,8 @@ class TestIcingaVariables < MiniTest::Unit::TestCase
   end
 
   def teardown
+    # reset the config to empty to avoid polluting the static data for other tests
+    NagiosHerald::Config.config = {}
   end
 
   # Read Icinga environment variables.
