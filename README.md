@@ -76,6 +76,7 @@ variable.
 * ``app_conf``
 * ``choice``
 * ``mail``
+* ``chef``
 
 ### Stack Bars
 
