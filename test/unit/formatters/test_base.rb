@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 
 # I assume cat'ing to the LOAD path goes away when we're a real gem.
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', '..', 'lib')
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', '..', '..', 'lib')
 require 'nagios-herald'
 require 'nagios-herald/config'
 require 'nagios-herald/executor'
@@ -17,7 +17,7 @@ class TestFormatterBase < MiniTest::Unit::TestCase
     @options[:message_type] = 'EMAIL'
     @options[:nagios_url] = "http://nagios.example.com"
     @formatter = NagiosHerald::Formatter.new(@options)
-    env_file = File.join(File.dirname(__FILE__), '..', 'env_files', 'nagios_vars.EXAMPLE')
+    env_file = File.join(File.dirname(__FILE__), '..', '..', 'env_files', 'nagios_vars.EXAMPLE')
     NagiosHerald::Executor.new.load_env_from_file(env_file) # load an env file for testing
   end
 

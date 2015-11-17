@@ -22,10 +22,10 @@ class TestConfig < MiniTest::Unit::TestCase
   # Read values from command-line options and the config file.
   def test_load_config
     NagiosHerald::Config.load(@options)
-    assert_equal "pager", NagiosHerald::Config.config['message_type']                       # Command line
-    assert_equal "ganglia.example.com", NagiosHerald::Config.config['servers']['ganglia']   # Config file
-    assert_equal "splunkuser",  NagiosHerald::Config.config['splunk']['username']           # Config file
-    assert_equal "http://logstash.example.com:9200",  NagiosHerald::Config.config['elasticsearch']['url']           # Config file
+    assert_equal "pager", NagiosHerald::Config.config['message_type'] # Command line
+    assert_equal "ganglia.example.com", NagiosHerald::Config.config['servers']['ganglia'] # Config file
+    assert_equal "splunkuser", NagiosHerald::Config.config['splunk']['username'] # Config file
+    assert_equal "http://logstash.example.com:9200", NagiosHerald::Config.config['elasticsearch']['url'] # Config file
   end
 
 end

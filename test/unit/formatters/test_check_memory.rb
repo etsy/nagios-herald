@@ -1,12 +1,12 @@
 require 'minitest/autorun'
 
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', '..', 'lib')
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', '..', '..', 'lib')
 require 'nagios-herald'
 require 'nagios-herald/config'
 require 'nagios-herald/executor'
 require 'nagios-herald/formatters/base'
 
-# Test Formatter::Base.
+# Test Formatter::CheckMemory.
 class TestFormatterCheckMemory < MiniTest::Unit::TestCase
 
   # TODO: We need a similar set of tests for RECOVERY emails.
@@ -16,7 +16,7 @@ class TestFormatterCheckMemory < MiniTest::Unit::TestCase
     @options[:message_type] = 'EMAIL'
     @options[:nagios_url] = "http://nagios.example.com"
     @options[:formatter_name] = 'check_memory'
-    env_file = File.join(File.dirname(__FILE__), '..', 'env_files', 'check_memory.CRITICAL')
+    env_file = File.join(File.dirname(__FILE__), '..', '..', 'env_files', 'check_memory.CRITICAL')
     NagiosHerald::Executor.new.load_env_from_file(env_file) # load an env file for testing
     NagiosHerald::Executor.new.load_formatters
     NagiosHerald::Executor.new.load_messages

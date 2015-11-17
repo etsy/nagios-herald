@@ -6,7 +6,7 @@ require 'nagios-herald'
 require 'nagios-herald/executor'
 
 # Test the Executor class.
-class TestIcingaVariables < MiniTest::Unit::TestCase
+class TestExecutorIcingaVariables < MiniTest::Unit::TestCase
   include NagiosHerald::Util
 
   # initial setup before we execute tests
@@ -17,6 +17,8 @@ class TestIcingaVariables < MiniTest::Unit::TestCase
   end
 
   def teardown
+    # reset the config to empty to avoid polluting the static data for other tests
+    NagiosHerald::Config.config = {}
   end
 
   # Read Icinga environment variables.
@@ -25,7 +27,7 @@ class TestIcingaVariables < MiniTest::Unit::TestCase
     @executor.load_env_from_file(@options[:env])
     assert_equal "ops@example.com", get_nagios_var('NAGIOS_CONTACTEMAIL')
     assert_equal "ops@example.com", get_nagios_var('ICINGA_CONTACTEMAIL')
-    assert_equal "PROBLEM",  get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
+    assert_equal "PROBLEM", get_nagios_var('NAGIOS_NOTIFICATIONTYPE')
   end
 
 end
