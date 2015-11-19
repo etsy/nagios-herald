@@ -38,21 +38,30 @@ define command {
 
 ### Using Custom Message Class Commands
 
-To use your custom message class, you can specify the ``command_name`` that uses your message class as a notification command for a host or service.  As you can specify more than one notification command per service, you may specify a custom message command along with the command for a provided message to send multiple kinds of messages:
+To use your custom message class, you can specify the ``command_name`` that uses your message class as a host or service notification command for a contact.  As you can specify multiple notification commands for a single contact, you may specify a custom message command along with the command for a provided message to send multiple kinds of messages:
 
 ```
-define service {
+define contact {
         ...
         service_notification_commands   notify-service-by-email,notify-service-by-carrier-pigeon
-        _message_formatter_name         performance_context
 }
 ```
 
-The same formatter will be used for each message type.
+The formatter specified using ``message_formatter_name`` in the host or service will be used for all message types.
 
 If your custom message type is different enough from the other message types that use a certain formatter, it may be necessary to use a new key in the ``content`` hash to add content specific to that message type.  Content should be added to the ``content`` hash in the formatter; the ``send`` function of the custom message class should then use that content to construct and send the message.
 
 As an example example, the ``CarrierPigeon`` message class may send text contained in ``content[:handwritten]``.  A formatter that is used with the ``CarrierPigeon`` class should implement a method that adds content to ``handwritten`` sections just as the ``add_html()`` method adds content to ``html`` sections.  The formatter should add content that should be delivered by carrier pigeon to the ``handwritten`` hash and still add content to be delivered in an HTML email to the ``html`` hash using the ``add_html()`` method.
+
+Finally, it should be noted that you can add custom object variables for individual contacts that can later be accessed by a custom message class using the ``get_nagios_var()`` library function:
+
+```
+define contact {
+        ...
+        service_notification_commands   notify-service-by-irc-channel
+        _irc_channel                    performance
+}
+```
 
 
 ### Naming Convention
