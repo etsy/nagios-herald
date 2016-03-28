@@ -157,6 +157,12 @@ module NagiosHerald
             logger.error "#{line}"
           end
           return nil
+        rescue Exception => e
+          logger.error "Could not connect to Elasticsearch - #{e.message}"
+          e.backtrace.each do |line|
+            logger.error "#{line}"
+          end
+          return nil
         end
       end
 
