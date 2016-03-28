@@ -45,7 +45,8 @@ module NagiosHerald
         @elasticsearch_port = uri.port
         @elasticsearch_uri  = uri.request_uri
 
-        @es_client = Elasticsearch::Client.new hosts: ["#{@elasticsearch_host}:#{@elasticsearch_port}"], reload_connections: true
+        # Set a reasonable open timeout insteaf of waiting the default 60 seconds.
+        @es_client = Elasticsearch::Client.new transport_options: {request: { open_timeout: 10 }}, hosts: ["#{@elasticsearch_host}:#{@elasticsearch_port}"], reload_connections: true
       end
 
       # Public: Queries Elasticsearch using a simple Lucene query string.
@@ -158,7 +159,7 @@ module NagiosHerald
           end
           return nil
         rescue Exception => e
-          logger.error "Could not connect to Elasticsearch - #{e.message}"
+          logger.error "Could not connect to Elasticsearch - [#{e.class}] #{e.message}"
           e.backtrace.each do |line|
             logger.error "#{line}"
           end
