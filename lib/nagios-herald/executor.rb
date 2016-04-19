@@ -43,13 +43,6 @@ module NagiosHerald
           default nil
         end
 
-        option :formatter_dir do
-          short   "-F"
-          long    "--formatter-dir"
-          desc    "Formatter directory"
-          default nil
-        end
-
         option :formatter_name do
           short   "-f"
           long    "--formatter"
@@ -61,6 +54,13 @@ module NagiosHerald
           short   "-F"
           long    "--formatter-dir"
           desc    "Formatter directory"
+          default nil
+        end
+
+        option :helper_dir do
+          short "-H"
+          long "--helper-dir"
+          desc "Helper directory"
           default nil
         end
 
@@ -176,6 +176,20 @@ module NagiosHerald
       @messages_loaded ||= message_loader.load_messages
     end
 
+    # Public: Instantiate a new HelperLoader object.
+    #
+    # Returns a new HelperLoader object.
+    def helper_loader
+      @helper_loader ||= NagiosHerald::HelperLoader.new
+    end
+
+    # Public: Loads all helper classes.
+    #
+    # Returns true.
+    def load_helpers
+      @helpers_loaded ||= helper_loader.load_helpers
+    end
+
     # Public: The main method from which notifications are generated and sent.
     def announce
       begin
@@ -188,13 +202,14 @@ module NagiosHerald
       begin
         # Load the environment if asked for it
         load_env_from_file(@options.env) if @options.env
-  
+
         # Load the config for use globally
         Config.load(@options)
-  
-        # load the formatters and messages
+
+        # load the formatters, messages, and helpers
         load_formatters
         load_messages
+        load_helpers
 
         recipients = {}
         if @options.recipients.nil?
@@ -206,7 +221,7 @@ module NagiosHerald
           recipients['command_line'] = @options.recipients
         end
         nagios_notification_type = @options.notification_type.nil? ? get_nagios_var("NAGIOS_NOTIFICATIONTYPE") : @options.notification_type
-  
+
         # Log the host and service that's notifying (assuming we can read the environment)
         state_type = get_nagios_var("NAGIOS_SERVICESTATE") != "" ? "SERVICE" : "HOST"
         hostname = get_nagios_var("NAGIOS_HOSTNAME")

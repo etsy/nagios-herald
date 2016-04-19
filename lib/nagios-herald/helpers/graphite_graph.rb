@@ -1,9 +1,10 @@
+require 'nagios-herald/helpers/base'
 require 'securerandom'
 require 'uri'
 
 module NagiosHerald
-  module Helpers
-    class GraphiteGraph
+  class Helper
+    class GraphiteGraph < Helper
       include NagiosHerald::Logging
 
       # Public: Initialize a GraphiteGraph helper object.

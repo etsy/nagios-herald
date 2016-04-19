@@ -1,4 +1,4 @@
-
+require 'nagios-herald/helpers/base'
 # Search for previous occurrences of a given Nagios alert and report.
 #
 # Can search for host alerts (i.e. DOWN state) and service alerts for a
@@ -13,8 +13,8 @@
 #  for host alerts.
 
 module NagiosHerald
-  module Helpers
-    class AlertFrequency
+  class Helper
+    class AlertFrequency < Helper
       include NagiosHerald::Logging
 
       # Public: Initialize a new AlertFrequency object.

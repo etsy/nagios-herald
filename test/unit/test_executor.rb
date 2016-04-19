@@ -62,4 +62,20 @@ class TestExecutor < MiniTest::Unit::TestCase
     end
   end
 
+  # Get the file names of each of the helpers and confirm they load properly.
+  # This helps ensure helpers are named and subclassed properly.
+  def test_load_helpers
+    helper_dir = File.join(File.dirname(__FILE__), '..', '..', 'lib', 'nagios-herald', 'helpers')
+    helper_class_files = Dir["#{helper_dir}/*.rb"]
+    @executor.load_helpers
+    helper_class_files.each do |helper_class_file|
+      class_file = File.basename(helper_class_file, '.rb') # strip the extension
+      next if class_file.eql?('base') # base.rb doesn't get loaded
+      assert NagiosHerald::Helper.helper_types.has_key?(class_file), "'#{helper_dir}/#{class_file}.rb' was not loaded. "\
+      "Check that it's named and subclassed properly.\n"\
+      "See https://github.com/etsy/nagios-herald/blob/master/docs/helpers.md for help.\n
+      #{NagiosHerald::Helper.helper_types}"
+    end
+  end
+
 end

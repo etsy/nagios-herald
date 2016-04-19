@@ -1,3 +1,5 @@
+require 'nagios-herald/helpers/base'
+
 require 'net/http'
 require 'uri'
 require 'json'
@@ -5,8 +7,8 @@ require 'json'
 # Query Splunk with arbitrary search criteria
 
 module NagiosHerald
-  module Helpers
-    class SplunkQuery
+  class Helper
+    class SplunkQuery < Helper
       #include NagiosHerald::Logging
 
       # Public: Initialize a new SplunkQuery object.

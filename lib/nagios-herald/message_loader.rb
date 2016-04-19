@@ -43,7 +43,7 @@ module NagiosHerald
         end
       end
 
-      # Return an array of the available formatters
+      # Return an array of the available messages
       message_class_files.values
     end
 
@@ -58,7 +58,7 @@ module NagiosHerald
       if message_class_files.empty?
         if @custom_message_path
           logger.fatal "#{$0}: No messages were found in '#{@message_path}'" \
-          " or '#{@custom_message_path}' (as defined by the 'formatter_dir' option)"
+          " or '#{@custom_message_path}' (as defined by the 'message_dir' option)"
         else
           logger.fatal "#{$0}: No messages were found in '#{@message_path}'"
         end
