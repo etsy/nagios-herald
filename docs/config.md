@@ -49,6 +49,10 @@ should they arise. If **nagios-herald** isn't sending notifications, **it's a bu
 details. Optionally, setting ``trace`` to **true** (equivalent to ``--trace`` on the command line) will
 provide a backtrace to aid in debugging.
 
+Similar to the ``formatter_dir`` option, ``message_dir`` and ``helper_dir`` can be used to specify
+locations of **your custom message classes and helper classes**, respectively. These classes will get
+loaded in addition to default messages and helpers.
+
 ### Icinga Support
 
 ``nagios-herald`` relies on the environment variables set when a notification is sent.
