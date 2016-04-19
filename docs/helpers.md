@@ -17,7 +17,7 @@ You may write your own helpers and use them with nagios-herald.  These helper cl
 
 ### Custom Helper Configuration
 
-To use a custom helper, you must add the --helper-dir flag to any stanzas in ``commands.cfg`` that will use that helper class. ``helper-dir`` specifies the directory in which your custom helper class is stored.
+To use a custom helper, you must add the --helper-dir flag to any notification command stanzas in ``commands.cfg`` that will use that helper class. ``helper-dir`` specifies the directory in which your custom helper class is stored. You can also define the location of custom helper classes in the ``config.yml`` configuration file.
 
 ```
 # notify by carrier pigeon
