@@ -1,3 +1,4 @@
+require 'nagios-herald/helpers/base'
 require 'net/http'
 require 'uri'
 require 'json'
@@ -6,8 +7,8 @@ require 'elasticsearch'
 # Query Elasticsearch with arbitrary search criteria
 
 module NagiosHerald
-  module Helpers
-    class ElasticsearchQuery
+  class Helper
+    class ElasticsearchQuery < Helper
       include NagiosHerald::Logging
 
       attr_reader :query

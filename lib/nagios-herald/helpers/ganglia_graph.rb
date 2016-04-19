@@ -1,8 +1,9 @@
+require 'nagios-herald/helpers/base'
 require 'chef/search/query'
 
 module NagiosHerald
-  module Helpers
-    class GangliaGraph
+  class Helper
+    class GangliaGraph < Helper
       include NagiosHerald::Logging
 
       # Public: Initialize a GangliaGraph helper object.

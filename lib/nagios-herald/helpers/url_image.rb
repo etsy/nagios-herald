@@ -1,10 +1,11 @@
+require 'nagios-herald/helpers/base'
 require 'net/http'
 require 'uri'
 
 # TODO: don't assume the MIME type is image/png; provide a mechanism for ensuring a standard image size
 module NagiosHerald
-  module Helpers
-    class UrlImage
+  class Helper
+    class UrlImage < Helper
 
       # Public: Requests an image by its URI.
       #

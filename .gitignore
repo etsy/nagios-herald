@@ -6,3 +6,5 @@ mail.html
 *.gem
 .idea
 Gemfile.lock
+vendor/
+.bundle/

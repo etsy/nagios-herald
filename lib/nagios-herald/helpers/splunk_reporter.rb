@@ -1,3 +1,4 @@
+require 'nagios-herald/helpers/base'
 require 'net/http'
 require 'uri'
 require 'json'
@@ -17,8 +18,8 @@ require 'json'
 #  for host alerts.
 
 module NagiosHerald
-  module Helpers
-    class SplunkReporter
+  class Helper
+    class SplunkReporter < Helper
       include NagiosHerald::Logging
 
       # Public: Initialize a new SplunkReporter object.
