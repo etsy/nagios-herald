@@ -24,7 +24,7 @@ module NagiosHerald
       #
       # Returns nothing. Appends the downloaded image path to @image_paths.
       def download_image(url, download_path)
-        success = NagiosHerald::Helpers::UrlImage.download_image(url, download_path)
+        success = NagiosHerald::Helper::UrlImage.download_image(url, download_path)
         if success
           @image_paths.push(download_path)
         else

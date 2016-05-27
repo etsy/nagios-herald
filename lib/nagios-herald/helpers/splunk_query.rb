@@ -21,9 +21,9 @@ module NagiosHerald
       #
       # Example:
       #
-      # splunk_query = NagiosHerald::Helpers::SplunkQuery.new('sourcetype=perf_log page=index.html')
-      # splunk_query = NagiosHerald::Helpers::SplunkQuery.new('transaction_state=paid', {:index => 'get_paid'})
-      # splunk_query = NagiosHerald::Helpers::SplunkQuery.new('source=nagios-herald.log alert_type=host', {:output => 'csv'})
+      # splunk_query = NagiosHerald::Helper::SplunkQuery.new('sourcetype=perf_log page=index.html')
+      # splunk_query = NagiosHerald::Helper::SplunkQuery.new('transaction_state=paid', {:index => 'get_paid'})
+      # splunk_query = NagiosHerald::Helper::SplunkQuery.new('source=nagios-herald.log alert_type=host', {:output => 'csv'})
       #
       # Returns a new SplunkQuery object.
       def initialize(query, options={})

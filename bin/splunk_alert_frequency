@@ -49,6 +49,6 @@ end
 config  = AppConf.new
 config.load( Choice[:config_file] )
 
-reporter = NagiosHerald::Helpers::SplunkReporter.new(config['splunk']['url'],config['splunk']['username'], config['splunk']['password'])
+reporter = NagiosHerald::Helper::SplunkReporter.new(config['splunk']['url'],config['splunk']['username'], config['splunk']['password'])
 puts reporter.get_alert_frequency(Choice[:hostname], Choice[:service_name], {:duration => Choice[:duration]})
 

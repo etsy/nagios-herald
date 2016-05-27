@@ -81,7 +81,7 @@ module NagiosHerald
       def get_alert_frequency(query)
         # Call elasticsearch_query.rb here
         options = {:time_period => @time_period, :num_results => @num_results}
-        es = NagiosHerald::Helpers::ElasticsearchQuery.new(options)
+        es = NagiosHerald::Helper::ElasticsearchQuery.new(options)
         results = es.query_from_string(query)
 
         events_count = aggregate_events(results)

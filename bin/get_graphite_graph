@@ -53,6 +53,6 @@ historical_graph = true if Choice[:historical_graph]
 path = Choice[:path]
 uri = Choice[:uri]
 
-graphite = NagiosHerald::Helpers::GraphiteGraph.new
+graphite = NagiosHerald::Helper::GraphiteGraph.new
 image_paths = graphite.get_graph(uri, path, historical_graph)
 puts image_paths.join(", ") if image_paths

@@ -76,7 +76,7 @@ abort("Config file not found #{options.config_file}") unless File.exists? option
 config = AppConf.new
 config.load( options.config_file )
 
-ganglia = NagiosHerald::Helpers::GangliaGraph.new
+ganglia = NagiosHerald::Helper::GangliaGraph.new
 
 image_paths = ganglia.get_graphs( options.hosts, options.metric, options.path, options.range )
 puts image_paths.join( ", " ) if image_paths

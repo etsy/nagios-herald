@@ -20,7 +20,7 @@ module NagiosHerald
         # The aggregation level limit for which we can render results
         agg_level_limit = 3
 
-        elasticsearch_helper = NagiosHerald::Helpers::ElasticsearchQuery.new({ :time_period => command_components[:time_period]})
+        elasticsearch_helper = NagiosHerald::Helper::ElasticsearchQuery.new({ :time_period => command_components[:time_period]})
         results = get_elasticsearch_results(elasticsearch_helper, command_components[:query])
 
         # Handle the case when an exception is thrown inside get_elasticsearch_results
