@@ -46,5 +46,5 @@ end
 path = Choice[:path] if Choice[:path]
 uris = Choice[:uris] if Choice[:uris]
 
-image_paths = NagiosHerald::Helpers::UrlImage.download_images( uris, path )
+image_paths = NagiosHerald::Helper::UrlImage.download_images( uris, path )
 puts image_paths.join( ", " )

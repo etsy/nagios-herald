@@ -12,7 +12,7 @@ module NagiosHerald
       # Returns the file names of all retrieved graphs. These can be attached to the message.
       def get_graphite_graphs(url)
         begin
-          graphite = NagiosHerald::Helpers::GraphiteGraph.new
+          graphite = NagiosHerald::Helper::GraphiteGraph.new
           show_historical = true
           graphs =  graphite.get_graph(url, @sandbox, show_historical)
           return graphs

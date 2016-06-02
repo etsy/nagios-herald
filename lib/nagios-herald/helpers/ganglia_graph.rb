@@ -86,7 +86,7 @@ module NagiosHerald
           cluster_name = get_cluster_name_for_host(host)
           url = get_ganglia_url(cluster_name, host, metric, range)
           image_path = "#{path}/#{host}-#{metric}.png"
-          success = NagiosHerald::Helpers::UrlImage.download_image(url, image_path)
+          success = NagiosHerald::Helper::UrlImage.download_image(url, image_path)
           if success
             image_paths.push( image_path )
           else
