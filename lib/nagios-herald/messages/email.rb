@@ -118,6 +118,7 @@ module NagiosHerald
 
         html_part = Mail::Part.new do
           content_type 'multipart/related;'
+          content_transfer_encoding 'quoted-printable'
         end
 
         # Load the attachments
@@ -131,6 +132,7 @@ module NagiosHerald
           inline_html = inline_body_with_attachments(html_part.attachments)
           html_content_part = Mail::Part.new do
             content_type 'text/html; charset=UTF-8'
+            content_transfer_encoding 'quoted-printable'
             body     inline_html
           end
           html_part.add_part(html_content_part)
