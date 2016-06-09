@@ -26,6 +26,11 @@ class TestConfig < MiniTest::Unit::TestCase
     assert_equal "ganglia.example.com", NagiosHerald::Config.config['servers']['ganglia'] # Config file
     assert_equal "splunkuser", NagiosHerald::Config.config['splunk']['username'] # Config file
     assert_equal "http://logstash.example.com:9200", NagiosHerald::Config.config['elasticsearch']['url'] # Config file
+    assert_equal "https://kibana.example.com/#/dashboard/file/logstash.json?from=%{from}&to=%{to}&query=%{query}", NagiosHerald::Config.config['elasticsearch']['frontend_url'] # Config file
+
+    fields_in_email = NagiosHerald::Config.config['elasticsearch']['fields_in_email']
+    assert_includes fields_in_email, 'message'
+    assert_includes fields_in_email, 'host'
   end
 
 end

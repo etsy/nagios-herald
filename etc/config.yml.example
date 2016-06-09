@@ -10,7 +10,7 @@ elasticsearch:
   url: http://logstash.example.com:9200
   frontend_url: https://kibana.example.com/#/dashboard/file/logstash.json?from=%{from}&to=%{to}&query=%{query}
   result_field_truncate: 200
-  fields_in_email: [ message, host, type, etsy_user_id, etsy_request_uuid ]
+  fields_in_email: [ message, host, type ]
   num_results: 10
 logfile: /tmp/nagios-herald.log
 formatter_dir: /usr/local/nagios-herald-formatters
