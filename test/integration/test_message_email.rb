@@ -62,7 +62,7 @@ class TestMessageEmail < MiniTest::Unit::TestCase
     assert_match "text/plain", mail.text_part.content_type
   end
 
-  def xtest_message_delivery
+  def test_message_delivery
     # This test depends on the mailcatcher gem being installed and
     # `mailcatcher` running. `mailcatcher` runs locally on tcp/1025.
     # NOTE: NagiosHerald::Message::Email#send calls #build_message before
