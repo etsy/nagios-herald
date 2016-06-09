@@ -118,6 +118,7 @@ module NagiosHerald
 
         html_part = Mail::Part.new do
           content_type 'multipart/related;'
+          content_transfer_encoding 'quoted-printable'
         end
 
         # Load the attachments
