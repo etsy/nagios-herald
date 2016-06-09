@@ -73,7 +73,7 @@ module NagiosHerald
           service_output = get_nagios_var("NAGIOS_SERVICECHECKCOMMAND")
           command_components =  parse_command(service_output)
 
-          frontend_url_format = NagiosHerald::Config.config['elasticsearch']['frontend_url']
+          frontend_url_format = Config.config['elasticsearch']['frontend_url']
 
           if !frontend_url_format.nil? and !frontend_url_format.empty?
             bounds = get_frontend_bounds_from_time_period(command_components[:time_period])
@@ -176,7 +176,7 @@ module NagiosHerald
         output_prefix = "<table border='1' cellpadding='0' cellspacing='1'>"
         output_suffix = "</table>"
 
-        fields_in_config = NagiosHerald::Config.config['elasticsearch']['fields_in_email']
+        fields_in_config = Config.config['elasticsearch']['fields_in_email']
 
         if fields_in_config.nil?
             fields = results.first['_source'].keys
