@@ -86,7 +86,7 @@ module NagiosHerald
             frontend_url = frontend_url_format % { :query => ERB::Util.url_encode(query_string), :to => bounds[:to], :from => bounds[:from] }
 
             text += "Frontend URL: #{frontend_url}\n\n"
-            add_short_text("additional_info", frontend_url)
+            add_short_text("additional_info", "View logs here: #{frontend_url}")
             html += "<b>Frontend URL</b>: #{frontend_url}<br><br>"
           end
 
