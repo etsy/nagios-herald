@@ -48,7 +48,11 @@ module NagiosHerald
           html_output = generate_table_from_buckets(results["aggregations"][agg_field_name]["buckets"])
         else
           # We have normal search results
-          html_output = generate_html_output(results["hits"]["hits"])
+          if !results['hits']['hits'].empty?
+            html_output = generate_html_output(results["hits"]["hits"])
+          else
+            html_output = ""
+          end
         end
 
         add_html(section, html_output)
