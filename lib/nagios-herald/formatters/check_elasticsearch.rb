@@ -74,21 +74,8 @@ module NagiosHerald
           text = ""
           html = ""
 
-          service_output = get_nagios_var("NAGIOS_SERVICECHECKCOMMAND")
-          command_components =  parse_command(service_output)
-
-          frontend_url_format = Config.config['elasticsearch']['frontend_url']
-
-          if !frontend_url_format.nil? and !frontend_url_format.empty?
-            bounds = get_frontend_bounds_from_time_period(command_components[:time_period])
-            query_string = command_components[:query]
-
-            # Strip leading and following single quotes from query if present
-            query_string = query_string[1..-1] if query_string[0] == "'"
-            query_string = query_string[0..-2] if query_string[-1] == "'"
-
-            frontend_url = frontend_url_format % { :query => ERB::Util.url_encode(query_string), :to => bounds[:to], :from => bounds[:from] }
-
+          frontend_url = generate_frontend_url
+          if frontend_url
             text += "Frontend URL: #{frontend_url}\n\n"
             add_short_text("additional_info", "View logs here: #{frontend_url}")
             html += "<b>Frontend URL</b>: #{frontend_url}<br><br>"
@@ -96,6 +83,29 @@ module NagiosHerald
 
           add_text(section, text)
           add_html(section, html)
+      end
+
+      def generate_frontend_url
+        frontend_url = nil
+        frontend_url_format = Config.config['elasticsearch']['frontend_url']
+
+        if !frontend_url_format.nil? and !frontend_url_format.empty?
+          service_output = get_nagios_var("NAGIOS_SERVICECHECKCOMMAND")
+          command_components =  parse_command(service_output)
+
+          bounds = get_frontend_bounds_from_time_period(command_components[:time_period])
+          # The query may contain Nagios macros, which are replaced by Nagios before the query is executed.  Replicate
+          # that for the link to search results.
+          query_string = command_components[:query].gsub(/\$([A-Z]+)\$/) { |macro| get_nagios_var("NAGIOS_#{$1}") }
+
+          # Strip leading and following single quotes from query if present
+          query_string = query_string[1..-1] if query_string[0] == "'"
+          query_string = query_string[0..-2] if query_string[-1] == "'"
+
+          frontend_url = frontend_url_format % { :query => ERB::Util.url_encode(query_string), :to => bounds[:to], :from => bounds[:from] }
+        end
+
+        frontend_url
       end
 
       private
