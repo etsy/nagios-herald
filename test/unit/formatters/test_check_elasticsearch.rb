@@ -22,6 +22,9 @@ class TestFormatterCheckElasticsearch < MiniTest::Unit::TestCase
     NagiosHerald::Executor.new.load_messages
     formatter_class = NagiosHerald::Formatter.formatters[@options[:formatter_name]]
     @formatter = formatter_class.new(@options)
+
+    @options['config_file'] = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'etc', 'config.yml.example'))
+    NagiosHerald::Config.load(@options)
   end
 
   def teardown
@@ -37,6 +40,12 @@ class TestFormatterCheckElasticsearch < MiniTest::Unit::TestCase
   def test_clean_sandbox
     @formatter.clean_sandbox
     assert !File.directory?(@formatter.sandbox)
+  end
+
+  def test_generate_frontend_url
+    # from and to will be replaced with timestamps relative to now, but the rest is fixed.
+    pattern = %r{https://kibana\.example\.com/#/dashboard/file/logstash\.json\?from=\d+&to=\d+&query=type%3Aweb_info_log%20AND%20host%3Aweb\.example\.com}
+    assert_match pattern, @formatter.generate_frontend_url
   end
 
 end
