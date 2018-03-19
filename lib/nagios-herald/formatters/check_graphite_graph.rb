@@ -42,7 +42,7 @@ module NagiosHerald
         # Get Graphite graphs.
         # Extract the Graphite URL from NAGIOS_SERVICECHECKCOMMAND
         service_check_command = get_nagios_var("NAGIOS_SERVICECHECKCOMMAND")
-        url = service_check_command.split(/!/)[-1].gsub(/'/, '')
+        url = service_check_command.split(/!/)[-1].gsub(/['"]/, '')
         graphite_graphs = get_graphite_graphs(url)
         from_match = url.match(/from=(?<from>[^&]*)/)
         if from_match
